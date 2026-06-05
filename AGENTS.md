@@ -23,6 +23,7 @@
 - 后端接口可测试、可监控、可回滚。
 - PRD 必须输出为可打开的 HTML 文档，便于产品、设计、开发和测试统一评审。
 - UI 设计必须连接 Figma 生成可编辑设计图，并优先使用 `.codex/skills/ui-ux-pro-max` 建立设计系统。
+- UI 设计必须输出可落地设计稿：包含真实图片质感资产、优美可编辑 SVG 图标、Ready for Dev 画板、Handoff 标注、组件命名、间距/字体/颜色/图片规格说明，不能只交付原型图或抽象色块占位稿。
 
 ## 业务角色
 
@@ -54,7 +55,7 @@
 | --- | --- |
 | Orchestrator Agent | 总控调度、阶段门禁、产物检查、下一步推进 |
 | Product Agent | 外卖业务 PRD、用户故事、订单状态、验收标准、HTML PRD |
-| Design Agent | Vue3 H5 移动端 UI/UX、Figma 设计图、ui-ux-pro-max 设计系统 |
+| Design Agent | Vue3 H5 移动端 UI/UX、Figma 可落地设计稿、真实图片/SVG 图标资产、Ready for Dev/Handoff、ui-ux-pro-max 设计系统 |
 | Architect Agent | 外卖平台架构、订单状态机、接口契约、数据模型 |
 | Data Agent | 数据模型、Migration、索引、数据一致性、回滚 |
 | Frontend Agent | Vue3 H5 页面、组件、路由、状态管理、移动端适配 |
@@ -153,6 +154,8 @@
 - HTML 版 PRD 已生成并可打开。
 - H5 交互状态和移动端适配已明确。
 - Figma 设计图已生成或更新，且设计规则来自 `ui-ux-pro-max` 设计系统。
+- Figma 正式 UI 包含 Ready for Dev 画板和 Handoff 标注，说明 8px 栅格、页面边距、触控目标、组件尺寸、颜色 token、字体、图片规格、状态和前端组件拆分。
+- 商家封面、商品图、活动横幅使用真实图片质感资产；分类、导航、操作按钮使用统一优美的可编辑 SVG 图标，并记录素材来源和生产替换策略。
 - 技术方案已明确模块边界、接口、数据、安全和运维要求。
 - 订单、支付、库存、权限等核心规则已写清。
 - 代码实现遵循现有项目规范。
