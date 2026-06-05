@@ -1,37 +1,22 @@
-# 外卖平台 Codex 工作流索引
+# 通用 Codex 工作流索引
+
+本目录只维护项目流程，不写死具体业务需求。业务目标、角色、核心链路、技术栈和质量重点应放在 `docs/requirements/` 下的需求文档中。
 
 ## 主流程
 
-- `multi-agent-sdlc.md`：产品设计 -> UI 设计 -> 技术设计 -> 开发 -> 测试 -> 审查 -> 部署 -> 验收。
+- `multi-agent-sdlc.md`：从需求读取、产品设计、UI 设计、技术设计、开发、测试、审查、发布到验收复盘的通用多 Agent 流程。
+- `git-submit-workflow.md`：开发完成后，由 Git Agent 执行 branch、commit、push、PR 的通用提交流程。
 
-## 新增：提交代码流程
+## 使用方式
 
-- `git-submit-workflow.md`：开发完成后，如何由 Git Agent 执行 branch、commit、push、PR。
-
-提交代码阶段应放在：
-
-```text
-阶段 5：并行开发
-阶段 6：测试与质量门禁
-阶段 6.5：提交代码到 GitHub
-阶段 7：PR Review
-阶段 8：部署发布
-阶段 9：验收复盘
-```
-
-## 提交代码阶段门禁
-
-- 本地质量门禁必须通过。
-- 必须检查 diff。
-- 不允许误提交用户无关改动。
-- 不允许提交构建产物、日志、密钥。
-- Agent 可以 commit、push、创建 PR。
-- Agent 不允许 approve、merge、跳过 CI、直接发布生产。
+1. Orchestrator 先确认当前需求文档路径。
+2. 各角色 Agent 读取需求文档，再套用通用流程。
+3. 工作流只约束阶段、产物、门禁和协作规则。
+4. 业务判断、页面范围、技术栈命令和风险重点来自需求文档或项目实际代码。
 
 ## 相关文件
 
-- `.codex/agents/git.toml`
-- `.codex/checklists/commit-checklist.md`
-- `.github/pull_request_template.md`
-- `.github/workflows/ci.yml`
-- `.gitignore`
+- `.codex/agents/`
+- `.codex/checklists/`
+- `docs/requirements/`
+- `.github/workflows/`

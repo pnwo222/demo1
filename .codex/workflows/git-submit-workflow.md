@@ -1,10 +1,10 @@
-# Git/GitHub 提交代码工作流
+# 通用 Git/GitHub 提交流程
 
-本工作流用于外卖平台 Vue3 H5 + Java 项目，把 Agent 本地开发完成的代码提交到 GitHub，并进入 PR、CI、Review 和人工审批。
+本工作流用于把 Agent 本地开发完成的改动提交到 GitHub，并进入 PR、CI、Review 和人工审批。它不绑定具体业务或技术栈；提交前必须读取当前需求文档和项目实际脚本。
 
 ## 适用时机
 
-当某个 feature slice 的开发、基础测试和本地验证完成后，进入提交代码阶段。
+当某个 feature slice 的开发、基础测试和本地验证完成后，进入提交流程。
 
 典型触发语：
 
@@ -25,7 +25,7 @@
 | QA Agent | 确认测试和构建结果 |
 | Security Agent | 确认安全扫描或风险说明 |
 | Reviewer Agent | PR 后进行代码审查 |
-| DevOps Agent | CI/CD、环境变量、部署前检查 |
+| DevOps Agent | CI/CD、环境变量、发布前检查 |
 
 ## 标准流程
 
@@ -44,19 +44,6 @@ git remote -v
 - 必须确认工作区里哪些文件属于本次任务。
 - 如果有用户已有改动，不能擅自纳入提交。
 
-如果当前目录不是 Git 仓库：
-
-```powershell
-git init
-git checkout -b feature/food-delivery-mvp
-```
-
-如果已有 GitHub 仓库：
-
-```powershell
-git remote add origin <github-repo-url>
-```
-
 ### 2. 创建或切换 feature branch
 
 分支命名建议：
@@ -65,45 +52,32 @@ git remote add origin <github-repo-url>
 feature/<slice-name>
 fix/<bug-name>
 chore/<workflow-name>
+docs/<doc-name>
 ```
 
-外卖平台示例：
+示例：
 
 ```powershell
-git checkout -b feature/food-delivery-mvp
-git checkout -b feature/order-checkout
+git checkout -b feature/user-facing-mvp
+git checkout -b fix/price-preview
 git checkout -b chore/github-submit-workflow
 ```
 
 ### 3. 提交前质量门禁
 
-前端：
+根据项目实际脚本和当前需求文档执行必要检查。常见命令包括：
 
 ```powershell
-cd frontend
+npm run lint
+npm run typecheck
+npm test
 npm run build
 ```
-
-后端：
-
-```powershell
-javac -encoding UTF-8 -d backend\out backend\src\main\java\com\demo\fooddelivery\FoodDeliveryServer.java
-```
-
-API smoke：
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\api-smoke.ps1
-```
-
-如果项目后续接入 Spring Boot、Maven 或 Gradle，需要替换为：
 
 ```powershell
 mvn test
 mvn package
 ```
-
-或：
 
 ```powershell
 gradle test
@@ -113,8 +87,9 @@ gradle build
 门禁：
 
 - 构建失败：不允许作为完成提交。
-- 测试失败：必须修复或标记 WIP。
+- 测试失败：必须修复或标记 WIP 并说明原因。
 - 安全高危：不允许进入合并。
+- 技术栈命令以当前仓库配置为准，不在工作流里写死。
 
 ### 4. 检查 diff
 
@@ -128,25 +103,16 @@ git status --short
 
 - 只提交本次 feature slice 相关文件。
 - 不包含临时日志、构建产物、密钥、个人配置。
-- 不误提交 `node_modules`、`backend/out`、`dist` 等生成物。
-
-推荐增加 `.gitignore`：
-
-```text
-node_modules/
-frontend/dist/
-backend/out/
-*.log
-```
+- 不误提交 `node_modules`、`dist`、`out` 等生成物。
 
 ### 5. Commit
 
 ```powershell
 git add <files>
-git commit -m "feat: add food delivery MVP"
+git commit -m "feat: add user-facing MVP slice"
 ```
 
-commit message 规则：
+commit message 建议：
 
 | 类型 | 场景 |
 | --- | --- |
@@ -161,24 +127,31 @@ commit message 规则：
 ### 6. Push 到 GitHub
 
 ```powershell
-git push -u origin feature/food-delivery-mvp
+git push -u origin feature/user-facing-mvp
 ```
 
 门禁：
 
-- 不强推 main/master。
-- 如果 push 失败，先检查 remote、权限、网络和分支保护。
-- 如果远程已有更新，先 fetch/rebase 或按团队规范处理。
+- 不强推 `main` / `master`。
+- push 失败时先检查 remote、权限、网络和分支保护。
+- 远程已有更新时，按团队规范 fetch/rebase 或合并。
 
 ### 7. 创建 Pull Request
 
 如果安装了 GitHub CLI：
 
 ```powershell
-gh pr create --base main --head feature/food-delivery-mvp --title "feat: add food delivery MVP" --body-file .github/pull_request_template.md
+gh pr create --base main --head feature/user-facing-mvp --title "feat: add user-facing MVP slice" --body-file .github/pull_request_template.md
 ```
 
-如果没有 `gh`，Git Agent 输出 GitHub 网页创建 PR 的链接和填写内容。
+PR 内容必须包含：
+
+- 需求文档路径。
+- feature slice 和影响范围。
+- 本地验证命令和结果。
+- CI 状态。
+- 风险、回滚方案和残余问题。
+- 需要 Review 的重点。
 
 PR 创建后必须等待：
 
@@ -204,7 +177,7 @@ Agent 不允许：
 当前阶段：提交代码
 阶段目标：把已完成 slice 提交到 GitHub 并创建 PR
 调用 Agent：Git Agent、QA Agent、Security Agent、Reviewer Agent
-输入材料：feature slice、代码 diff、测试结果、PR checklist
+输入材料：需求文档、feature slice、代码 diff、测试结果、PR checklist
 预期输出：commit、push、PR、CI 链接、提交报告
 验收标准：本地门禁通过，PR 创建成功，CI 启动，未绕过 Review 和人工审批
 是否需要用户确认：push、创建 PR、合并和发布前需要确认
