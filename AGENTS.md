@@ -12,6 +12,9 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 - 需求、业务规则、数据规则、权限规则不清时，不直接进入代码开发。
 - 前端优先复用现有组件、路由、状态管理和样式规范。
 - 后端优先遵循现有分层架构、接口规范、异常处理和事务规范。
+- 开发阶段默认项目根目录为 `project/`，其下按 `project/frontend/` 和 `project/backend/` 分别组织前端与后端代码；如实际仓库结构不同，Orchestrator 必须先说明映射关系。
+- 后端开发时，若本地运行环境、数据库或 MySQL 缺失，不阻断代码开发；先完成 API、业务逻辑、数据结构、配置说明和可运行性降级记录，再标注未执行的验证项。
+- 前端开发必须同步维护 mock 数据；当后端接口无法连接、未完成或本地环境不可用时，页面应使用 mock 数据展示主流程和关键状态。
 - 涉及资金、权限、状态机、库存或资源、用户数据、删除和批量操作的改动必须重点审查。
 - 所有功能都必须有验收标准、测试结果和残余风险说明。
 
@@ -44,7 +47,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 4. Architect Agent 明确模块边界、状态机、API、数据模型、安全模型和可运维性。
 5. Data Agent 细化数据库模型、migration、索引、回滚和数据一致性策略。
 6. Orchestrator 按用户价值拆 feature slice。
-7. Orchestrator 套用 `.codex/workflows/auto-dispatch-parallel-development.md`，生成任务图、依赖 DAG、并发 wave、owner 分配、branch/worktree 策略和集成策略。
+7. Orchestrator 套用 `.codex/workflows/auto-dispatch-parallel-development.md`，生成任务图、依赖 DAG、并行 wave、owner 分配、branch/worktree 策略和集成策略。
 8. Frontend、Backend、Data、QA 等 Agent 在独立 branch 或 worktree 并行开发。
 9. 本地运行必要检查后提交 PR。
 10. Reviewer、Security、QA Agent 做审查。
@@ -131,3 +134,17 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 - `.codex/workflows/`：通用多 Agent SDLC 工作流。
 - `.codex/checklists/`：PR、发布、验收检查表。
 - `.codex/skills/`：项目本地技能，已有内容不要随意删除。
+
+## 默认开发目录
+
+开发阶段默认采用以下目录约定：
+
+```text
+project/
+  frontend/
+  backend/
+```
+
+- `project/frontend/`：前端页面、组件、路由、状态管理、接口 client、mock 数据和前端测试。
+- `project/backend/`：后端 API、业务逻辑、数据访问、migration、后端测试和运行配置。
+- 如果仓库没有 `project/` 目录，Agent 应先识别实际前后端目录，并在阶段输出中说明映射关系。

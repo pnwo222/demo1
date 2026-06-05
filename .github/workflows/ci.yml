@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: frontend
+        working-directory: project/frontend
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -50,5 +50,5 @@ jobs:
 
       - name: Compile Java API
         run: |
-          mkdir -p backend/out
-          javac -encoding UTF-8 -d backend/out backend/src/main/java/com/demo/fooddelivery/FoodDeliveryServer.java
+          mkdir -p project/backend/out
+          javac -encoding UTF-8 -d project/backend/out project/backend/src/main/java/com/demo/fooddelivery/FoodDeliveryServer.java

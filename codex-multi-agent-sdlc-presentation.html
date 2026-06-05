@@ -519,7 +519,7 @@
       <div class="canvas">
         <div class="kicker">Codex Multi-Agent SDLC</div>
         <h1>用 Codex 搭建通用多 Agent SDLC 流水线</h1>
-        <p class="lead">需求独立沉淀在 docs/requirements/，工作流保持通用；Orchestrator 读取需求集合后自动拆分任务、分配 Agent、并发开发、集成门禁和验收复盘。</p>
+        <p class="lead">需求独立沉淀在 docs/requirements/，工作流保持通用；Orchestrator 读取需求集合后自动拆分任务、分配 Agent、并行开发、集成门禁和验收复盘。</p>
         <div class="hero-grid">
           <div class="metric"><strong>12+</strong><span class="small">专业 Agent 角色</span></div>
           <div class="metric"><strong>14</strong><span class="small">通用交付阶段</span></div>
@@ -542,12 +542,12 @@
     <section class="slide">
       <div class="canvas">
         <div class="kicker">End-to-End Flow</div>
-        <h2>完整流程：从需求集合到并发开发，再到上线后的持续反馈</h2>
+        <h2>完整流程：从需求集合到并行开发，再到上线后的持续反馈</h2>
         <div class="flow">
           <div class="flow-step"><span class="num">1</span><h3>需求装载</h3><p>读取 docs/requirements/ 全部文档，形成需求集合。</p></div>
           <div class="flow-step"><span class="num">2</span><h3>产品与设计</h3><p>HTML PRD、低保真 HTML、Figma 可落地设计稿。</p></div>
           <div class="flow-step"><span class="num">3</span><h3>技术与数据</h3><p>架构、API、状态机、数据模型、回滚策略。</p></div>
-          <div class="flow-step"><span class="num">4</span><h3>自动分配</h3><p>任务图、依赖 DAG、并发 wave、owner 和 worktree。</p></div>
+          <div class="flow-step"><span class="num">4</span><h3>自动分配</h3><p>任务图、依赖 DAG、并行 wave、owner 和 worktree。</p></div>
           <div class="flow-step"><span class="num">5</span><h3>集成门禁</h3><p>CI、Review、QA、安全扫描、PR queue。</p></div>
           <div class="flow-step"><span class="num">6</span><h3>发布复盘</h3><p>预发、灰度、全量、监控、验收和流程改进。</p></div>
         </div>
@@ -579,7 +579,7 @@
     <section class="slide">
       <div class="canvas">
         <div class="kicker">Operating Model</div>
-        <h2>推荐工作模式：需求集合驱动，总控编排，专业 Agent 并发交付</h2>
+        <h2>推荐工作模式：需求集合驱动，总控编排，专业 Agent 并行交付</h2>
         <div class="two-col">
           <div class="card accent-blue">
             <h3>总控 Agent</h3>
@@ -710,7 +710,7 @@
     <section class="slide">
       <div class="canvas">
         <div class="kicker">Task Breakdown</div>
-        <h2>阶段四：任务拆分，先切 Slice，再生成可并发执行的任务图</h2>
+        <h2>阶段四：任务拆分，先切 Slice，再生成可并行执行的任务图</h2>
         <div class="timeline">
           <div class="timeline-item"><h3>Slice</h3><p>按用户价值切最小业务闭环，明确输入、输出和验收。</p></div>
           <div class="timeline-item"><h3>Task Graph</h3><p>每个任务包含 owner、范围、产物、检查命令和风险等级。</p></div>
@@ -728,14 +728,14 @@
     <section class="slide">
       <div class="canvas">
         <div class="kicker">Auto Dispatch</div>
-        <h2>阶段五：自动分配与并发开发，用 wave 控制速度和风险</h2>
+        <h2>阶段五：自动分配与并行开发，用 wave 控制速度和风险</h2>
         <div class="two-col">
           <div class="card accent-blue">
             <h3>自动分配规则</h3>
             <div class="bullets">
               <div class="bullet"><span class="dot"></span><span>Wave 0：产品、设计、架构补齐规格。</span></div>
               <div class="bullet"><span class="dot"></span><span>Wave 1：API 契约、数据底座、QA 测试计划。</span></div>
-              <div class="bullet"><span class="dot"></span><span>Wave 2：前端、后端、数据、测试用例并发实现。</span></div>
+              <div class="bullet"><span class="dot"></span><span>Wave 2：前端、后端、数据、测试用例并行实现。</span></div>
               <div class="bullet"><span class="dot"></span><span>Wave 3：联调、修复、smoke、回归。</span></div>
             </div>
           </div>
@@ -749,7 +749,7 @@
             </div>
           </div>
         </div>
-        <div class="footer"><span>自动分配与并发开发</span><span class="page-num">10 / 15</span></div>
+        <div class="footer"><span>自动分配与并行开发</span><span class="page-num">10 / 15</span></div>
       </div>
     </section>
 

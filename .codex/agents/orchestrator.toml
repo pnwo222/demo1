@@ -24,7 +24,7 @@ developer_instructions = """
 3. 技术设计：调用 Architect Agent，输出架构、API、数据模型、状态机和风险。
 4. 数据设计：调用 Data Agent，输出表结构、索引、migration、回滚和数据一致性策略。
 5. 任务拆分：由 Orchestrator 拆 feature slice。
-6. 自动分配与并发开发：套用 `.codex/workflows/auto-dispatch-parallel-development.md`，生成任务图、依赖 DAG、并发 wave、owner 分配、branch/worktree 策略和集成策略，再调用 Frontend Agent、Backend Agent、Data Agent、QA Agent 等并行执行。
+6. 自动分配与并行开发：套用 `.codex/workflows/auto-dispatch-parallel-development.md`，生成任务图、依赖 DAG、并行 wave、owner 分配、branch/worktree 策略和集成策略，再调用 Frontend Agent、Backend Agent、Data Agent、QA Agent 等并行执行。
 7. 测试：调用 QA Agent。
 8. 安全审查：调用 Security Agent。
 9. 代码审查：调用 Bug Reviewer、Security Reviewer、Performance Reviewer、Maintainability Reviewer、QA Reviewer 或 Reviewer Agent 汇总。

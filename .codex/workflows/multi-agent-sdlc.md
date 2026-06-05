@@ -166,18 +166,32 @@ Figma 设计图要求：
 
 ## 阶段 6：自动分配与并行开发
 
-进入开发前，优先套用 `auto-dispatch-parallel-development.md`，由 Orchestrator 生成任务图、依赖 DAG、并发 wave、owner 分配、branch/worktree 策略和集成策略。
+进入开发前，优先套用 `auto-dispatch-parallel-development.md`，由 Orchestrator 生成任务图、依赖 DAG、并行 wave、owner 分配、branch/worktree 策略和集成策略。
+
+默认开发目录：
+
+```text
+project/
+  frontend/
+  backend/
+```
+
+如果实际仓库结构不同，Orchestrator 必须先识别并输出前端、后端目录映射。
 
 Frontend Agent：
 
 - 实现页面、组件、路由和状态管理。
 - 处理适配、交互、loading、empty、error 和异常状态。
 - 不信任前端对关键业务规则的最终判断，最终校验以可信服务为准。
+- 同步维护 mock 数据、mock 接口或 mock adapter。
+- 当后端接口无法连接、未完成或本地环境不可用时，使用 mock 数据展示主流程、关键状态和异常状态。
 
 Backend Agent：
 
 - 实现 API、业务逻辑、权限、事务、幂等和审计。
 - 更新接口文档和测试。
+- 本地运行环境、数据库或 MySQL 缺失时，不阻断开发；先完成代码、接口契约、配置示例、migration 草案和未验证项记录。
+- 无法连接数据库时，必须在完成报告中说明未执行的验证、预期验证命令和恢复环境后的验证步骤。
 
 Data Agent：
 

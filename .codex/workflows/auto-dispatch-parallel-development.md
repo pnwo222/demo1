@@ -1,4 +1,4 @@
-# 自动分配与并发开发工作流
+# 自动分配与并行开发工作流
 
 本工作流定义 Orchestrator 如何把已确认的需求、PRD、设计稿和技术方案自动拆解为可并行开发任务，并按大厂常见研发协作方式完成分配、隔离开发、集成、门禁和汇总。
 
@@ -24,7 +24,7 @@
 - Feature slice 作为最小业务闭环。
 - Task graph 作为任务依赖图。
 - Agent owner 作为专业负责人。
-- Branch / worktree 作为并发隔离单元。
+- Branch / worktree 作为并行隔离单元。
 - Integration branch 或 PR queue 作为集成入口。
 - CI、Review、QA、Security 作为合并门禁。
 
@@ -39,6 +39,7 @@ Orchestrator 必须先读取并确认：
 - 当前仓库结构。
 - 当前分支和工作区状态。
 - 已有脚本、测试、CI 和构建命令。
+- 前端目录和后端目录映射。默认按 `project/frontend/`、`project/backend/` 识别；如果实际结构不同，必须说明映射关系。
 
 输出：
 
@@ -99,7 +100,7 @@ tasks:
     owner_agent: Frontend Agent
     dependencies: [API-001, UI-001]
     files_allowed:
-      - frontend/**
+      - project/frontend/**
     local_checks:
       - npm run lint
       - npm run build
@@ -120,17 +121,19 @@ Orchestrator 根据任务依赖生成 DAG，并把任务分为 wave。
 | Wave 3 | 联调和修复 | frontend integration、backend integration、qa smoke |
 | Wave 4 | 门禁和交付 | review、security、ci、release notes |
 
-并发原则：
+并行原则：
 
 - 没有依赖关系的任务可以并行。
 - 共享同一批核心文件的任务不并行写入。
 - API 契约和数据模型未稳定前，前后端只能基于 mock 或 contract 并行。
+- 后端运行环境、数据库或 MySQL 缺失时，不阻断后端任务开发；该任务标记为可编码、待环境验证。
+- 前端任务必须同步产出 mock 数据；后端不可用时，前端页面使用 mock 数据完成展示和交互验证。
 - 高风险状态、金额、权限、资源扣减类任务必须先完成技术设计和测试设计。
 - QA 和 Security 不等开发结束才开始，应从 Wave 1 起并行准备。
 
 ## 阶段 3：分配执行单元
 
-每个并发任务必须拥有独立执行单元。
+每个并行任务必须拥有独立执行单元。
 
 推荐策略：
 
@@ -160,7 +163,7 @@ worktree 命名：
 ../worktrees/<slice-id>-qa
 ```
 
-## 阶段 4：并发执行规则
+## 阶段 4：并行执行规则
 
 每个 Agent 开始前必须声明：
 
@@ -175,7 +178,7 @@ Owner：
 完成产物：
 ```
 
-并发写入规则：
+并行写入规则：
 
 - Agent 只能修改 `files_allowed` 中的文件。
 - 发现必须修改范围外文件时，先回报 Orchestrator。
@@ -183,6 +186,8 @@ Owner：
 - 公共契约文件由 Architect 或 Backend 维护，Frontend 只消费。
 - migration 由 Data Agent 维护，Backend 不直接改。
 - 测试用例可由 QA 维护，开发 Agent 可补充贴近实现的单元测试。
+- 前端接口层必须支持真实 API 与 mock 数据切换，切换方式以项目现有配置、环境变量或 adapter 约定为准。
+- 后端因环境或 MySQL 缺失无法运行时，必须继续完成代码实现，并在任务状态中记录 `pending_environment_verification`。
 
 ## 阶段 5：日常同步
 
@@ -294,6 +299,7 @@ Wave：
 | 分支冲突 | Orchestrator 指派单一 owner 串行解决 |
 | 契约变更 | Architect 更新 contract，Frontend/Backend 重新同步 |
 | migration 失败 | Data Agent 回滚或补兼容 migration |
+| 后端环境或 MySQL 缺失 | Backend Agent 继续编码，补配置说明和待验证清单；Frontend Agent 使用 mock 数据推进 |
 | CI 失败 | 按失败类型路由给对应 Agent |
 | 测试不稳定 | QA Agent 标记 flaky，开发 Agent 修复根因 |
 | 安全高危 | Security Agent 阻断合并 |
@@ -301,13 +307,13 @@ Wave：
 ## Orchestrator 输出模板
 
 ```text
-当前阶段：自动分配与并发开发
+当前阶段：自动分配与并行开发
 阶段目标：
 需求文档：
 输入产物：
 Feature Slice：
 任务图：
-并发 Wave：
+并行 Wave：
 任务分配：
 分支/Worktree 策略：
 集成策略：
@@ -321,7 +327,7 @@ Feature Slice：
 
 - 任务图已生成。
 - 任务依赖已明确。
-- 并发 wave 已明确。
+- 并行 wave 已明确。
 - 每个任务都有 owner、范围、产物和检查命令。
 - branch/worktree 策略已明确。
 - 集成策略已明确。
