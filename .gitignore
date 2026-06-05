@@ -1,6 +1,7 @@
 node_modules/
-project/frontend/node_modules/
-project/frontend/dist/
+node_modules
+dist
+out
 project/backend/out/
 *.log
 *.tmp
@@ -9,12 +10,12 @@ Thumbs.db
 
 /design-system
 
-/docs/architecture
-/docs/design
-/docs/prd
-/docs/process
-/docs/data
+# /docs/architecture
+# /docs/design
+# /docs/prd
+# /docs/process
+# /docs/data
 
-/project
+# /project
 
 /tmp-assets
