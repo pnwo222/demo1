@@ -1,0 +1,912 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Codex 多 Agent 软件开发流程</title>
+  <style>
+    :root {
+      --ink: #18202b;
+      --muted: #5c6675;
+      --line: #dbe2ea;
+      --paper: #f6f8fb;
+      --white: #ffffff;
+      --blue: #246bfe;
+      --teal: #0f9f8f;
+      --amber: #e69b18;
+      --red: #d94a4a;
+      --green: #289260;
+      --navy: #11233f;
+      --shadow: 0 20px 70px rgba(17, 35, 63, 0.18);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", Arial, sans-serif;
+    }
+
+    body {
+      overflow: hidden;
+    }
+
+    .deck {
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+    }
+
+    .slide {
+      display: none;
+      width: min(1280px, 100%);
+      aspect-ratio: 16 / 9;
+      background: var(--white);
+      border: 1px solid rgba(219, 226, 234, 0.9);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .slide.active {
+      display: block;
+    }
+
+    .canvas {
+      position: absolute;
+      inset: 0;
+      padding: 58px 70px 52px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--blue);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .kicker::before {
+      content: "";
+      width: 28px;
+      height: 3px;
+      background: var(--blue);
+      border-radius: 999px;
+    }
+
+    h1, h2, h3, p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 66px;
+      line-height: 1.05;
+      letter-spacing: 0;
+      color: var(--navy);
+      max-width: 900px;
+    }
+
+    h2 {
+      font-size: 42px;
+      line-height: 1.15;
+      color: var(--navy);
+      max-width: 940px;
+    }
+
+    h3 {
+      font-size: 24px;
+      line-height: 1.25;
+      color: var(--navy);
+    }
+
+    .lead {
+      font-size: 24px;
+      line-height: 1.55;
+      color: var(--muted);
+      max-width: 900px;
+    }
+
+    .small {
+      font-size: 17px;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    .caption {
+      font-size: 14px;
+      color: #7b8492;
+    }
+
+    .footer {
+      position: absolute;
+      left: 70px;
+      right: 70px;
+      bottom: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #8490a1;
+      font-size: 13px;
+    }
+
+    .page-num {
+      color: var(--navy);
+      font-weight: 700;
+    }
+
+    .hero-band {
+      position: absolute;
+      right: -100px;
+      top: -120px;
+      width: 520px;
+      height: 520px;
+      background:
+        linear-gradient(135deg, rgba(36, 107, 254, 0.18), rgba(15, 159, 143, 0.22));
+      border-radius: 46% 54% 52% 48%;
+      transform: rotate(-12deg);
+    }
+
+    .hero-grid {
+      margin-top: auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      width: min(920px, 100%);
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      background: #fbfcfe;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 28px;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      gap: 36px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .three-col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      flex: 1;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfe;
+      padding: 22px;
+    }
+
+    .card.accent-blue { border-top: 5px solid var(--blue); }
+    .card.accent-teal { border-top: 5px solid var(--teal); }
+    .card.accent-amber { border-top: 5px solid var(--amber); }
+    .card.accent-red { border-top: 5px solid var(--red); }
+    .card.accent-green { border-top: 5px solid var(--green); }
+
+    .bullets {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .bullet {
+      display: grid;
+      grid-template-columns: 16px 1fr;
+      gap: 12px;
+      align-items: start;
+      font-size: 19px;
+      line-height: 1.45;
+      color: #313b49;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      margin-top: 9px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      align-items: stretch;
+      margin-top: 10px;
+    }
+
+    .flow-step {
+      min-height: 150px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 17px 14px;
+      background: linear-gradient(180deg, #ffffff, #f7f9fc);
+      position: relative;
+    }
+
+    .flow-step::after {
+      content: "→";
+      position: absolute;
+      right: -13px;
+      top: 58px;
+      color: #9aa5b5;
+      font-weight: 700;
+      z-index: 3;
+    }
+
+    .flow-step:last-child::after {
+      content: "";
+    }
+
+    .num {
+      display: inline-grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      color: white;
+      background: var(--navy);
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .flow-step h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .flow-step p {
+      font-size: 14px;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+
+    .matrix {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 17px;
+      overflow: hidden;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+    }
+
+    .matrix th {
+      text-align: left;
+      background: var(--navy);
+      color: white;
+      padding: 14px 16px;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .matrix td {
+      padding: 13px 16px;
+      border-top: 1px solid var(--line);
+      color: #2e3947;
+      vertical-align: top;
+    }
+
+    .matrix tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+
+    .lane {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .lane-label {
+      background: #f2f6fb;
+      padding: 16px;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--navy);
+      border-right: 1px solid var(--line);
+    }
+
+    .lane-items {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      padding: 12px;
+    }
+
+    .pill {
+      border: 1px solid #d8e1ec;
+      border-radius: 999px;
+      padding: 10px 12px;
+      text-align: center;
+      font-size: 14px;
+      color: #344052;
+      background: white;
+      white-space: nowrap;
+    }
+
+    .big-quote {
+      margin-top: auto;
+      padding: 34px 40px;
+      border-left: 8px solid var(--blue);
+      background: #f5f8ff;
+      font-size: 34px;
+      line-height: 1.35;
+      color: var(--navy);
+      font-weight: 800;
+    }
+
+    .command {
+      background: #111827;
+      color: #e5eefc;
+      border-radius: 8px;
+      padding: 22px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 17px;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    .tag-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: #eef4ff;
+      color: #1d56bd;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .timeline-item {
+      padding-top: 18px;
+      border-top: 5px solid var(--blue);
+    }
+
+    .timeline-item:nth-child(2) { border-color: var(--teal); }
+    .timeline-item:nth-child(3) { border-color: var(--amber); }
+    .timeline-item:nth-child(4) { border-color: var(--green); }
+    .timeline-item:nth-child(5) { border-color: var(--red); }
+
+    .timeline-item h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .timeline-item p {
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .controls {
+      position: fixed;
+      right: 28px;
+      bottom: 22px;
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+    }
+
+    button {
+      border: 1px solid #cdd7e3;
+      background: white;
+      color: var(--navy);
+      border-radius: 8px;
+      width: 42px;
+      height: 38px;
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(17, 35, 63, 0.12);
+    }
+
+    button:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    .progress {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 5px;
+      background: #dbe2ea;
+      z-index: 9;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--blue), var(--teal));
+    }
+
+    .print-tip {
+      position: fixed;
+      left: 28px;
+      bottom: 18px;
+      color: #6f7b8c;
+      font-size: 13px;
+      z-index: 10;
+      background: rgba(255,255,255,0.76);
+      border: 1px solid rgba(205,215,227,0.8);
+      padding: 8px 10px;
+      border-radius: 8px;
+    }
+
+    @media (max-width: 900px) {
+      .deck { padding: 12px; }
+      .canvas { padding: 34px 32px 44px; gap: 18px; }
+      h1 { font-size: 38px; }
+      h2 { font-size: 28px; }
+      .lead { font-size: 17px; }
+      .hero-grid, .three-col, .two-col, .flow, .timeline { grid-template-columns: 1fr; }
+      .slide { aspect-ratio: auto; height: calc(100vh - 24px); overflow: auto; }
+      .footer { left: 32px; right: 32px; bottom: 22px; }
+      .flow-step::after { content: ""; }
+      .lane { grid-template-columns: 1fr; }
+      .lane-items { grid-template-columns: 1fr 1fr; }
+      .controls, .print-tip { display: none; }
+    }
+
+    @media print {
+      body {
+        overflow: visible;
+        background: white;
+      }
+      .deck {
+        display: block;
+        width: auto;
+        height: auto;
+        padding: 0;
+      }
+      .slide {
+        display: block !important;
+        width: 100vw;
+        height: 100vh;
+        aspect-ratio: 16 / 9;
+        box-shadow: none;
+        border: 0;
+        page-break-after: always;
+      }
+      .controls, .progress, .print-tip { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck" id="deck">
+    <section class="slide active">
+      <div class="hero-band"></div>
+      <div class="canvas">
+        <div class="kicker">Codex Multi-Agent SDLC</div>
+        <h1>用 Codex 搭建多 Agent 软件开发流水线</h1>
+        <p class="lead">从产品设计、UI 设计、前后端开发、测试、部署到验收，把“大厂式交付流程”变成可执行、可审计、可迭代的 agent 协作体系。</p>
+        <div class="hero-grid">
+          <div class="metric"><strong>12+</strong><span class="small">专业 Agent 角色</span></div>
+          <div class="metric"><strong>9</strong><span class="small">核心交付阶段</span></div>
+          <div class="metric"><strong>CI</strong><span class="small">自动质量门禁</span></div>
+          <div class="metric"><strong>PR</strong><span class="small">人机协同审查</span></div>
+        </div>
+        <div class="footer"><span>HTML Presentation</span><span class="page-num">01 / 15</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="canvas">
+        <div class="kicker">Key Message</div>
+        <h2>多 Agent 不是“一个 AI 写完整个系统”，而是把成熟 SDLC 拆给专业角色协作</h2>
+        <div class="big-quote">人类负责方向、取舍、审批和验收；Agent 负责检索、草稿、实现、验证、修复和总结。</div>
+        <div class="footer"><span>核心观点</span><span class="page-num">02 / 15</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="canvas">
+        <div class="kicker">End-to-End Flow</div>
+        <h2>完整流程：从想法到上线后的持续反馈</h2>
+        <div class="flow">
+          <div class="flow-step"><span class="num">1</span><h3>产品设计</h3><p>PRD、用户故事、成功指标、验收标准。</p></div>
+          <div class="flow-step"><span class="num">2</span><h3>UI 设计</h3><p>页面流程、组件状态、Figma、设计系统。</p></div>
+          <div class="flow-step"><span class="num">3</span><h3>技术方案</h3><p>架构、API、数据模型、权限、安全。</p></div>
+          <div class="flow-step"><span class="num">4</span><h3>开发联调</h3><p>前端、后端、数据库、接口契约并行。</p></div>
+          <div class="flow-step"><span class="num">5</span><h3>测试发布</h3><p>CI、E2E、安全扫描、灰度、回滚。</p></div>
+          <div class="flow-step"><span class="num">6</span><h3>验收复盘</h3><p>UAT、监控、反馈、复盘、下一轮迭代。</p></div>
+        </div>
+        <div class="footer"><span>端到端生命周期</span><span class="page-num">03 / 15</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="canvas">
+        <div class="kicker">Agent Team</div>
+        <h2>推荐 Agent 角色：按专业边界拆，不按“万能助手”拆</h2>
+        <table class="matrix">
+          <thead>
+            <tr><th>Agent</th><th>职责</th><th>关键产出</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Product</td><td>需求澄清、范围控制、验收标准</td><td>PRD、用户故事、MVP 边界</td></tr>
+            <tr><td>Design</td><td>体验流程、页面结构、设计系统映射</td><td>页面清单、交互状态、Figma 说明</td></tr>
+            <tr><td>Architect</td><td>技术方案、模块边界、接口契约</td><td>RFC、ADR、API、数据模型</td></tr>
+            <tr><td>Frontend / Backend</td><td>垂直功能实现与联调</td><td>代码、测试、文档、验证结果</td></tr>
+            <tr><td>QA / Security / DevOps</td><td>质量、安全、部署和回滚</td><td>测试报告、安全审查、发布计划</td></tr>
+          </tbody>
+        </table>
+        <div class="footer"><span>团队结构</span><span class="page-num">04 / 15</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="canvas">
+        <div class="kicker">Operating Model</div>
+        <h2>推荐工作模式：总控 Agent 编排，专业 Agent 并行，PR 汇总</h2>
+        <div class="two-col">
+          <div class="card accent-blue">
+            <h3>总控 Agent</h3>
+            <div class="bullets">
+              <div class="bullet"><span class="dot"></span><span>读取 PRD、设计稿、代码库和历史规范。</span></div>
+              <div class="bullet"><span class="dot"></span><span>拆分 feature slice，分配给专业 Agent。</span></div>
+              <div class="bullet"><span class="dot"></span><span>汇总结果、发现冲突、输出集成计划。</span></div>
+              <div class="bullet"><span class="dot"></span><span>推动审查、测试、发布和验收闭环。</span></div>
+            </div>
+          </div>
+          <div class="card accent-teal">
+            <h3>专业 Agent</h3>
+            <div class="bullets">
+              <div class="bullet"><span class="dot" style="background:var(--teal)"></span><span>只负责清晰边界内的任务。</span></div>
+              <div class="bullet"><span class="dot" style="background:var(--teal)"></span><span>在独立 branch 或 worktree 开发。</span></div>
+              <div class="bullet"><span class="dot" style="background:var(--teal)"></span><span>必须产出验证结果和风险说明。</span></div>
+              <div class="bullet"><span class="dot" style="background:var(--teal)"></span><span>不绕过 CI、Review 和人工审批。</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="footer"><span>协作方式</span><span class="page-num">05 / 15</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="canvas">
+        <div class="kicker">Product Phase</div>
+        <h2>阶段一：产品设计，把模糊想法变成可验收需求</h2>
+        <div class="three-col">
+          <div class="card accent-blue">
+            <h3>输入</h3>
+            <div class="bullets">
+              <div class="bullet"><span class="dot"></span><span>业务目标</span></div>
+              <div class="bullet"><span class="dot"></span><span>目标用户</span></div>
+              <div class="bullet"><span class="dot"></span><span>场景和痛点</span></div>
+              <div class="bullet"><span class="dot"></span><span>约束条件</span></div>
+            </div>
+          </div>
+          <div class="card accent-teal">
+            <h3>Agent 工作</h3>
+            <div class="bullets">
+              <div class="bullet"><span class="dot" style="background:var(--teal)"></span><span>拆用户故事</span></div>
+              <div class="bullet"><span class="dot" style="background:var(--teal)"></span><span>定义 MVP 边界</span></div>
+              <div class="bullet"><span class="dot" style="background:var(--teal)"></span><span>补非功能需求</span></div>
+              <div class="bullet"><span class="dot" style="background:var(--teal)"></span><span>生成验收标准</span></div>
+            </div>
+          </div>
+          <div class="card accent-amber">
+            <h3>输出</h3>
+            <div class="bullets">
+              <div class="bullet"><span class="dot" style="background:var(--amber)"></span><span>PRD</span></div>
+              <div class="bullet"><span class="dot" style="background:var(--amber)"></span><span>用户旅程</span></div>
+              <div class="bullet"><span class="dot" style="background:var(--amber)"></span><span>验收清单</span></div>
+              <div class="bullet"><span class="dot" style="background:var(--amber)"></span><span>埋点指标</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="footer"><span>产品设计</span><span class="page-num">06 / 15</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="canvas">
+        <div class="kicker">Design Phase</div>
+        <h2>阶段二：UI / UX 设计，先把体验和状态设计完整</h2>
+        <div class="two-col">
+          <div>
+            <div class="lane">
+              <div class="lane-label">页面</div>
+              <div class="lane-items">
+                <span class="pill">信息架构</span><span class="pill">页面清单</span><span class="pill">导航路径</span><span class="pill">响应式</span>
+              </div>
+            </div>
+            <div class="lane">
+              <div class="lane-label">组件</div>
+              <div class="lane-items">
+                <span class="pill">表格</span><span class="pill">表单</span><span class="pill">弹窗</span><span class="pill">筛选器</span>
+              </div>
+            </div>
+            <div class="lane">
+              <div class="lane-label">状态</div>
+              <div class="lane-items">
+                <span class="pill">Loading</span><span class="pill">Empty</span><span class="pill">Error</span><span class="pill">No Permission</span>
+              </div>
+            </div>
+            <div class="lane">
+              <div class="lane-label">标准</div>
+              <div class="lane-items">
+                <span class="pill">Design System</span><span class="pill">A11y</span><span class="pill">文案</span><span class="pill">视觉回归</span>
+              </div>
+            </div>
+          </div>
+          <div class="card accent-blue">
+            <h3>关键要求</h3>
+            <p class="lead" style="font-size:22px;margin-top:14px;">设计 Agent 的结果必须能被前端直接实现，而不是只停留在“漂亮页面”。Figma、组件库、交互状态和验收规则要一起交付。</p>
+            <div class="tag-row" style="margin-top:28px;">
+              <span class="tag">Figma MCP</span>
+              <span class="tag">Design Tokens</span>
+              <span class="tag">Component Mapping</span>
+              <span class="tag">Responsive Rules</span>
+            </div>
+          </div>
+        </div>
+        <div class="footer"><span>UI / UX</span><span class="page-num">07 / 15</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="canvas">
+        <div class="kicker">Architecture Phase</div>
+        <h2>阶段三：技术设计，避免 Agent 一上来就乱改代码</h2>
+        <table class="matrix">
+          <thead>
+            <tr><th>设计项</th><th>必须明确的问题</th><th>常见产物</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>模块边界</td><td>哪些系统负责哪些能力，哪些地方不能碰</td><td>架构图、模块图</td></tr>
+            <tr><td>接口契约</td><td>请求、响应、错误码、分页、权限、兼容性</td><td>OpenAPI、API 文档</td></tr>
+            <tr><td>数据模型</td><td>表结构、索引、迁移、回滚、大数据量风险</td><td>ERD、Migration</td></tr>
+            <tr><td>安全模型</td><td>认证、授权、审计、敏感数据、威胁建模</td><td>Threat Model</td></tr>
+            <tr><td>可运维性</td><td>日志、指标、告警、限流、降级、回滚</td><td>Runbook、SLO</td></tr>
+          </tbody>
+        </table>
+        <div class="footer"><span>技术方案</span><span class="page-num">08 / 15</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="canvas">
+        <div class="kicker">Task Breakdown</div>
+        <h2>阶段四：任务拆分，按用户价值切 Slice，而不是按岗位切大包</h2>
+        <div class="timeline">
+          <div class="timeline-item"><h3>Slice 1</h3><p>数据模型、基础 API、空页面、权限框架。先搭最小闭环。</p></div>
+          <div class="timeline-item"><h3>Slice 2</h3><p>列表查询、筛选、分页、空状态、错误状态。</p></div>
+          <div class="timeline-item"><h3>Slice 3</h3><p>创建、编辑、校验、重复提交、乐观反馈。</p></div>
+          <div class="timeline-item"><h3>Slice 4</h3><p>权限、审计日志、异常处理、安全扫描。</p></div>
+          <div class="timeline-item"><h3>Slice 5</h3><p>E2E、预发、灰度、验收报告、发布说明。</p></div>
+        </div>
+        <div class="card accent-blue" style="margin-top:auto;">
+          <p class="lead" style="font-size:21px;">每个 Slice 都应该能独立评审、独立测试，最好能独立发布或通过 Feature Flag 控制。</p>
+        </div>
+        <div class="footer"><span>任务拆解</span><span class="page-num">09 / 15</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="canvas">
+        <div class="kicker">Development Phase</div>
+        <h2>阶段五：前后端开发，独立分支并行推进</h2>
+        <div class="two-col">
+          <div class="card accent-blue">
+            <h3>Frontend Agent</h3>
+            <div class="bullets">
+              <div class="bullet"><span class="dot"></span><span>遵循现有组件库和设计系统。</span></div>
+              <div class="bullet"><span class="dot"></span><span>实现页面、组件、状态管理、路由。</span></div>
+              <div class="bullet"><span class="dot"></span><span>补齐 loading、empty、error、permission 状态。</span></div>
+              <div class="bullet"><span class="dot"></span><span>运行 lint、typecheck、unit、视觉检查。</span></div>
+            </div>
+          </div>
+          <div class="card accent-teal">
+            <h3>Backend Agent</h3>
+            <div class="bullets">
+              <div class="bullet"><span class="dot" style="background:var(--teal)"></span><span>实现 API、服务逻辑、权限校验。</span></div>
+              <div class="bullet"><span class="dot" style="background:var(--teal)"></span><span>更新接口文档和错误码。</span></div>
+              <div class="bullet"><span class="dot" style="background:var(--teal)"></span><span>处理事务、并发、幂等和审计日志。</span></div>
+              <div class="bullet"><span class="dot" style="background:var(--teal)"></span><span>运行单测、集成测试、契约测试。</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="footer"><span>并行开发</span><span class="page-num">10 / 15</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="canvas">
+        <div class="kicker">Quality Gates</div>
+        <h2>阶段六：测试与质量门禁，把“能跑”升级成“可上线”</h2>
+        <div class="three-col">
+          <div class="card accent-green">
+            <h3>自动化测试</h3>
+            <div class="bullets">
+              <div class="bullet"><span class="dot" style="background:var(--green)"></span><span>Unit Test</span></div>
+              <div class="bullet"><span class="dot" style="background:var(--green)"></span><span>Integration Test</span></div>
+              <div class="bullet"><span class="dot" style="background:var(--green)"></span><span>E2E Test</span></div>
+              <div class="bullet"><span class="dot" style="background:var(--green)"></span><span>Contract Test</span></div>
+            </div>
+          </div>
+          <div class="card accent-amber">
+            <h3>工程检查</h3>
+            <div class="bullets">
+              <div class="bullet"><span class="dot" style="background:var(--amber)"></span><span>Lint</span></div>
+              <div class="bullet"><span class="dot" style="background:var(--amber)"></span><span>Typecheck</span></div>
+              <div class="bullet"><span class="dot" style="background:var(--amber)"></span><span>Build</span></div>
+              <div class="bullet"><span class="dot" style="background:var(--amber)"></span><span>Coverage</span></div>
+            </div>
+          </div>
+          <div class="card accent-red">
+            <h3>安全检查</h3>
+            <div class="bullets">
+              <div class="bullet"><span class="dot" style="background:var(--red)"></span><span>SAST</span></div>
+              <div class="bullet"><span class="dot" style="background:var(--red)"></span><span>SCA</span></div>
+              <div class="bullet"><span class="dot" style="background:var(--red)"></span><span>Secret Scan</span></div>
+              <div class="bullet"><span class="dot" style="background:var(--red)"></span><span>DAST</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="footer"><span>测试策略</span><span class="page-num">11 / 15</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="canvas">
+        <div class="kicker">Code Review</div>
+        <h2>阶段七：审查，不让 Agent 自己给自己放行</h2>
+        <div class="two-col">
+          <div>
+            <table class="matrix">
+              <thead><tr><th>Reviewer</th><th>重点</th></tr></thead>
+              <tbody>
+                <tr><td>Bug Reviewer</td><td>真实缺陷、边界条件、兼容性</td></tr>
+                <tr><td>Security Reviewer</td><td>权限绕过、数据泄漏、注入、依赖风险</td></tr>
+                <tr><td>Performance Reviewer</td><td>慢查询、重复请求、缓存、并发</td></tr>
+                <tr><td>Maintainability Reviewer</td><td>复杂度、重复代码、模块边界</td></tr>
+                <tr><td>QA Reviewer</td><td>缺失测试、验收标准覆盖</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="command">Codex CLI:
+
+/review
+
+或：
+
+请以代码审查模式检查当前分支相对 main 的 diff。
+重点关注真实 bug、权限风险、性能风险和缺失测试。
+按 P0 / P1 / P2 输出必须修改项。</div>
+        </div>
+        <div class="footer"><span>审查机制</span><span class="page-num">12 / 15</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="canvas">
+        <div class="kicker">Release Phase</div>
+        <h2>阶段八：部署发布，用灰度和回滚控制生产风险</h2>
+        <div class="flow">
+          <div class="flow-step"><span class="num">1</span><h3>CI 构建</h3><p>测试、构建、镜像、安全扫描全部通过。</p></div>
+          <div class="flow-step"><span class="num">2</span><h3>预发</h3><p>接近生产的环境完成 UAT 和联调。</p></div>
+          <div class="flow-step"><span class="num">3</span><h3>Feature Flag</h3><p>功能开关控制暴露范围。</p></div>
+          <div class="flow-step"><span class="num">4</span><h3>Canary</h3><p>小流量发布，观察错误率和核心指标。</p></div>
+          <div class="flow-step"><span class="num">5</span><h3>全量</h3><p>逐步扩大流量，确认无异常后完成。</p></div>
+          <div class="flow-step"><span class="num">6</span><h3>回滚</h3><p>异常时按预案回滚代码、配置和数据。</p></div>
+        </div>
+        <div class="footer"><span>部署发布</span><span class="page-num">13 / 15</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="canvas">
+        <div class="kicker">Acceptance</div>
+        <h2>阶段九：验收，按 PRD 逐条确认，而不是只看页面能否打开</h2>
+        <table class="matrix">
+          <thead><tr><th>验收维度</th><th>检查内容</th><th>责任角色</th></tr></thead>
+          <tbody>
+            <tr><td>产品验收</td><td>用户流程、验收标准、MVP 范围</td><td>PM + Product Agent</td></tr>
+            <tr><td>UI 验收</td><td>设计稿一致性、交互状态、响应式</td><td>Designer + Frontend Agent</td></tr>
+            <tr><td>功能验收</td><td>接口、数据、权限、异常场景</td><td>QA + Dev Agent</td></tr>
+            <tr><td>安全验收</td><td>高危漏洞清零、敏感数据、审计日志</td><td>Security Agent</td></tr>
+            <tr><td>发布验收</td><td>回滚方案、监控、告警、发布说明</td><td>DevOps + Release Agent</td></tr>
+          </tbody>
+        </table>
+        <div class="footer"><span>业务验收</span><span class="page-num">14 / 15</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="canvas">
+        <div class="kicker">Implementation Plan</div>
+        <h2>从 0 到 1 的落地路线：先轻量，再自动化</h2>
+        <div class="timeline">
+          <div class="timeline-item"><h3>第 1 周</h3><p>建立 AGENTS.md、PR 模板、测试命令和基础工作规范。</p></div>
+          <div class="timeline-item"><h3>第 2 周</h3><p>配置 product、architect、frontend、backend、qa 五类 agent。</p></div>
+          <div class="timeline-item"><h3>第 3 周</h3><p>用一个真实小需求跑完整流程，沉淀提示词和检查表。</p></div>
+          <div class="timeline-item"><h3>第 4 周</h3><p>接入 Figma、GitHub、CI、安全扫描和自动 Review。</p></div>
+          <div class="timeline-item"><h3>持续</h3><p>根据事故、返工和指标改进 agent 规则与质量门禁。</p></div>
+        </div>
+        <div class="big-quote" style="font-size:30px;">最佳实践：用 Agent 提速，用流程兜底，用数据复盘。</div>
+        <div class="footer"><span>落地路径</span><span class="page-num">15 / 15</span></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="print-tip">← / → 翻页，按 Ctrl+P 可打印或另存为 PDF</div>
+  <div class="controls">
+    <button type="button" id="prev" aria-label="上一页">‹</button>
+    <button type="button" id="next" aria-label="下一页">›</button>
+  </div>
+  <div class="progress"><span id="progress"></span></div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const progress = document.getElementById("progress");
+    let index = 0;
+
+    function show(nextIndex) {
+      index = Math.max(0, Math.min(slides.length - 1, nextIndex));
+      slides.forEach((slide, i) => slide.classList.toggle("active", i === index));
+      progress.style.width = `${((index + 1) / slides.length) * 100}%`;
+      document.title = `Codex 多 Agent 软件开发流程 - ${index + 1}/${slides.length}`;
+    }
+
+    document.getElementById("prev").addEventListener("click", () => show(index - 1));
+    document.getElementById("next").addEventListener("click", () => show(index + 1));
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight" || event.key === "PageDown" || event.key === " ") {
+        event.preventDefault();
+        show(index + 1);
+      }
+      if (event.key === "ArrowLeft" || event.key === "PageUp") {
+        event.preventDefault();
+        show(index - 1);
+      }
+      if (event.key === "Home") show(0);
+      if (event.key === "End") show(slides.length - 1);
+    });
+
+    show(0);
+  </script>
+</body>
+</html>

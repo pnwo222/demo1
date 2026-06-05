@@ -1,11 +1,11 @@
 # 通用 Codex 多 Agent SDLC 工作流
 
-本工作流是通用项目流程，不绑定具体业务。业务目标、技术栈、角色、核心链路、质量重点和高风险规则必须从 `docs/requirements/` 中读取。
+本工作流是通用项目流程，不绑定具体业务。业务目标、技术栈、角色、核心链路、质量重点和高风险规则必须从 `docs/requirements/` 下的全部需求文档中读取。
 
-执行任何阶段前，Orchestrator 必须先确认当前需求文档路径，例如：
+执行任何阶段前，Orchestrator 必须先读取 `docs/requirements/` 下的全部需求文档，并输出已读取的需求文档清单。
 
 ```text
-docs/requirements/<current-requirement>.md
+docs/requirements/**
 ```
 
 ## 总控调度规则
@@ -37,7 +37,7 @@ docs/requirements/<current-requirement>.md
 
 ## 阶段门禁
 
-- 未读取并确认当前需求文档，不进入产品设计。
+- 未读取并确认 `docs/requirements/` 下全部需求文档，不进入产品设计。
 - HTML PRD 未确认，不进入低保真原型确认。
 - 可交互低保真 HTML 原型未确认，不进入 UI 设计。
 - Figma UI 未确认，不进入技术设计。
@@ -52,7 +52,7 @@ docs/requirements/<current-requirement>.md
 
 必须明确：
 
-- 当前需求文档路径。
+- 已读取的需求文档清单。
 - 项目目标。
 - 技术栈。
 - 业务角色或用户角色。
@@ -64,7 +64,7 @@ docs/requirements/<current-requirement>.md
 
 ## 阶段 1：产品设计
 
-由 Product Agent 基于需求文档输出 PRD、用户故事、MVP 范围和验收标准，并生成 HTML 版 PRD。
+由 Product Agent 基于需求集合输出 PRD、用户故事、MVP 范围和验收标准，并生成 HTML 版 PRD。
 
 Product Agent 还必须输出可打开、可点击交互的低保真 HTML 原型。
 
@@ -101,9 +101,9 @@ HTML PRD 要求：
 
 ## 阶段 2：UI/UX 设计
 
-由 Design Agent 基于已确认的需求文档、HTML PRD 和可交互低保真 HTML 原型，生成设计系统并连接 Figma 生成可编辑设计图。
+由 Design Agent 基于已确认的需求集合、HTML PRD 和可交互低保真 HTML 原型，生成设计系统并连接 Figma 生成可编辑设计图。
 
-必须先运行项目适配的设计系统检索。检索关键词必须来自需求文档，而不是写死在 workflow 中。
+必须先运行项目适配的设计系统检索。检索关键词必须来自需求集合，而不是写死在 workflow 中。
 
 Figma 设计图要求：
 
@@ -121,7 +121,7 @@ Figma 设计图要求：
 
 ## 阶段 3：技术设计
 
-由 Architect Agent 基于需求文档、PRD、低保真原型和 UI 设计输出技术设计。
+由 Architect Agent 基于需求集合、PRD、低保真原型和 UI 设计输出技术设计。
 
 必须明确：
 
@@ -149,7 +149,7 @@ Figma 设计图要求：
 
 ## 阶段 5：按用户价值切 Feature Slice
 
-由 Orchestrator 基于需求文档、PRD、技术设计和数据设计拆分 feature slice。
+由 Orchestrator 基于需求集合、PRD、技术设计和数据设计拆分 feature slice。
 
 不要按岗位切成“前端做全部页面、后端做全部接口”。应按一个可验收的业务闭环切。
 
@@ -164,7 +164,9 @@ Figma 设计图要求：
 - 依赖关系。
 - 风险和回滚策略。
 
-## 阶段 6：并行开发
+## 阶段 6：自动分配与并行开发
+
+进入开发前，优先套用 `auto-dispatch-parallel-development.md`，由 Orchestrator 生成任务图、依赖 DAG、并发 wave、owner 分配、branch/worktree 策略和集成策略。
 
 Frontend Agent：
 
@@ -187,7 +189,7 @@ QA Agent：
 
 ## 阶段 7：测试与质量门禁
 
-根据需求文档和技术栈执行项目定义的质量门禁。
+根据需求集合和技术栈执行项目定义的质量门禁。
 
 通用门禁包括：
 
@@ -241,7 +243,7 @@ QA Agent：
 
 ## 阶段 10：验收和复盘
 
-验收维度来自需求文档和 PRD。
+验收维度来自需求集合和 PRD。
 
 复盘关注：
 
