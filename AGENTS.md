@@ -22,6 +22,7 @@
 - 前端 H5 在移动端体验顺滑。
 - 后端接口可测试、可监控、可回滚。
 - PRD 必须输出为可打开的 HTML 文档，便于产品、设计、开发和测试统一评审。
+- 低保真原型必须输出为可打开、可点击交互的 HTML 文档，只表达产品流程、信息结构和业务规则，不连接 Figma。
 - UI 设计必须连接 Figma 生成可编辑设计图，并优先使用 `.codex/skills/ui-ux-pro-max` 建立设计系统。
 - UI 设计必须输出可落地设计稿：包含真实图片质感资产、优美可编辑 SVG 图标、Ready for Dev 画板、Handoff 标注、组件命名、间距/字体/颜色/图片规格说明，不能只交付原型图或抽象色块占位稿。
 
@@ -54,7 +55,7 @@
 | Agent | 职责 |
 | --- | --- |
 | Orchestrator Agent | 总控调度、阶段门禁、产物检查、下一步推进 |
-| Product Agent | 外卖业务 PRD、用户故事、订单状态、验收标准、HTML PRD |
+| Product Agent | 外卖业务 PRD、用户故事、订单状态、验收标准、HTML PRD、可交互低保真 HTML 原型 |
 | Design Agent | Vue3 H5 移动端 UI/UX、Figma 可落地设计稿、真实图片/SVG 图标资产、Ready for Dev/Handoff、ui-ux-pro-max 设计系统 |
 | Architect Agent | 外卖平台架构、订单状态机、接口契约、数据模型 |
 | Data Agent | 数据模型、Migration、索引、数据一致性、回滚 |
@@ -133,8 +134,8 @@
 ## 标准开发流程
 
 0. Orchestrator Agent 先声明当前阶段、调用 Agent、输入、输出、验收标准和下一阶段。
-1. Orchestrator 调用 Product Agent 生成外卖业务 PRD、验收标准和 HTML 版 PRD。
-2. Orchestrator 调用 Design Agent 生成低保真原型；确认后再使用 `.codex/skills/ui-ux-pro-max` 生成设计系统，并连接 Figma 直接生成可编辑设计图。
+1. Orchestrator 调用 Product Agent 生成外卖业务 PRD、验收标准、HTML 版 PRD 和可交互低保真 HTML 原型。
+2. Orchestrator 在 PRD 和低保真 HTML 原型确认后，调用 Design Agent 使用 `.codex/skills/ui-ux-pro-max` 生成设计系统，并连接 Figma 直接生成可编辑设计图。
 3. Orchestrator 调用 Architect Agent 明确模块边界、订单状态机、API、数据模型、安全模型和可运维性。
 4. Orchestrator 调用 Data Agent 细化数据库模型、migration、索引、回滚和数据一致性策略。
 5. Orchestrator 按用户价值拆 feature slice。
@@ -152,6 +153,7 @@
 
 - PRD 或需求说明已确认。
 - HTML 版 PRD 已生成并可打开。
+- 可交互低保真 HTML 原型已生成并可打开，主路径页面切换、关键按钮、购物车状态、提交订单和支付结果可点击验证。
 - H5 交互状态和移动端适配已明确。
 - Figma 设计图已生成或更新，且设计规则来自 `ui-ux-pro-max` 设计系统。
 - Figma 正式 UI 包含 Ready for Dev 画板和 Handoff 标注，说明 8px 栅格、页面边距、触控目标、组件尺寸、颜色 token、字体、图片规格、状态和前端组件拆分。
