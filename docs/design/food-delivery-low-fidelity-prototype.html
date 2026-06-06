@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>外卖平台低保真原型</title>
+  <style>
+    :root {
+      --ink: #20262e;
+      --muted: #687381;
+      --line: #cfd6df;
+      --paper: #ffffff;
+      --shade: #f3f6f8;
+      --accent: #1f7a5c;
+      --accent-bg: #e8f3ee;
+      --danger: #a23a3a;
+      --warn: #96600f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #e9edf2;
+      color: var(--ink);
+      font-family: "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif;
+    }
+    button, input, select { font: inherit; }
+    .workspace {
+      display: grid;
+      grid-template-columns: 390px 1fr;
+      gap: 24px;
+      width: min(1180px, calc(100% - 32px));
+      margin: 24px auto;
+      align-items: start;
+    }
+    .phone {
+      width: 390px;
+      min-height: 780px;
+      background: var(--paper);
+      border: 2px solid #20262e;
+      box-shadow: 0 16px 36px rgba(18, 28, 45, .16);
+      display: flex;
+      flex-direction: column;
+    }
+    .statusbar {
+      height: 30px;
+      padding: 7px 16px;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcfd;
+    }
+    header h1 { margin: 0; font-size: 20px; line-height: 1.2; }
+    header p { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
+    .screen {
+      display: none;
+      flex: 1;
+      padding: 14px;
+      overflow: auto;
+    }
+    .screen.active { display: block; }
+    .bottom-nav {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--line);
+      background: #fbfcfd;
+    }
+    .bottom-nav button {
+      min-height: 54px;
+      border: 0;
+      border-right: 1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .bottom-nav button:last-child { border-right: 0; }
+    .bottom-nav button.active {
+      color: var(--accent);
+      background: var(--accent-bg);
+      font-weight: 700;
+    }
+    .panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 8px 0;
+    }
+    .stack { display: grid; gap: 8px; }
+    .muted { color: var(--muted); }
+    .tiny { font-size: 12px; }
+    .title { font-weight: 700; }
+    .divider { height: 1px; background: var(--line); margin: 10px 0; }
+    .pill {
+      display: inline-block;
+      border: 1px solid var(--line);
+      background: var(--shade);
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .warn { color: var(--warn); }
+    .danger { color: var(--danger); }
+    .ok { color: var(--accent); }
+    .btn {
+      border: 1px solid #26323f;
+      background: #26323f;
+      color: #fff;
+      min-height: 38px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+    .btn.secondary { background: #fff; color: #26323f; }
+    .btn.ghost { background: var(--shade); color: var(--ink); border-color: var(--line); }
+    .btn.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+    .btn:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+    .list-item {
+      border: 1px solid var(--line);
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #fff;
+    }
+    .sketch {
+      display: grid;
+      place-items: center;
+      min-width: 54px;
+      min-height: 54px;
+      border: 1px dashed #8c97a3;
+      background: var(--shade);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .qty {
+      display: inline-grid;
+      grid-template-columns: 30px 34px 30px;
+      align-items: center;
+      border: 1px solid var(--line);
+      text-align: center;
+    }
+    .qty button {
+      border: 0;
+      min-height: 30px;
+      background: var(--shade);
+      cursor: pointer;
+    }
+    .summary {
+      position: sticky;
+      bottom: 0;
+      margin: 12px -14px -14px;
+      padding: 12px 14px;
+      border-top: 1px solid var(--line);
+      background: #fff;
+    }
+    .steps {
+      display: grid;
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .step {
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 8px;
+      align-items: start;
+      color: var(--muted);
+    }
+    .dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--line);
+      margin-top: 3px;
+    }
+    .step.done { color: var(--ink); }
+    .step.done .dot { border-color: var(--accent); background: var(--accent); }
+    .sidebar {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      padding: 18px;
+    }
+    .sidebar h2 { margin: 0 0 12px; font-size: 20px; }
+    .sidebar ul { padding-left: 20px; }
+    .rule {
+      border-left: 4px solid var(--accent);
+      background: #f8fbfa;
+      padding: 10px 12px;
+      margin: 10px 0;
+    }
+    .log {
+      min-height: 84px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      background: #fbfcfd;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    @media (max-width: 860px) {
+      .workspace { display: block; width: 100%; margin: 0; }
+      .phone {
+        width: 100%;
+        min-height: 100vh;
+        border: 0;
+        box-shadow: none;
+      }
+      .sidebar { border-width: 1px 0 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="workspace">
+    <div class="phone" aria-label="移动端低保真原型">
+      <div class="statusbar"><span>9:41</span><span>H5 Prototype</span></div>
+      <header>
+        <h1 id="screenTitle">附近商家</h1>
+        <p id="screenSubtitle">地址：未来社区 3 号楼，可配送商家优先展示</p>
+      </header>
+
+      <section class="screen active" data-screen="home">
+        <div class="panel">
+          <div class="row">
+            <div>
+              <div class="title">配送地址</div>
+              <div class="muted tiny">未来社区 3 号楼 1201</div>
+            </div>
+            <button class="btn ghost" data-action="toggleAddress">切换地址</button>
+          </div>
+          <div id="addressWarning" class="tiny muted">规则：下单时后端必须再次校验地址是否可送达。</div>
+        </div>
+        <div class="list-item">
+          <div class="row">
+            <div class="sketch">商家</div>
+            <div style="flex:1">
+              <div class="title">米饭小馆</div>
+              <div class="tiny muted">月售 1288 · 30 分钟 · 配送费 5 元</div>
+              <div><span class="pill">满 40 减 8</span> <span class="pill ok">营业中</span></div>
+            </div>
+            <button class="btn" data-nav="shop">进店</button>
+          </div>
+        </div>
+        <div class="list-item">
+          <div class="row">
+            <div class="sketch">商家</div>
+            <div style="flex:1">
+              <div class="title">深夜面档</div>
+              <div class="tiny muted">月售 642 · 45 分钟 · 配送费 7 元</div>
+              <div><span class="pill warn">休息中</span></div>
+            </div>
+            <button class="btn secondary" disabled>不可下单</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="shop">
+        <div class="panel">
+          <div class="row">
+            <div>
+              <div class="title">米饭小馆</div>
+              <div class="tiny muted">起送 20 元 · 配送费 5 元 · 包装费按商品计</div>
+            </div>
+            <span class="pill ok">营业中</span>
+          </div>
+          <div class="tiny muted">规则：商品、库存、商家营业状态在提交订单时由后端重新校验。</div>
+        </div>
+        <div class="list-item">
+          <div class="row">
+            <div class="sketch">SKU</div>
+            <div style="flex:1">
+              <div class="title">招牌鸡腿饭</div>
+              <div class="tiny muted">SKU：标准份 · 库存充足 · 包装费 1 元</div>
+              <div class="ok">¥24.00</div>
+            </div>
+            <button class="btn" data-action="addChicken">加购</button>
+          </div>
+        </div>
+        <div class="list-item">
+          <div class="row">
+            <div class="sketch">SKU</div>
+            <div style="flex:1">
+              <div class="title">番茄牛腩饭</div>
+              <div class="tiny muted">SKU：大份 · 仅剩 1 份 · 包装费 1 元</div>
+              <div class="ok">¥32.00</div>
+            </div>
+            <button class="btn" data-action="addBeef">加购</button>
+          </div>
+        </div>
+        <div class="list-item">
+          <div class="row">
+            <div class="sketch">失效</div>
+            <div style="flex:1">
+              <div class="title">小酥肉</div>
+              <div class="tiny danger">已下架，不能加入购物车</div>
+              <div class="muted">¥18.00</div>
+            </div>
+            <button class="btn secondary" disabled>已下架</button>
+          </div>
+        </div>
+        <div class="summary">
+          <div class="row">
+            <div>
+              <div class="title">购物车：<span id="cartCount">0</span> 件</div>
+              <div class="tiny muted">前端仅预估，最终金额以后端为准</div>
+            </div>
+            <button class="btn" data-nav="cart">查看购物车</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="cart">
+        <div id="emptyCart" class="panel">
+          <div class="title">购物车为空</div>
+          <p class="muted">从商家详情添加商品后，可以在这里调整数量和进入结算。</p>
+          <button class="btn" data-nav="shop">去选商品</button>
+        </div>
+        <div id="cartContent" style="display:none">
+          <div id="cartItems"></div>
+          <div class="panel">
+            <div class="row"><span>商品小计</span><strong id="itemTotal">¥0.00</strong></div>
+            <div class="row"><span>满减优惠</span><strong id="discount">-¥0.00</strong></div>
+            <div class="row"><span>配送费</span><strong>¥5.00</strong></div>
+            <div class="row"><span>包装费</span><strong id="packageFee">¥0.00</strong></div>
+            <div class="divider"></div>
+            <div class="row"><span>预估应付</span><strong id="payable">¥0.00</strong></div>
+            <div class="tiny muted">规则：购物车价格可实时展示，但提交订单必须由后端重新计算。</div>
+          </div>
+          <div class="row">
+            <button class="btn secondary" data-action="clearCart">清空</button>
+            <button class="btn" data-nav="checkout">去结算</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="checkout">
+        <div class="panel">
+          <div class="title">确认订单</div>
+          <div class="tiny muted">提交后将校验商家营业、库存、地址、商品状态和最终金额。</div>
+        </div>
+        <div class="panel">
+          <div class="row"><span>配送地址</span><strong id="checkoutAddress">未来社区 3 号楼 1201</strong></div>
+          <div id="checkoutAddressTip" class="tiny muted">地址在商家配送范围内。</div>
+        </div>
+        <div class="panel">
+          <div class="row"><span>后端重算金额</span><strong id="serverAmount">待提交</strong></div>
+          <div class="tiny muted">如果金额变化，用户必须重新确认。</div>
+        </div>
+        <div class="row">
+          <button class="btn secondary" data-nav="cart">返回购物车</button>
+          <button class="btn" data-action="submitOrder">提交订单</button>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="pay">
+        <div class="panel">
+          <div class="title">待支付订单</div>
+          <div class="row"><span>订单号</span><strong id="orderNo">未创建</strong></div>
+          <div class="row"><span>应付金额</span><strong id="payAmount">¥0.00</strong></div>
+          <div class="tiny muted">规则：支付回调必须校验签名、金额、订单号和幂等性。</div>
+        </div>
+        <div class="row">
+          <button class="btn secondary" data-action="cancelOrder">取消订单</button>
+          <button class="btn" data-action="payOrder">模拟支付成功</button>
+        </div>
+        <button class="btn ghost" style="width:100%;margin-top:10px" data-action="duplicateCallback">模拟重复支付回调</button>
+      </section>
+
+      <section class="screen" data-screen="order">
+        <div class="panel">
+          <div class="row">
+            <div>
+              <div class="title">订单状态：<span id="orderStatus">未下单</span></div>
+              <div class="tiny muted">所有状态变化必须有触发人、允许路径、资源影响、通知和审计。</div>
+            </div>
+          </div>
+          <div class="steps" id="orderSteps"></div>
+        </div>
+        <div class="panel">
+          <div class="title">角色操作演示</div>
+          <div class="stack" style="margin-top:10px">
+            <button class="btn" data-action="merchantAccept">商家接单</button>
+            <button class="btn" data-action="merchantCook">商家标记制作中</button>
+            <button class="btn" data-action="merchantReady">商家出餐，待配送</button>
+            <button class="btn" data-action="riderPickup">骑手取餐，配送中</button>
+            <button class="btn" data-action="riderDone">骑手送达，已完成</button>
+            <button class="btn secondary" data-action="refund">用户申请退款</button>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="title">审计日志</div>
+          <div id="auditLog" class="log">暂无关键操作。</div>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="profile">
+        <div class="panel">
+          <div class="title">我的</div>
+          <p class="muted">用户只能查看和操作自己的订单；商家、骑手、运营同样必须由后端做数据隔离。</p>
+        </div>
+        <div class="stack">
+          <button class="btn" data-nav="order">查看当前订单</button>
+          <button class="btn secondary" data-action="unauthorized">模拟越权访问他人订单</button>
+        </div>
+      </section>
+
+      <nav class="bottom-nav">
+        <button class="active" data-nav="home">首页</button>
+        <button data-nav="shop">点餐</button>
+        <button data-nav="order">订单</button>
+        <button data-nav="profile">我的</button>
+      </nav>
+    </div>
+
+    <aside class="sidebar">
+      <h2>低保真原型说明</h2>
+      <p>需求来源：<strong>docs/requirements/food-delivery-platform.md</strong></p>
+      <div class="rule">点击路径：附近商家 -> 进店 -> 加购 -> 购物车 -> 去结算 -> 提交订单 -> 模拟支付 -> 商家/骑手状态流转。</div>
+      <ul>
+        <li>金额展示为前端预估，提交订单后模拟后端重算。</li>
+        <li>支付成功和重复回调演示幂等规则。</li>
+        <li>订单状态按钮演示明确状态机，不允许非法跳转。</li>
+        <li>切换不可配送地址后，提交订单会被阻断。</li>
+        <li>越权访问演示后端权限校验必须存在。</li>
+      </ul>
+      <h3>当前事件</h3>
+      <div id="eventLog" class="log">等待操作。</div>
+    </aside>
+  </div>
+
+  <script>
+    const titles = {
+      home: ["附近商家", "地址：未来社区 3 号楼，可配送商家优先展示"],
+      shop: ["商家详情", "选择商品和 SKU，加入购物车"],
+      cart: ["购物车", "价格可预估，最终下单以后端校验为准"],
+      checkout: ["确认订单", "后端重算金额、库存、营业和配送范围"],
+      pay: ["支付", "支付回调需要校验签名、金额、订单号和幂等性"],
+      order: ["订单跟踪", "订单状态机、通知和审计日志"],
+      profile: ["我的", "权限和数据隔离必须由后端校验"]
+    };
+    const state = {
+      screen: "home",
+      deliverable: true,
+      cart: {},
+      orderNo: "",
+      orderStatus: "未下单",
+      paid: false,
+      duplicateCallbacks: 0,
+      audit: []
+    };
+    const products = {
+      chicken: { name: "招牌鸡腿饭", price: 2400, packageFee: 100 },
+      beef: { name: "番茄牛腩饭", price: 3200, packageFee: 100 }
+    };
+    const flow = ["待支付", "已支付", "商家已接单", "制作中", "待配送", "配送中", "已完成"];
+    const els = {
+      screens: document.querySelectorAll(".screen"),
+      navs: document.querySelectorAll("[data-nav]"),
+      screenTitle: document.getElementById("screenTitle"),
+      screenSubtitle: document.getElementById("screenSubtitle"),
+      cartCount: document.getElementById("cartCount"),
+      emptyCart: document.getElementById("emptyCart"),
+      cartContent: document.getElementById("cartContent"),
+      cartItems: document.getElementById("cartItems"),
+      itemTotal: document.getElementById("itemTotal"),
+      discount: document.getElementById("discount"),
+      packageFee: document.getElementById("packageFee"),
+      payable: document.getElementById("payable"),
+      eventLog: document.getElementById("eventLog"),
+      auditLog: document.getElementById("auditLog"),
+      orderSteps: document.getElementById("orderSteps"),
+      orderStatus: document.getElementById("orderStatus")
+    };
+    function money(cents) {
+      return "¥" + (cents / 100).toFixed(2);
+    }
+    function totals() {
+      const items = Object.entries(state.cart).reduce((sum, [id, qty]) => sum + products[id].price * qty, 0);
+      const packages = Object.entries(state.cart).reduce((sum, [id, qty]) => sum + products[id].packageFee * qty, 0);
+      const discount = items >= 4000 ? 800 : 0;
+      const delivery = items > 0 ? 500 : 0;
+      return { items, packages, discount, delivery, payable: Math.max(items + packages + delivery - discount, 0) };
+    }
+    function log(text) {
+      els.eventLog.textContent = text;
+    }
+    function audit(text) {
+      const time = new Date().toLocaleTimeString("zh-CN", { hour12: false });
+      state.audit.unshift(time + " " + text);
+      els.auditLog.textContent = state.audit.slice(0, 6).join("\n");
+    }
+    function nav(screen) {
+      state.screen = screen;
+      els.screens.forEach(el => el.classList.toggle("active", el.dataset.screen === screen));
+      document.querySelectorAll(".bottom-nav [data-nav]").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.nav === screen);
+      });
+      const copy = titles[screen];
+      els.screenTitle.textContent = copy[0];
+      els.screenSubtitle.textContent = copy[1];
+      render();
+    }
+    function renderCartItems() {
+      const entries = Object.entries(state.cart);
+      els.emptyCart.style.display = entries.length ? "none" : "block";
+      els.cartContent.style.display = entries.length ? "block" : "none";
+      els.cartItems.innerHTML = entries.map(([id, qty]) => `
+        <div class="list-item">
+          <div class="row">
+            <div>
+              <div class="title">${products[id].name}</div>
+              <div class="tiny muted">单价 ${money(products[id].price)} · 包装费 ${money(products[id].packageFee)}</div>
+            </div>
+            <div class="qty">
+              <button data-dec="${id}">-</button>
+              <span>${qty}</span>
+              <button data-inc="${id}">+</button>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+    function renderSteps() {
+      const currentIndex = flow.indexOf(state.orderStatus);
+      els.orderSteps.innerHTML = flow.map((name, index) => `
+        <div class="step ${currentIndex >= index ? "done" : ""}">
+          <span class="dot"></span>
+          <div><strong>${name}</strong><div class="tiny">${index <= currentIndex ? "已到达" : "等待流转"}</div></div>
+        </div>
+      `).join("");
+    }
+    function render() {
+      const t = totals();
+      const count = Object.values(state.cart).reduce((sum, qty) => sum + qty, 0);
+      els.cartCount.textContent = count;
+      renderCartItems();
+      els.itemTotal.textContent = money(t.items);
+      els.discount.textContent = "-" + money(t.discount);
+      els.packageFee.textContent = money(t.packages);
+      els.payable.textContent = money(t.payable);
+      document.getElementById("checkoutAddress").textContent = state.deliverable ? "未来社区 3 号楼 1201" : "远郊测试地址";
+      document.getElementById("checkoutAddressTip").textContent = state.deliverable ? "地址在商家配送范围内。" : "地址不可配送，提交订单会被后端拒绝。";
+      document.getElementById("addressWarning").textContent = state.deliverable ? "规则：下单时后端必须再次校验地址是否可送达。" : "当前地址不可配送，商家列表和下单均应限制。";
+      document.getElementById("serverAmount").textContent = state.orderNo ? money(t.payable) : "待提交";
+      document.getElementById("orderNo").textContent = state.orderNo || "未创建";
+      document.getElementById("payAmount").textContent = money(t.payable);
+      els.orderStatus.textContent = state.orderStatus;
+      if (!state.audit.length) els.auditLog.textContent = "暂无关键操作。";
+      renderSteps();
+    }
+    function setStatus(next, actor) {
+      const current = state.orderStatus;
+      const allowed = {
+        "待支付": ["已支付", "已取消"],
+        "已支付": ["商家已接单", "退款中"],
+        "商家已接单": ["制作中", "退款中"],
+        "制作中": ["待配送", "退款中"],
+        "待配送": ["配送中"],
+        "配送中": ["已完成"],
+        "退款中": ["已退款"]
+      };
+      if (!allowed[current] || !allowed[current].includes(next)) {
+        log("非法状态跳转被拒绝：" + current + " -> " + next);
+        audit("拒绝非法状态跳转：" + current + " -> " + next);
+        return false;
+      }
+      state.orderStatus = next;
+      audit(actor + "：" + current + " -> " + next);
+      log("状态已更新为：" + next);
+      render();
+      return true;
+    }
+    document.addEventListener("click", event => {
+      const navTarget = event.target.closest("[data-nav]");
+      if (navTarget) {
+        nav(navTarget.dataset.nav);
+        return;
+      }
+      const inc = event.target.closest("[data-inc]");
+      const dec = event.target.closest("[data-dec]");
+      if (inc) {
+        state.cart[inc.dataset.inc] = (state.cart[inc.dataset.inc] || 0) + 1;
+        log("已增加商品数量，购物车金额仍为前端预估。");
+        render();
+        return;
+      }
+      if (dec) {
+        const id = dec.dataset.dec;
+        state.cart[id] = Math.max((state.cart[id] || 0) - 1, 0);
+        if (state.cart[id] === 0) delete state.cart[id];
+        log("已减少商品数量。");
+        render();
+        return;
+      }
+      const action = event.target.closest("[data-action]")?.dataset.action;
+      if (!action) return;
+      if (action === "toggleAddress") {
+        state.deliverable = !state.deliverable;
+        log(state.deliverable ? "已切回可配送地址。" : "已切换到不可配送地址。");
+      }
+      if (action === "addChicken") {
+        state.cart.chicken = (state.cart.chicken || 0) + 1;
+        log("已加入招牌鸡腿饭。");
+      }
+      if (action === "addBeef") {
+        if ((state.cart.beef || 0) >= 1) {
+          log("番茄牛腩饭仅剩 1 份，继续加购被库存规则阻止。");
+        } else {
+          state.cart.beef = 1;
+          log("已加入番茄牛腩饭，库存仅剩 1 份。");
+        }
+      }
+      if (action === "clearCart") {
+        state.cart = {};
+        log("购物车已清空。");
+      }
+      if (action === "submitOrder") {
+        if (!Object.keys(state.cart).length) {
+          log("购物车为空，不能提交订单。");
+          render();
+          return;
+        }
+        if (!state.deliverable) {
+          log("后端校验失败：配送地址不可送达。");
+          audit("提交订单失败：地址不可配送");
+          render();
+          return;
+        }
+        state.orderNo = "FD" + Date.now().toString().slice(-8);
+        state.orderStatus = "待支付";
+        state.paid = false;
+        audit("用户提交订单，后端重算金额并创建待支付订单");
+        log("订单创建成功，进入待支付。");
+        nav("pay");
+        return;
+      }
+      if (action === "cancelOrder") {
+        setStatus("已取消", "用户取消订单");
+      }
+      if (action === "payOrder") {
+        if (!state.orderNo) {
+          log("还没有订单，无法支付。");
+        } else if (state.paid) {
+          log("支付已经成功，重复点击不会重复扣款。");
+        } else if (setStatus("已支付", "支付回调校验通过")) {
+          state.paid = true;
+          nav("order");
+        }
+      }
+      if (action === "duplicateCallback") {
+        state.duplicateCallbacks += 1;
+        log("重复支付回调已被幂等处理，次数：" + state.duplicateCallbacks);
+        audit("支付重复回调被幂等拦截");
+      }
+      if (action === "merchantAccept") setStatus("商家已接单", "商家");
+      if (action === "merchantCook") setStatus("制作中", "商家");
+      if (action === "merchantReady") setStatus("待配送", "商家");
+      if (action === "riderPickup") setStatus("配送中", "骑手");
+      if (action === "riderDone") setStatus("已完成", "骑手");
+      if (action === "refund") {
+        if (["已支付", "商家已接单", "制作中"].includes(state.orderStatus)) {
+          setStatus("退款中", "用户申请退款");
+        } else if (state.orderStatus === "退款中") {
+          setStatus("已退款", "退款回调");
+        } else {
+          log("当前状态不允许发起退款：" + state.orderStatus);
+          audit("退款申请被状态机拒绝：" + state.orderStatus);
+        }
+      }
+      if (action === "unauthorized") {
+        log("后端权限校验拦截：用户不能查看他人订单。");
+        audit("越权访问他人订单被拒绝");
+      }
+      render();
+    });
+    render();
+  </script>
+</body>
+</html>
