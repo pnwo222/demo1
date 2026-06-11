@@ -1,10 +1,5 @@
 <script setup lang="ts">
-const milestones = [
-  '商家浏览',
-  '商品购物车',
-  '订单预览',
-  '支付履约'
-]
+import { coreJourney, launchReadiness, qualityGates } from './mock/launchPlan'
 </script>
 
 <template>
@@ -13,13 +8,30 @@ const milestones = [
       <header class="hero">
         <p class="eyebrow">Food Delivery H5</p>
         <h1>外卖平台工程骨架</h1>
-        <p>当前阶段仅完成 Vue 3 H5 工程落位，业务页面按 Feature Slice 后续实现。</p>
+        <p>基于需求文档维护前端 mock 数据，在后端接口接入前展示主链路、角色边界和质量门禁。</p>
       </header>
 
       <section class="panel">
-        <h2>下一批前端任务</h2>
+        <h2>核心点餐链路</h2>
+        <ol class="journey-list">
+          <li v-for="item in coreJourney" :key="item">{{ item }}</li>
+        </ol>
+      </section>
+
+      <section class="readiness-list" aria-label="上线准备状态">
+        <article v-for="item in launchReadiness" :key="item.title" class="readiness-item">
+          <div>
+            <h2>{{ item.title }}</h2>
+            <p>{{ item.description }}</p>
+          </div>
+          <span>{{ item.status }}</span>
+        </article>
+      </section>
+
+      <section class="panel compact">
+        <h2>提交前门禁</h2>
         <ul>
-          <li v-for="item in milestones" :key="item">{{ item }}</li>
+          <li v-for="item in qualityGates" :key="item">{{ item }}</li>
         </ul>
       </section>
     </section>
