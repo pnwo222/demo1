@@ -7,6 +7,7 @@
 ```text
 docs/requirements/**
 project/docs/**
+.codex/skills/snowy-framework-bootstrap/**
 ```
 
 ## 总控调度规则
@@ -40,6 +41,7 @@ project/docs/**
 
 - 未读取并确认 `docs/requirements/` 下全部需求文档，不进入产品设计。
 - 未读取并确认 `project/docs/` 下全部框架文档，不进入产品设计、技术设计或开发。
+- 首次执行项目工作流时，未使用 `snowy-framework-bootstrap` 输出框架运行提示，不进入产品设计、技术设计或开发；默认不由 Agent 自动安装、构建、启动或校验环境。IntelliJ IDEA 是后端本地开发必备工具，必须提示开发者在 IDEA 中导入 `project/`、配置 JDK 17/Maven、确认 MySQL/Redis 配置并运行后端启动类。
 - HTML PRD 未确认，不进入低保真原型确认。
 - 可交互低保真 HTML 原型未确认，不进入 UI 设计。
 - Figma UI 未确认，不进入技术设计。
@@ -66,6 +68,39 @@ project/docs/**
 - 必须复用的现有框架能力。
 
 如果需求文档缺失、框架文档缺失或内容不足，先补齐对应文档，不进入后续阶段。
+
+## 阶段 0.5：框架运行提示
+
+由 Orchestrator Agent 使用 `.codex/skills/snowy-framework-bootstrap` 输出开发者自检提示。默认不执行安装、构建、启动或环境校验脚本，除非用户明确要求。
+
+必须明确：
+
+- 已提示开发者先确认当前 Snowy 框架能否正常运行。
+- 前端运行步骤：进入 `project/snowy-admin-web`，先执行 `npm install`，再执行 `npm run dev`，打开 Vite 输出地址，通常是 `http://localhost:5173`。
+- 后端运行步骤：用 IDEA 打开 `project/`，配置 JDK 17、Maven、Maven importer/runner，运行 `project/snowy-web-app/src/main/java/vip/xiaonuo/Application.java`。
+- Java 配置提示：Project SDK、Modules SDK、Java Compiler、Maven importer、Maven runner 均使用 JDK 17。
+- 后端配置文件：`project/snowy-web-app/src/main/resources/application.properties`。
+- MySQL 配置项：`spring.datasource.dynamic.datasource.master.url`、`username`、`password`。
+- Redis 配置项：`spring.data.redis.host`、`port`、`database`、`password`。
+- 后端端口：`server.port=82`，启动后可访问或检测 `http://localhost:82`。
+- 如果开发者未确认可运行，记录为“开发者自检待完成”，不默认执行脚本。
+
+前端自检命令：
+
+```powershell
+cd project/snowy-admin-web
+npm install
+npm run dev
+```
+
+后端由 IDEA 自检：
+
+```text
+IDEA 打开 project/
+配置 JDK 17 和 Maven
+确认 application.properties 中 MySQL/Redis
+运行 snowy-web-app/src/main/java/vip/xiaonuo/Application.java
+```
 
 ## 阶段 1：产品设计
 

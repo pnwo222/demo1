@@ -12,14 +12,16 @@
 
 1. Orchestrator 先读取 `docs/requirements/` 下的全部需求文档。
 2. Orchestrator 再读取 `project/docs/` 下的全部框架文档，确认本次开发基于现有 `project/` 框架增量扩展。
-3. 各角色 Agent 基于需求集合和框架文档，再套用通用流程。
-4. 工作流只约束阶段、产物、门禁和协作规则。
-5. 业务判断、页面范围、技术栈命令和风险重点来自需求文档、框架文档或项目实际代码。
+3. 首次执行项目工作流前，Orchestrator 使用 `.codex/skills/snowy-framework-bootstrap` 输出框架运行提示，请开发者自行确认前后端具备运行条件；默认不自动安装、构建、启动或校验环境。
+4. 各角色 Agent 基于需求集合和框架文档，再套用通用流程。
+5. 工作流只约束阶段、产物、门禁和协作规则。
+6. 业务判断、页面范围、技术栈命令和风险重点来自需求文档、框架文档或项目实际代码。
 
 ## 相关文件
 
 - `.codex/agents/*.md`
 - `.codex/checklists/`
+- `.codex/skills/snowy-framework-bootstrap/`
 - `docs/requirements/`
 - `project/docs/`
 - `.github/workflows/`

@@ -7,6 +7,8 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 ## 协作原则
 
 - 修改项目之前，先阅读本文件、`.codex/workflows/`、相关 `.codex/agents/*.md` 角色说明、`docs/requirements/` 下的全部需求文档，以及 `project/docs/` 下的框架说明和开发规范。
+- 首次执行项目工作流前，必须使用 `.codex/skills/snowy-framework-bootstrap` 向开发者提示：请先确认当前 Snowy 框架能否在本机正常运行。默认不由 Agent 自动执行环境安装、构建、启动或校验脚本，除非用户明确要求。
+- 后端启动前必须提示开发者确认 Java、MySQL、Redis 配置：Java 在 IDEA Project SDK、Modules SDK、Java Compiler、Maven importer、Maven runner 中都必须是 JDK 17；MySQL/Redis 配置位于 `project/snowy-web-app/src/main/resources/application.properties`，可由开发者自行修改，或在明确要求时由 Agent 按开发者提供的值修改。
 - 不直接在主分支上开发，功能改动使用独立 branch 或 worktree。
 - 不让开发 Agent 自己给自己放行，必须经过 Review、CI 和人工审批。
 - 需求、业务规则、数据规则、权限规则不清时，不直接进入代码开发。
@@ -42,19 +44,20 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 
 0. Orchestrator 先声明当前阶段、调用 Agent、输入、输出、验收标准和下一阶段。
 1. Orchestrator 读取 `docs/requirements/` 下的全部需求文档，并读取 `project/docs/` 下的框架文档。
-2. Product Agent 基于需求和现有框架能力生成 PRD、验收标准、HTML PRD 和可交互低保真 HTML 原型。
-3. PRD 和低保真 HTML 原型确认后，Design Agent 建立设计系统，并连接 Figma 生成可落地设计稿。
-4. Architect Agent 明确模块边界、状态机、API、数据模型、安全模型和可运维性。
-5. Data Agent 细化数据库模型、migration、索引、回滚和数据一致性策略。
-6. Orchestrator 按用户价值拆 feature slice。
-7. Orchestrator 套用 `.codex/workflows/auto-dispatch-parallel-development.md`，生成任务图、依赖 DAG、并行 wave、owner 分配、branch/worktree 策略和集成策略。
-8. Frontend、Backend、Data、QA 等 Agent 在独立 branch 或 worktree 并行开发。
-9. 本地运行必要检查后提交 PR。
-10. Reviewer、Security、QA Agent 做审查。
-11. CI 运行 lint、typecheck、test、build、安全扫描等项目定义的质量门禁。
-12. 人工负责人审批后合并。
-13. 预发验证、灰度发布、全量发布。
-14. 发布后监控核心指标和用户反馈。
+2. Orchestrator 使用 `.codex/skills/snowy-framework-bootstrap` 输出框架运行提示，要求开发者自行确认前端和后端能正常运行。
+3. Product Agent 基于需求和现有框架能力生成 PRD、验收标准、HTML PRD 和可交互低保真 HTML 原型。
+4. PRD 和低保真 HTML 原型确认后，Design Agent 建立设计系统，并连接 Figma 生成可落地设计稿。
+5. Architect Agent 明确模块边界、状态机、API、数据模型、安全模型和可运维性。
+6. Data Agent 细化数据库模型、migration、索引、回滚和数据一致性策略。
+7. Orchestrator 按用户价值拆 feature slice。
+8. Orchestrator 套用 `.codex/workflows/auto-dispatch-parallel-development.md`，生成任务图、依赖 DAG、并行 wave、owner 分配、branch/worktree 策略和集成策略。
+9. Frontend、Backend、Data、QA 等 Agent 在独立 branch 或 worktree 并行开发。
+10. 本地运行必要检查后提交 PR。
+11. Reviewer、Security、QA Agent 做审查。
+12. CI 运行 lint、typecheck、test、build、安全扫描等项目定义的质量门禁。
+13. 人工负责人审批后合并。
+14. 预发验证、灰度发布、全量发布。
+15. 发布后监控核心指标和用户反馈。
 
 ## 通用 Definition of Done
 
@@ -62,6 +65,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 
 - `docs/requirements/` 下的需求文档已全部读取，并在产物中列出已引用的需求来源。
 - `project/docs/` 下的框架说明和开发规范已全部读取，并在技术产物中列出已引用的框架来源。
+- 首次流程已输出 Snowy 框架运行提示，并记录开发者是否确认前端和后端可运行；未确认时应记录为开发者自检待完成项。
 - PRD 或需求说明已确认。
 - HTML 版 PRD 已生成并可打开。
 - 可交互低保真 HTML 原型已生成并可打开，主路径页面切换、关键按钮和核心状态可点击验证。

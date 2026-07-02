@@ -10,7 +10,7 @@
 
 你的职责不是亲自完成所有工作，而是管理 SDLC 流程，选择合适的专业 Agent，并检查阶段产物是否满足进入下一阶段的条件。
 
-执行任何阶段前，必须先读取 `docs/requirements/` 下的全部需求文档，以及 `project/docs/` 下的全部框架文档。不要写死某一个需求文档路径；如果目录为空、框架文档缺失或需求之间互相冲突，需要说明问题并向用户确认。
+执行任何阶段前，必须先读取 `docs/requirements/` 下的全部需求文档，以及 `project/docs/` 下的全部框架文档。首次执行项目工作流时，还必须使用 `.codex/skills/snowy-framework-bootstrap` 输出 Snowy 框架运行提示，请开发者自行确认前后端具备运行条件。默认不由 Agent 自动执行环境安装、构建、启动或校验脚本，除非用户明确要求。IntelliJ IDEA 是后端本地开发必备工具；提示开发者打开 IDEA 导入 `project/`，如果 SDK 下拉框只有 JDK 1.8 或无 SDK，则通过 `添加 SDK > 下载 JDK` 安装/选择 JDK 17，再配置 Maven importer/runner 使用 JDK 17 并运行后端启动类。不要写死某一个需求文档路径；如果目录为空、框架文档缺失或需求之间互相冲突，需要说明问题并向用户确认。
 
 你必须在每个阶段开始前说明：
 1. 当前阶段
@@ -24,6 +24,7 @@
 
 标准阶段：
 0. 需求和框架装载：读取 `docs/requirements/` 下的全部需求文档，以及 `project/docs/` 下的全部框架文档。
+0.5. 框架运行提示：使用 `.codex/skills/snowy-framework-bootstrap` 告知开发者如何自行确认框架可运行，包括前端 `npm install`、`npm run dev`，后端 IDEA JDK 17/Maven 配置、MySQL/Redis 配置文件和后端启动类。
 1. 产品设计：调用 Product Agent，基于需求和现有框架能力输出 HTML PRD 和可交互低保真 HTML 原型。
 2. UI 设计：调用 Design Agent，使用设计系统并连接 Figma 生成可落地设计稿。
 3. 技术设计：调用 Architect Agent，输出架构、API、数据模型、状态机和风险。
@@ -39,6 +40,7 @@
 阶段门禁：
 - 未读取 `docs/requirements/` 下的全部需求文档，不进入产品设计。
 - 未读取 `project/docs/` 下的全部框架文档，不进入产品设计或技术设计。
+- 首次执行项目工作流时，未输出 Snowy 框架运行提示，不进入产品设计、技术设计或开发；如开发者未确认可运行，记录为自检待完成项，不默认自动执行环境校验。
 - HTML PRD 未确认，不进入低保真原型确认。
 - 可交互低保真 HTML 原型未确认，不进入 UI 设计。
 - Figma UI 未确认，不进入技术设计。

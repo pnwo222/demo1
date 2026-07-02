@@ -4,6 +4,7 @@
 
 - 后续开发是基于 `project/` 现有框架增量扩展，不从零创建独立的新项目结构。
 - Agent 执行工作流时必须同时读取需求文档和框架文档：`docs/requirements/**`、`project/docs/**`。
+- 首次执行项目工作流前，必须使用 `.codex/skills/snowy-framework-bootstrap` 输出框架运行提示，请开发者先自行确认当前 Snowy 框架能否正常运行。默认不由 Agent 自动执行环境安装、构建、启动或校验脚本，除非用户明确要求。IntelliJ IDEA 是后端本地开发必备工具，开发者必须在 IDEA 中导入 `project/`、配置 JDK 17/Maven 并运行后端启动类。
 - 修改代码前先识别目标功能应落在哪个 Snowy 模块、插件或前端目录，并在阶段输出中说明映射关系。
 - 优先复用现有组件、接口封装、权限体系、异常处理、分页、字典、日志、审计、配置、文件和消息能力。
 - 不清楚业务规则、权限规则、状态机、金额规则、库存或资源一致性时，不直接进入代码开发。
@@ -27,15 +28,15 @@ project/snowy-admin-web/
 - 后端不可用时，同步维护 mock 数据、mock adapter 或可降级数据来源，保证主流程可演示。
 - 金额、库存、权限和状态流转只做展示或预校验，最终以后端可信结果为准。
 
-推荐检查：
+前端运行：
 
 ```powershell
 cd project/snowy-admin-web
 npm install
-npm run build
+npm run dev
 ```
 
-如项目未提供 lint/typecheck 脚本，不得伪造执行结果，应在完成报告中说明未执行原因。
+开发者打开 Vite 输出的本地地址，通常是 `http://localhost:5173`。如需生产构建，再手动执行 `npm run build`。
 
 ## 后端规范
 
@@ -59,7 +60,7 @@ project/snowy-common/        # 公共能力
 - 状态机、支付回调、库存扣减、退款、取消、批量操作必须考虑幂等、事务、并发和审计。
 - 本地 MySQL、Redis 或完整运行环境缺失时，不阻断编码；必须记录未执行验证、预期验证命令和环境恢复后的验证步骤。
 
-推荐检查：
+后端可选命令行检查：
 
 ```powershell
 cd project
@@ -67,7 +68,33 @@ mvn test
 mvn package
 ```
 
-如本地环境缺少 JDK、Maven、MySQL 或 Redis，应在报告中说明已完成的静态检查和未执行的运行验证。
+默认后端由开发者在 IDEA 中运行；如本地环境缺少 JDK、Maven、MySQL 或 Redis，应在报告中说明开发者自检未完成或运行失败原因。
+
+后端运行前必须确认 Java、MySQL、Redis 配置：
+
+- IDEA Project SDK、Modules SDK、Java Compiler、Maven importer、Maven runner 必须全部使用 JDK 17。
+- MySQL、Redis 配置位于 `project/snowy-web-app/src/main/resources/application.properties`。
+- MySQL 必填配置项：`spring.datasource.dynamic.datasource.master.url`、`spring.datasource.dynamic.datasource.master.username`、`spring.datasource.dynamic.datasource.master.password`。
+- Redis 必填配置项：`spring.data.redis.host`、`spring.data.redis.port`、`spring.data.redis.database`、`spring.data.redis.password`。
+- Agent 可先询问开发者 MySQL 地址、端口、库名、账号、密码，以及 Redis 地址、端口、库号、密码；只有在开发者明确要求时，才按开发者提供的值修改配置文件。
+- 也可以让开发者自行修改 `application.properties`，修改后由开发者重新启动后端验证。
+- 端口可达只代表网络可连，不代表账号、密码、库名一定正确；后端启动失败时必须回到配置文件核对。
+
+当命令行缺少 JDK 17 或 Maven 时，使用 IDEA 兜底验证：
+
+1. IDEA 打开 `project/`。
+2. `File > Project Structure > Project` 设置 SDK 为 JDK 17。
+   - 如果 SDK 下拉框只有 `1.8 java version "1.8.0_381"` 或 `<无 SDK>`，选择 `添加 SDK > 下载 JDK`。
+   - 版本选择 `17`。
+   - 供应商选择 `Eclipse Temurin` 或 `JetBrains Runtime`。
+   - 下载完成后选择新 JDK 17，并把语言级别设置为 `17`。
+3. `File > Project Structure > Modules` 中把所有模块 SDK 设置为 `Project SDK 17`，至少包括 `snowy-common`、`snowy-plugin`、`snowy-plugin-api`、`snowy-web-app`。
+4. `Settings > Build, Execution, Deployment > Compiler > Java Compiler` 中把项目和模块字节码目标设置为 `17`。
+5. `Settings > Build, Execution, Deployment > Build Tools > Maven` 确认 Maven home。
+6. Maven importer 和 runner 的 JDK/JRE 都选择 JDK 17。
+7. 等待 Maven 导入完成。
+8. 运行 `project/snowy-web-app/src/main/java/vip/xiaonuo/Application.java`。
+9. 用 `Test-NetConnection 127.0.0.1 -Port 82` 验证后端端口。
 
 ## 数据和 Migration 规范
 

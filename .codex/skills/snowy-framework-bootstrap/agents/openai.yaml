@@ -1,0 +1,4 @@
+interface:
+  display_name: "Snowy Framework Run Guide"
+  short_description: "Prompt developers to run Snowy frontend and backend"
+  default_prompt: "Use $snowy-framework-bootstrap to explain how the developer should run and verify the Snowy framework locally."
