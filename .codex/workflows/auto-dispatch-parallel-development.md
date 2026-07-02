@@ -2,13 +2,14 @@
 
 本工作流定义 Orchestrator 如何把已确认的需求、PRD、设计稿和技术方案自动拆解为可并行开发任务，并按大厂常见研发协作方式完成分配、隔离开发、集成、门禁和汇总。
 
-它不绑定具体业务。业务范围、技术栈、风险等级和质量门禁必须来自 `docs/requirements/` 下的全部需求文档、PRD 和技术设计。
+它不绑定具体业务。业务范围、风险等级和质量门禁必须来自 `docs/requirements/` 下的全部需求文档、PRD 和技术设计；框架结构、技术栈、目录映射和开发规范必须来自 `project/docs/` 下的框架文档和 `project/` 实际代码。
 
 ## 适用时机
 
 当以下产物已确认后，进入本流程：
 
 - `docs/requirements/` 下的全部需求文档。
+- `project/docs/` 下的全部框架文档。
 - HTML PRD。
 - 可交互低保真 HTML 原型。
 - Figma 正式设计稿或 UI 说明。
@@ -33,13 +34,14 @@
 Orchestrator 必须先读取并确认：
 
 - 已读取的需求文档清单。
+- 已读取的框架文档清单。
 - PRD 路径。
 - 设计稿或设计摘要。
 - 技术设计和数据设计。
 - 当前仓库结构。
 - 当前分支和工作区状态。
 - 已有脚本、测试、CI 和构建命令。
-- 前端目录和后端目录映射。默认按 `project/frontend/`、`project/backend/` 识别；如果实际结构不同，必须说明映射关系。
+- 前端目录和后端目录映射。当前默认基于 Snowy 框架识别：前端 `project/snowy-admin-web/`；后端启动 `project/snowy-web-app/`；插件实现 `project/snowy-plugin/`；插件 API `project/snowy-plugin-api/`；公共模块 `project/snowy-common/`。如果实际结构变化，必须说明映射关系。
 
 输出：
 
@@ -47,6 +49,7 @@ Orchestrator 必须先读取并确认：
 当前阶段：自动分配准备
 输入材料：
 需求文档清单：
+框架文档清单：
 PRD：
 设计稿：
 技术设计：
@@ -100,7 +103,7 @@ tasks:
     owner_agent: Frontend Agent
     dependencies: [API-001, UI-001]
     files_allowed:
-      - project/frontend/**
+      - project/snowy-admin-web/**
     local_checks:
       - npm run lint
       - npm run build
@@ -162,6 +165,8 @@ worktree 命名：
 ../worktrees/<slice-id>-data
 ../worktrees/<slice-id>-qa
 ```
+
+每个执行单元开始前必须读取任务相关框架文档，并把 `files_allowed` 限定到 Snowy 实际模块路径，例如 `project/snowy-admin-web/**`、`project/snowy-plugin/**`、`project/snowy-plugin-api/**`、`project/snowy-common/**` 或 `project/snowy-web-app/**`。
 
 ## 阶段 4：并行执行规则
 

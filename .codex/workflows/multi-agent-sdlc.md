@@ -1,11 +1,12 @@
 # 通用 Codex 多 Agent SDLC 工作流
 
-本工作流是通用项目流程，不绑定具体业务。业务目标、技术栈、角色、核心链路、质量重点和高风险规则必须从 `docs/requirements/` 下的全部需求文档中读取。
+本工作流是通用项目流程，不绑定具体业务。业务目标、角色、核心链路、质量重点和高风险规则必须从 `docs/requirements/` 下的全部需求文档中读取；框架结构、目录映射、技术栈和开发规范必须从 `project/docs/` 下的框架文档和 `project/` 实际代码中读取。
 
-执行任何阶段前，Orchestrator 必须先读取 `docs/requirements/` 下的全部需求文档，并输出已读取的需求文档清单。
+执行任何阶段前，Orchestrator 必须先读取 `docs/requirements/` 下的全部需求文档和 `project/docs/` 下的全部框架文档，并输出已读取的需求文档清单和框架文档清单。
 
 ```text
 docs/requirements/**
+project/docs/**
 ```
 
 ## 总控调度规则
@@ -38,6 +39,7 @@ docs/requirements/**
 ## 阶段门禁
 
 - 未读取并确认 `docs/requirements/` 下全部需求文档，不进入产品设计。
+- 未读取并确认 `project/docs/` 下全部框架文档，不进入产品设计、技术设计或开发。
 - HTML PRD 未确认，不进入低保真原型确认。
 - 可交互低保真 HTML 原型未确认，不进入 UI 设计。
 - Figma UI 未确认，不进入技术设计。
@@ -46,25 +48,28 @@ docs/requirements/**
 - P0/P1 Review 问题未修复，不允许合并。
 - CI 和发布检查未通过，不进入全量发布。
 
-## 阶段 0：需求装载
+## 阶段 0：需求和框架装载
 
 由 Orchestrator Agent 执行。
 
 必须明确：
 
 - 已读取的需求文档清单。
+- 已读取的框架文档清单。
+- 当前框架目录映射。
 - 项目目标。
 - 技术栈。
 - 业务角色或用户角色。
 - 核心链路。
 - 高风险规则。
 - 质量门禁。
+- 必须复用的现有框架能力。
 
-如果需求文档缺失或内容不足，先补需求文档，不进入后续阶段。
+如果需求文档缺失、框架文档缺失或内容不足，先补齐对应文档，不进入后续阶段。
 
 ## 阶段 1：产品设计
 
-由 Product Agent 基于需求集合输出 PRD、用户故事、MVP 范围和验收标准，并生成 HTML 版 PRD。
+由 Product Agent 基于需求集合和框架能力输出 PRD、用户故事、MVP 范围和验收标准，并生成 HTML 版 PRD。
 
 Product Agent 还必须输出可打开、可点击交互的低保真 HTML 原型。
 
@@ -121,7 +126,7 @@ Figma 设计图要求：
 
 ## 阶段 3：技术设计
 
-由 Architect Agent 基于需求集合、PRD、低保真原型和 UI 设计输出技术设计。
+由 Architect Agent 基于需求集合、框架文档、PRD、低保真原型和 UI 设计输出技术设计。
 
 必须明确：
 
@@ -149,7 +154,7 @@ Figma 设计图要求：
 
 ## 阶段 5：按用户价值切 Feature Slice
 
-由 Orchestrator 基于需求集合、PRD、技术设计和数据设计拆分 feature slice。
+由 Orchestrator 基于需求集合、框架文档、PRD、技术设计和数据设计拆分 feature slice。
 
 不要按岗位切成“前端做全部页面、后端做全部接口”。应按一个可验收的业务闭环切。
 
@@ -168,15 +173,18 @@ Figma 设计图要求：
 
 进入开发前，优先套用 `auto-dispatch-parallel-development.md`，由 Orchestrator 生成任务图、依赖 DAG、并行 wave、owner 分配、branch/worktree 策略和集成策略。
 
-默认开发目录：
+默认基于现有 `project/` 框架增量开发：
 
 ```text
 project/
-  frontend/
-  backend/
+  snowy-admin-web/
+  snowy-web-app/
+  snowy-common/
+  snowy-plugin/
+  snowy-plugin-api/
 ```
 
-如果实际仓库结构不同，Orchestrator 必须先识别并输出前端、后端目录映射。
+Orchestrator 必须先读取 `project/docs/` 并输出前端、后端、插件、公共模块目录映射；不得按全新项目假设创建 `project/frontend/` 或 `project/backend/`。
 
 Frontend Agent：
 

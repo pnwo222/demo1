@@ -6,13 +6,13 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 
 ## 协作原则
 
-- 修改项目之前，先阅读本文件、`.codex/workflows/`、相关 `.codex/agents/` 角色说明，以及 `docs/requirements/` 下的全部需求文档。
+- 修改项目之前，先阅读本文件、`.codex/workflows/`、相关 `.codex/agents/*.md` 角色说明、`docs/requirements/` 下的全部需求文档，以及 `project/docs/` 下的框架说明和开发规范。
 - 不直接在主分支上开发，功能改动使用独立 branch 或 worktree。
 - 不让开发 Agent 自己给自己放行，必须经过 Review、CI 和人工审批。
 - 需求、业务规则、数据规则、权限规则不清时，不直接进入代码开发。
 - 前端优先复用现有组件、路由、状态管理和样式规范。
 - 后端优先遵循现有分层架构、接口规范、异常处理和事务规范。
-- 开发阶段默认项目根目录为 `project/`，其下按 `project/frontend/` 和 `project/backend/` 分别组织前端与后端代码；如实际仓库结构不同，Orchestrator 必须先说明映射关系。
+- 开发阶段默认基于 `project/` 下已有框架进行增量开发，不按全新项目重新搭建。当前框架映射为：前端 `project/snowy-admin-web/`；后端启动模块 `project/snowy-web-app/`；后端业务插件 `project/snowy-plugin/`；后端插件 API `project/snowy-plugin-api/`；公共模块 `project/snowy-common/`。如实际结构变化，Orchestrator 必须先更新并说明映射关系。
 - 后端开发时，若本地运行环境、数据库或 MySQL 缺失，不阻断代码开发；先完成 API、业务逻辑、数据结构、配置说明和可运行性降级记录，再标注未执行的验证项。
 - 前端开发必须同步维护 mock 数据；当后端接口无法连接、未完成或本地环境不可用时，页面应使用 mock 数据展示主流程和关键状态。
 - 涉及资金、权限、状态机、库存或资源、用户数据、删除和批量操作的改动必须重点审查。
@@ -41,8 +41,8 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 ## 标准开发流程
 
 0. Orchestrator 先声明当前阶段、调用 Agent、输入、输出、验收标准和下一阶段。
-1. Orchestrator 读取 `docs/requirements/` 下的全部需求文档。
-2. Product Agent 基于需求生成 PRD、验收标准、HTML PRD 和可交互低保真 HTML 原型。
+1. Orchestrator 读取 `docs/requirements/` 下的全部需求文档，并读取 `project/docs/` 下的框架文档。
+2. Product Agent 基于需求和现有框架能力生成 PRD、验收标准、HTML PRD 和可交互低保真 HTML 原型。
 3. PRD 和低保真 HTML 原型确认后，Design Agent 建立设计系统，并连接 Figma 生成可落地设计稿。
 4. Architect Agent 明确模块边界、状态机、API、数据模型、安全模型和可运维性。
 5. Data Agent 细化数据库模型、migration、索引、回滚和数据一致性策略。
@@ -61,6 +61,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 一个功能完成必须满足：
 
 - `docs/requirements/` 下的需求文档已全部读取，并在产物中列出已引用的需求来源。
+- `project/docs/` 下的框架说明和开发规范已全部读取，并在技术产物中列出已引用的框架来源。
 - PRD 或需求说明已确认。
 - HTML 版 PRD 已生成并可打开。
 - 可交互低保真 HTML 原型已生成并可打开，主路径页面切换、关键按钮和核心状态可点击验证。
@@ -130,21 +131,28 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 ## 目录说明
 
 - `docs/requirements/`：独立业务需求文档。
-- `.codex/agents/`：通用专业 Agent 配置。
+- `.codex/agents/`：通用专业 Agent Markdown 角色说明。
 - `.codex/workflows/`：通用多 Agent SDLC 工作流。
 - `.codex/checklists/`：PR、发布、验收检查表。
 - `.codex/skills/`：项目本地技能，已有内容不要随意删除。
 
 ## 默认开发目录
 
-开发阶段默认采用以下目录约定：
+开发阶段默认基于 `project/` 下现有 Snowy 框架进行增量开发，禁止把流程理解为从零新建 `frontend/`、`backend/` 两个空目录。
 
 ```text
 project/
-  frontend/
-  backend/
+  snowy-admin-web/     # 前端 Vue 3 + Ant Design Vue + Vite
+  snowy-web-app/       # 后端 Spring Boot 主启动模块
+  snowy-common/        # 后端公共模块
+  snowy-plugin/        # 后端插件实现模块
+  snowy-plugin-api/    # 后端插件 API 契约模块
+  docs/                # 框架说明、开发规范和框架读取入口
 ```
 
-- `project/frontend/`：前端页面、组件、路由、状态管理、接口 client、mock 数据和前端测试。
-- `project/backend/`：后端 API、业务逻辑、数据访问、migration、后端测试和运行配置。
-- 如果仓库没有 `project/` 目录，Agent 应先识别实际前后端目录，并在阶段输出中说明映射关系。
+- `project/snowy-admin-web/`：前端页面、组件、路由、状态管理、接口 client、mock 数据和前端测试。
+- `project/snowy-web-app/`：后端 Spring Boot 主启动、资源配置、SQL 初始化和运行配置。
+- `project/snowy-plugin/`：后端业务、系统、鉴权、开发工具等插件实现。
+- `project/snowy-plugin-api/`：插件 API 契约和跨插件调用接口。
+- `project/snowy-common/`：公共实体、工具、异常、分页、拦截器等基础能力。
+- `project/docs/`：框架内容介绍、开发规范和后续开发前必须读取的框架文档。

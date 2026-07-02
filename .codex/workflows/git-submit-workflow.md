@@ -1,6 +1,6 @@
 # 通用 Git/GitHub 提交流程
 
-本工作流用于把 Agent 本地开发完成的改动提交到 GitHub，并进入 PR、CI、Review 和人工审批。它不绑定具体业务或技术栈；提交前必须读取 `docs/requirements/` 下的全部需求文档和项目实际脚本。
+本工作流用于把 Agent 本地开发完成的改动提交到 GitHub，并进入 PR、CI、Review 和人工审批。它不绑定具体业务；提交前必须读取 `docs/requirements/` 下的全部需求文档、`project/docs/` 下的全部框架文档和项目实际脚本。
 
 ## 适用时机
 
@@ -147,6 +147,7 @@ gh pr create --base main --head feature/user-facing-mvp --title "feat: add user-
 PR 内容必须包含：
 
 - 已读取的需求文档清单。
+- 已读取的框架文档清单。
 - feature slice 和影响范围。
 - 本地验证命令和结果。
 - CI 状态。
@@ -177,7 +178,7 @@ Agent 不允许：
 当前阶段：提交代码
 阶段目标：把已完成 slice 提交到 GitHub 并创建 PR
 调用 Agent：Git Agent、QA Agent、Security Agent、Reviewer Agent
-输入材料：需求文档清单、feature slice、代码 diff、测试结果、PR checklist
+输入材料：需求文档清单、框架文档清单、feature slice、代码 diff、测试结果、PR checklist
 预期输出：commit、push、PR、CI 链接、提交报告
 验收标准：本地门禁通过，PR 创建成功，CI 启动，未绕过 Review 和人工审批
 是否需要用户确认：push、创建 PR、合并和发布前需要确认
