@@ -5,7 +5,7 @@ description: Provide this repository's Snowy framework run guide before project 
 
 # Snowy Framework Run Guide
 
-Use this skill before the first execution of the project workflow, and whenever a developer needs to confirm the local Snowy framework can run. The goal is to give a clear developer self-check prompt, not to run environment validation automatically.
+Use this skill before the first execution of the project workflow, when the global environment status is missing, or whenever a developer reports that the local Snowy framework can no longer run. The goal is to give a clear developer self-check prompt, not to run environment validation automatically.
 
 ## Required Inputs
 
@@ -190,4 +190,4 @@ Status values:
 
 On the first project workflow execution, Orchestrator must provide this run prompt before Product Agent work. The workflow should not automatically execute environment validation. If the developer has not confirmed the framework can run, stop at `blocked_until_developer_confirmed_ready` rather than moving to Product, UI, technical design, or development.
 
-Persist the status in `docs/workflow/status.md`. When the developer replies "前后端已确认可运行" or an equivalent statement, update that file to `developer_confirmed_ready`, mark frontend/backend confirmation as confirmed, and record confirmation source and time.
+Persist only the global environment status in `docs/workflow/status.md`. When the developer replies "前后端已确认可运行" or an equivalent statement, update that file to `developer_confirmed_ready`, mark frontend/backend confirmation as confirmed, and record confirmation source and time. Do not create per-requirement stage records from this skill; later PRD/UI/technical/development stages belong in `docs/workflow/requirements/<需求ID>.md`.
