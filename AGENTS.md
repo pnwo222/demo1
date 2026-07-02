@@ -12,7 +12,8 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 - 只有用户明确说“跳过工作流”“直接改代码”“无需 PRD/设计/技术方案”时，才允许跳过整个前置工作流；跳过原因必须在回复中简短记录。
 - 修改项目之前，先阅读本文件、`.codex/workflows/`、相关 `.codex/agents/*.md` 角色说明、`docs/requirements/` 下的全部需求文档，以及 `project/docs/` 下的框架说明和开发规范。
 - 首次执行项目工作流前，必须使用 `.codex/skills/snowy-framework-bootstrap` 向开发者提示：请先确认当前 Snowy 框架能否在本机正常运行。默认不由 Agent 自动执行环境安装、构建、启动或校验脚本，除非用户明确要求；开发者未确认前后端可运行前，不进入 PRD/UI/技术设计或开发阶段。
-- 后端启动前必须提示开发者确认 Java、MySQL、Redis 配置：Java 在 IDEA Project SDK、Modules SDK、Java Compiler、Maven importer、Maven runner 中都必须是 JDK 17；MySQL/Redis 配置位于 `project/snowy-web-app/src/main/resources/application.properties`，可由开发者自行修改，或在明确要求时由 Agent 按开发者提供的值修改。
+- 工作流状态必须记录在 `docs/workflow/status.md`。每个阶段进入、完成、跳过或阻塞时，Orchestrator 都必须更新该文件。开发者回复“前后端已确认可运行”或等价表达后，Orchestrator 必须把框架运行自检状态更新为 `developer_confirmed_ready`，并记录确认来源和时间。
+- 后端启动前必须提示开发者确认 Java、MySQL、Redis 配置：Java 在 IDEA Project SDK、Modules SDK、Java Compiler、Maven importer、Maven runner 中都必须是 JDK 17；MySQL/Redis 配置位于 `project/snowy-web-app/src/main/resources/application.properties`，可由开发者自行修改，或在明确要求时由 Agent 按开发者提供的值修改。若只修改数据库名，只更新 MySQL JDBC URL 中 `host:port/` 后、`?` 前的库名。
 - 不直接在主分支上开发，功能改动使用独立 branch 或 worktree。
 - 不让开发 Agent 自己给自己放行，必须经过 Review、CI 和人工审批。
 - 需求、业务规则、数据规则、权限规则不清时，不直接进入代码开发。
@@ -70,7 +71,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 
 - `docs/requirements/` 下的需求文档已全部读取，并在产物中列出已引用的需求来源。
 - `project/docs/` 下的框架说明和开发规范已全部读取，并在技术产物中列出已引用的框架来源。
-- 首次流程已输出 Snowy 框架运行提示，并记录开发者是否确认前端和后端可运行；未确认时不得进入后续阶段。
+- 首次流程已输出 Snowy 框架运行提示，并在 `docs/workflow/status.md` 记录开发者是否确认前端和后端可运行；未确认时不得进入后续阶段。
 - PRD 或最小需求说明已确认；如跳过 PRD，已记录跳过原因。
 - 如未跳过 PRD，HTML 版 PRD 已生成并可打开。
 - 如未跳过原型，可交互低保真 HTML 原型已生成并可打开，主路径页面切换、关键按钮和核心状态可点击验证。
@@ -145,6 +146,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 ## 目录说明
 
 - `docs/requirements/`：独立业务需求文档。
+- `docs/workflow/status.md`：当前工作流状态、环境自检确认、跳过项和阶段门禁记录。
 - `.codex/agents/`：通用专业 Agent Markdown 角色说明。
 - `.codex/workflows/`：通用多 Agent SDLC 工作流。
 - `.codex/checklists/`：PR、发布、验收检查表。

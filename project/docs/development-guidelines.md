@@ -75,8 +75,10 @@ mvn package
 - IDEA Project SDK、Modules SDK、Java Compiler、Maven importer、Maven runner 必须全部使用 JDK 17。
 - MySQL、Redis 配置位于 `project/snowy-web-app/src/main/resources/application.properties`。
 - MySQL 必填配置项：`spring.datasource.dynamic.datasource.master.url`、`spring.datasource.dynamic.datasource.master.username`、`spring.datasource.dynamic.datasource.master.password`。
+- 修改数据库名时，只修改 MySQL JDBC URL 中 `host:port/` 后、`?` 前的库名。例如 `jdbc:mysql://localhost:3306/snowy?...` 改为 `jdbc:mysql://localhost:3306/demo?...`。
 - Redis 必填配置项：`spring.data.redis.host`、`spring.data.redis.port`、`spring.data.redis.database`、`spring.data.redis.password`。
 - Agent 可先询问开发者 MySQL 地址、端口、库名、账号、密码，以及 Redis 地址、端口、库号、密码；只有在开发者明确要求时，才按开发者提供的值修改配置文件。
+- 如果开发者只要求修改数据库名，Agent 只询问新库名，并只更新 `spring.datasource.dynamic.datasource.master.url`，不改 host、port、账号、密码和 URL 查询参数。
 - 也可以让开发者自行修改 `application.properties`，修改后由开发者重新启动后端验证。
 - 端口可达只代表网络可连，不代表账号、密码、库名一定正确；后端启动失败时必须回到配置文件核对。
 

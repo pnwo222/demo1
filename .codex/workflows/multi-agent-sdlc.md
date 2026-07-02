@@ -2,10 +2,11 @@
 
 本工作流是通用项目流程，不绑定具体业务。业务目标、角色、核心链路、质量重点和高风险规则必须从 `docs/requirements/` 下的全部需求文档中读取；框架结构、目录映射、技术栈和开发规范必须从 `project/docs/` 下的框架文档和 `project/` 实际代码中读取。
 
-执行任何阶段前，Orchestrator 必须先读取 `docs/requirements/` 下的全部需求文档和 `project/docs/` 下的全部框架文档，并输出已读取的需求文档清单和框架文档清单。
+执行任何阶段前，Orchestrator 必须先读取 `docs/requirements/` 下的全部需求文档、`project/docs/` 下的全部框架文档和 `docs/workflow/status.md` 当前状态，并输出已读取的需求文档清单、框架文档清单和当前工作流状态。
 
 ```text
 docs/requirements/**
+docs/workflow/status.md
 project/docs/**
 .codex/skills/snowy-framework-bootstrap/**
 ```
@@ -13,6 +14,12 @@ project/docs/**
 ## 总控调度规则
 
 所有阶段默认由 Orchestrator Agent 先出场，再分派给专业 Agent。
+
+状态记录规则：
+
+- 每个阶段进入、完成、跳过或阻塞时，Orchestrator 必须更新 `docs/workflow/status.md`。
+- 状态文件必须记录阶段、状态、来源、产物、下一步和时间。
+- 不允许只在对话中说明阶段变化而不更新状态文件。
 
 触发规则：
 
@@ -55,6 +62,7 @@ project/docs/**
 - 未读取并确认 `project/docs/` 下全部框架文档，不进入产品设计、技术设计或开发。
 - 首次执行项目工作流时，未使用 `snowy-framework-bootstrap` 输出框架运行提示，不进入产品设计、技术设计或开发；默认不由 Agent 自动安装、构建、启动或校验环境。IntelliJ IDEA 是后端本地开发必备工具，必须提示开发者在 IDEA 中导入 `project/`、配置 JDK 17/Maven、确认 MySQL/Redis 配置并运行后端启动类。
 - 开发者未确认前端和后端可运行时，不进入 PRD/UI/技术设计或开发阶段；状态必须保持为 `blocked_until_developer_confirmed_ready`。
+- `docs/workflow/status.md` 未记录 `developer_confirmed_ready` 时，不进入 PRD/UI/技术设计或开发阶段。
 - 未确认是否需要 PRD/原型，不进入 Product 阶段或跳过记录。
 - 未确认是否需要 UI/Figma，不进入 Design 阶段或跳过记录。
 - 跳过 PRD 时，必须保留最小需求说明、范围、验收标准和风险记录。
@@ -95,9 +103,11 @@ project/docs/**
 - Java 配置提示：Project SDK、Modules SDK、Java Compiler、Maven importer、Maven runner 均使用 JDK 17。
 - 后端配置文件：`project/snowy-web-app/src/main/resources/application.properties`。
 - MySQL 配置项：`spring.datasource.dynamic.datasource.master.url`、`username`、`password`。
+- 修改数据库名：只修改 MySQL JDBC URL 中 `host:port/` 后、`?` 前的库名，例如 `jdbc:mysql://localhost:3306/snowy?...` 改为 `jdbc:mysql://localhost:3306/demo?...`。
 - Redis 配置项：`spring.data.redis.host`、`port`、`database`、`password`。
 - 后端端口：`server.port=82`，启动后可访问或检测 `http://localhost:82`。
 - 如果开发者未确认可运行，状态为 `blocked_until_developer_confirmed_ready`，不进入后续阶段，也不默认执行脚本。
+- 开发者回复“前后端已确认可运行”或等价表达后，Orchestrator 必须更新 `docs/workflow/status.md`：框架运行自检为 `developer_confirmed_ready`，前端/后端运行确认为 `已确认`，并记录确认来源和时间。
 
 前端自检命令：
 

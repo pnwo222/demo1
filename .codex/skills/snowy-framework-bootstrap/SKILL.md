@@ -13,6 +13,7 @@ Read these files first:
 
 ```text
 AGENTS.md
+docs/workflow/status.md
 project/docs/README.md
 project/docs/framework-overview.md
 project/docs/development-guidelines.md
@@ -51,8 +52,9 @@ Before Product/Design/Architect/Development stages, tell the developer:
 4. 配置 Java Compiler 字节码目标为 17
 5. 在 IDEA 的 Maven 设置中配置 Maven home
 6. Maven importer 和 runner 的 JDK/JRE 都选择 JDK 17
-7. 确认数据库和 Redis 配置后，运行 snowy-web-app 的 Application.java
-8. 启动后访问或检测 http://localhost:82
+7. 确认数据库和 Redis 配置；如需修改数据库名，修改 `application.properties` 中 MySQL JDBC URL 的库名段
+8. 运行 snowy-web-app 的 Application.java
+9. 启动后访问或检测 http://localhost:82
 ```
 
 Do not run `npm install`, `npm run dev`, Maven import, backend startup, or port checks automatically unless the user explicitly requests execution.
@@ -113,6 +115,18 @@ spring.datasource.dynamic.datasource.master.username=root
 spring.datasource.dynamic.datasource.master.password=123456
 ```
 
+To change only the database name, edit only the path segment after host and port in the JDBC URL:
+
+```properties
+# before
+spring.datasource.dynamic.datasource.master.url=jdbc:mysql://localhost:3306/snowy?...
+
+# after, for database name demo
+spring.datasource.dynamic.datasource.master.url=jdbc:mysql://localhost:3306/demo?...
+```
+
+Do not change host, port, username, password, or query parameters when the developer only asks to modify the database name.
+
 Required Redis settings:
 
 ```properties
@@ -144,8 +158,10 @@ Support two modes:
    - Ask the developer for MySQL host, port, database, username, password.
    - Ask the developer for Redis host, port, database, password.
    - Update `application.properties` only after the developer provides values and asks Codex to edit the file.
+   - If the developer only says to change the database name, ask only for the new database name and update only `spring.datasource.dynamic.datasource.master.url`.
 2. Developer-edit mode:
    - Tell the developer to edit `application.properties` directly.
+   - For database name only, tell the developer to change `jdbc:mysql://host:port/<database>?...`.
    - Ask the developer to rerun the frontend/backend manually after editing.
 
 ## Completion Report
@@ -158,6 +174,7 @@ Snowy 自检提示已给出。
 后端：IDEA 打开 project/，JDK/Maven 用 17，运行 Application.java
 配置：project/snowy-web-app/src/main/resources/application.properties
 状态：blocked_until_developer_confirmed_ready，等待开发者确认可运行
+记录：docs/workflow/status.md
 ```
 
 Only expand the full requirements/framework document list, MySQL/Redis property names, and IDEA step-by-step setup when the user asks for details or reports a concrete environment issue.
@@ -172,3 +189,5 @@ Status values:
 ## Workflow Gate
 
 On the first project workflow execution, Orchestrator must provide this run prompt before Product Agent work. The workflow should not automatically execute environment validation. If the developer has not confirmed the framework can run, stop at `blocked_until_developer_confirmed_ready` rather than moving to Product, UI, technical design, or development.
+
+Persist the status in `docs/workflow/status.md`. When the developer replies "前后端已确认可运行" or an equivalent statement, update that file to `developer_confirmed_ready`, mark frontend/backend confirmation as confirmed, and record confirmation source and time.

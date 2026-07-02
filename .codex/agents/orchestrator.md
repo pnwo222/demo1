@@ -12,7 +12,7 @@
 
 当用户输入“完成/开发/实现/新增/修复/优化 + 某功能”时，必须把请求识别为项目工作流入口，先进入 Orchestrator 简版 SDLC 流程，不得直接编码实现。PRD 和 UI 设计是开发者可跳过的决策点；用户明确说“跳过 PRD”“无需 PRD”“跳过 UI”“无需设计”“直接进入技术方案/开发”等等价表达时，记录跳过项和原因，然后进入下一合适阶段。即使跳过 PRD 或 UI，也必须保留最小需求说明、范围、验收标准和风险记录。只有用户明确说“跳过工作流”“直接改代码”“无需 PRD/设计/技术方案”时，才允许跳过整个前置工作流，并在回复中简短记录跳过原因。
 
-执行任何阶段前，必须先读取 `docs/requirements/` 下的全部需求文档，以及 `project/docs/` 下的全部框架文档。首次执行项目工作流时，还必须使用 `.codex/skills/snowy-framework-bootstrap` 输出 Snowy 框架运行提示，请开发者自行确认前后端具备运行条件。默认不由 Agent 自动执行环境安装、构建、启动或校验脚本，除非用户明确要求；开发者未确认前后端可运行前，不进入 PRD/UI/技术设计或开发阶段。IntelliJ IDEA 是后端本地开发必备工具；提示开发者打开 IDEA 导入 `project/`，如果 SDK 下拉框只有 JDK 1.8 或无 SDK，则通过 `添加 SDK > 下载 JDK` 安装/选择 JDK 17，再配置 Maven importer/runner 使用 JDK 17 并运行后端启动类。不要写死某一个需求文档路径；如果目录为空、框架文档缺失或需求之间互相冲突，需要说明问题并向用户确认。
+执行任何阶段前，必须先读取 `docs/requirements/` 下的全部需求文档、`project/docs/` 下的全部框架文档，以及 `docs/workflow/status.md` 当前状态。每个阶段进入、完成、跳过或阻塞时，必须更新 `docs/workflow/status.md`。首次执行项目工作流时，还必须使用 `.codex/skills/snowy-framework-bootstrap` 输出 Snowy 框架运行提示，请开发者自行确认前后端具备运行条件。默认不由 Agent 自动执行环境安装、构建、启动或校验脚本，除非用户明确要求；开发者未确认前后端可运行前，不进入 PRD/UI/技术设计或开发阶段。开发者回复“前后端已确认可运行”或等价表达后，必须更新 `docs/workflow/status.md` 为 `developer_confirmed_ready` 并记录确认来源和时间。IntelliJ IDEA 是后端本地开发必备工具；提示开发者打开 IDEA 导入 `project/`，如果 SDK 下拉框只有 JDK 1.8 或无 SDK，则通过 `添加 SDK > 下载 JDK` 安装/选择 JDK 17，再配置 Maven importer/runner 使用 JDK 17 并运行后端启动类。不要写死某一个需求文档路径；如果目录为空、框架文档缺失或需求之间互相冲突，需要说明问题并向用户确认。
 
 你必须在每个阶段开始前使用简版说明，默认控制在 5 行以内：
 1. 阶段
@@ -43,6 +43,7 @@
 - 未读取 `project/docs/` 下的全部框架文档，不进入产品设计或技术设计。
 - 首次执行项目工作流时，未输出 Snowy 框架运行提示，不进入产品设计、技术设计或开发。
 - 开发者未确认前端和后端可运行时，不进入 PRD/UI/技术设计或开发阶段；状态必须保持为 `blocked_until_developer_confirmed_ready`。
+- `docs/workflow/status.md` 未记录 `developer_confirmed_ready` 时，不进入 PRD/UI/技术设计或开发阶段。
 - 未确认是否需要 PRD/原型，不进入 Product 阶段或跳过记录。
 - 未确认是否需要 UI/Figma，不进入 Design 阶段或跳过记录。
 - PRD 被跳过时，必须先确认最小需求说明和验收标准。
