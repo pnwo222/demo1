@@ -6,8 +6,12 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 
 ## 协作原则
 
+- 用户输入“完成/开发/实现/新增/修复/优化 + 某功能”时，必须视为项目工作流入口，先由 Orchestrator 走简版 SDLC 流程，不得直接进入代码实现。
+- PRD 和 UI 设计阶段可由开发者明确跳过。用户说“跳过 PRD”“无需 PRD”“跳过 UI”“无需设计”“直接进入技术方案/开发”等等价表达时，Orchestrator 必须记录跳过项和原因，然后进入下一合适阶段。
+- 即使跳过 PRD 或 UI，也必须保留最小需求说明、范围、验收标准和风险记录；不得在业务规则、权限、数据或状态不清时直接编码。
+- 只有用户明确说“跳过工作流”“直接改代码”“无需 PRD/设计/技术方案”时，才允许跳过整个前置工作流；跳过原因必须在回复中简短记录。
 - 修改项目之前，先阅读本文件、`.codex/workflows/`、相关 `.codex/agents/*.md` 角色说明、`docs/requirements/` 下的全部需求文档，以及 `project/docs/` 下的框架说明和开发规范。
-- 首次执行项目工作流前，必须使用 `.codex/skills/snowy-framework-bootstrap` 向开发者提示：请先确认当前 Snowy 框架能否在本机正常运行。默认不由 Agent 自动执行环境安装、构建、启动或校验脚本，除非用户明确要求。
+- 首次执行项目工作流前，必须使用 `.codex/skills/snowy-framework-bootstrap` 向开发者提示：请先确认当前 Snowy 框架能否在本机正常运行。默认不由 Agent 自动执行环境安装、构建、启动或校验脚本，除非用户明确要求；开发者未确认前后端可运行前，不进入 PRD/UI/技术设计或开发阶段。
 - 后端启动前必须提示开发者确认 Java、MySQL、Redis 配置：Java 在 IDEA Project SDK、Modules SDK、Java Compiler、Maven importer、Maven runner 中都必须是 JDK 17；MySQL/Redis 配置位于 `project/snowy-web-app/src/main/resources/application.properties`，可由开发者自行修改，或在明确要求时由 Agent 按开发者提供的值修改。
 - 不直接在主分支上开发，功能改动使用独立 branch 或 worktree。
 - 不让开发 Agent 自己给自己放行，必须经过 Review、CI 和人工审批。
@@ -42,22 +46,23 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 
 ## 标准开发流程
 
-0. Orchestrator 先声明当前阶段、调用 Agent、输入、输出、验收标准和下一阶段。
+0. Orchestrator 先用简短格式声明当前阶段、关键输入、下一步和是否需要确认。
 1. Orchestrator 读取 `docs/requirements/` 下的全部需求文档，并读取 `project/docs/` 下的框架文档。
-2. Orchestrator 使用 `.codex/skills/snowy-framework-bootstrap` 输出框架运行提示，要求开发者自行确认前端和后端能正常运行。
-3. Product Agent 基于需求和现有框架能力生成 PRD、验收标准、HTML PRD 和可交互低保真 HTML 原型。
-4. PRD 和低保真 HTML 原型确认后，Design Agent 建立设计系统，并连接 Figma 生成可落地设计稿。
-5. Architect Agent 明确模块边界、状态机、API、数据模型、安全模型和可运维性。
-6. Data Agent 细化数据库模型、migration、索引、回滚和数据一致性策略。
-7. Orchestrator 按用户价值拆 feature slice。
-8. Orchestrator 套用 `.codex/workflows/auto-dispatch-parallel-development.md`，生成任务图、依赖 DAG、并行 wave、owner 分配、branch/worktree 策略和集成策略。
-9. Frontend、Backend、Data、QA 等 Agent 在独立 branch 或 worktree 并行开发。
-10. 本地运行必要检查后提交 PR。
-11. Reviewer、Security、QA Agent 做审查。
-12. CI 运行 lint、typecheck、test、build、安全扫描等项目定义的质量门禁。
-13. 人工负责人审批后合并。
-14. 预发验证、灰度发布、全量发布。
-15. 发布后监控核心指标和用户反馈。
+2. Orchestrator 使用 `.codex/skills/snowy-framework-bootstrap` 输出框架运行提示，要求开发者自行确认前端和后端能正常运行；未确认则停在本阶段。
+3. Orchestrator 询问是否需要 PRD 和 UI 设计；开发者可明确跳过。
+4. 如未跳过，Product Agent 基于需求和现有框架能力生成 PRD、验收标准、HTML PRD 和可交互低保真 HTML 原型。
+5. 如未跳过 UI，Design Agent 建立设计系统，并连接 Figma 生成可落地设计稿。
+6. Architect Agent 明确模块边界、状态机、API、数据模型、安全模型和可运维性。
+7. Data Agent 细化数据库模型、migration、索引、回滚和数据一致性策略。
+8. Orchestrator 按用户价值拆 feature slice。
+9. Orchestrator 套用 `.codex/workflows/auto-dispatch-parallel-development.md`，生成任务图、依赖 DAG、并行 wave、owner 分配、branch/worktree 策略和集成策略。
+10. Frontend、Backend、Data、QA 等 Agent 在独立 branch 或 worktree 并行开发。
+11. 本地运行必要检查后提交 PR。
+12. Reviewer、Security、QA Agent 做审查。
+13. CI 运行 lint、typecheck、test、build、安全扫描等项目定义的质量门禁。
+14. 人工负责人审批后合并。
+15. 预发验证、灰度发布、全量发布。
+16. 发布后监控核心指标和用户反馈。
 
 ## 通用 Definition of Done
 
@@ -65,12 +70,12 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 
 - `docs/requirements/` 下的需求文档已全部读取，并在产物中列出已引用的需求来源。
 - `project/docs/` 下的框架说明和开发规范已全部读取，并在技术产物中列出已引用的框架来源。
-- 首次流程已输出 Snowy 框架运行提示，并记录开发者是否确认前端和后端可运行；未确认时应记录为开发者自检待完成项。
-- PRD 或需求说明已确认。
-- HTML 版 PRD 已生成并可打开。
-- 可交互低保真 HTML 原型已生成并可打开，主路径页面切换、关键按钮和核心状态可点击验证。
-- 交互状态和适配要求已明确。
-- 涉及 UI 时，Figma 正式设计稿已生成或更新，且包含 Ready for Dev 画板和 Handoff 标注。
+- 首次流程已输出 Snowy 框架运行提示，并记录开发者是否确认前端和后端可运行；未确认时不得进入后续阶段。
+- PRD 或最小需求说明已确认；如跳过 PRD，已记录跳过原因。
+- 如未跳过 PRD，HTML 版 PRD 已生成并可打开。
+- 如未跳过原型，可交互低保真 HTML 原型已生成并可打开，主路径页面切换、关键按钮和核心状态可点击验证。
+- 交互状态和适配要求已明确；如跳过 UI 设计，已记录跳过原因和使用现有 Snowy UI 模式的约束。
+- 如未跳过 UI 且涉及 UI，Figma 正式设计稿已生成或更新，且包含 Ready for Dev 画板和 Handoff 标注。
 - 技术方案已明确模块边界、接口、数据、安全和运维要求。
 - 核心业务规则、权限规则、状态规则和数据一致性规则已写清。
 - 代码实现遵循现有项目规范。
@@ -84,7 +89,17 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 
 ## Orchestrator 阶段输出模板
 
-每个阶段开始前，总控 Agent 必须先输出：
+默认使用简版输出，控制在 5 行以内：
+
+```text
+阶段：<当前阶段>
+已读：<需求文档数量/框架文档数量/关键来源>
+处理：<本阶段要做什么>
+状态：<可继续/需确认/阻塞>
+下一步：<下一阶段或一个确认问题>
+```
+
+只有在用户要求“详细输出”“审计报告”“阶段材料清单”或出现阻塞/风险时，才展开完整字段：
 
 ```text
 当前阶段：
@@ -95,11 +110,6 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 验收标准：
 是否需要用户确认：
 下一阶段：
-```
-
-阶段完成后，总控 Agent 必须输出：
-
-```text
 阶段结果：
 已生成产物：
 未解决问题：

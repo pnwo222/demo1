@@ -14,7 +14,24 @@ project/docs/**
 
 所有阶段默认由 Orchestrator Agent 先出场，再分派给专业 Agent。
 
-阶段开始前必须输出：
+触发规则：
+
+- 用户输入“完成/开发/实现/新增/修复/优化 + 某功能”时，必须视为项目工作流入口，先进入阶段 0 和 0.5，不得直接编码。
+- PRD 和 UI 设计是可跳过决策点；用户明确说“跳过 PRD”“无需 PRD”“跳过 UI”“无需设计”“直接进入技术方案/开发”时，记录跳过项和原因，然后进入下一合适阶段。
+- 只有用户明确说“跳过工作流”“直接改代码”“无需 PRD/设计/技术方案”时，才允许跳过整个前置工作流。
+- 如果用户只给出功能名，例如“完成 内容管理-首页banner管理功能”，默认先输出简版阶段状态和一个范围确认问题。
+
+阶段开始前默认使用简版输出，控制在 5 行以内：
+
+```text
+阶段：<当前阶段>
+已读：<需求文档数量/框架文档数量/关键来源>
+处理：<本阶段动作>
+状态：<可继续/需确认/阻塞>
+下一步：<下一阶段或一个确认问题>
+```
+
+只有在用户要求详细输出、审计报告、阶段材料清单，或出现阻塞/高风险时，才展开完整字段：
 
 ```text
 当前阶段：
@@ -25,11 +42,6 @@ project/docs/**
 验收标准：
 是否需要用户确认：
 下一阶段：
-```
-
-阶段完成后必须输出：
-
-```text
 阶段结果：
 已生成产物：
 未解决问题：
@@ -42,9 +54,11 @@ project/docs/**
 - 未读取并确认 `docs/requirements/` 下全部需求文档，不进入产品设计。
 - 未读取并确认 `project/docs/` 下全部框架文档，不进入产品设计、技术设计或开发。
 - 首次执行项目工作流时，未使用 `snowy-framework-bootstrap` 输出框架运行提示，不进入产品设计、技术设计或开发；默认不由 Agent 自动安装、构建、启动或校验环境。IntelliJ IDEA 是后端本地开发必备工具，必须提示开发者在 IDEA 中导入 `project/`、配置 JDK 17/Maven、确认 MySQL/Redis 配置并运行后端启动类。
-- HTML PRD 未确认，不进入低保真原型确认。
-- 可交互低保真 HTML 原型未确认，不进入 UI 设计。
-- Figma UI 未确认，不进入技术设计。
+- 开发者未确认前端和后端可运行时，不进入 PRD/UI/技术设计或开发阶段；状态必须保持为 `blocked_until_developer_confirmed_ready`。
+- 未确认是否需要 PRD/原型，不进入 Product 阶段或跳过记录。
+- 未确认是否需要 UI/Figma，不进入 Design 阶段或跳过记录。
+- 跳过 PRD 时，必须保留最小需求说明、范围、验收标准和风险记录。
+- 跳过 UI 时，必须记录使用 Snowy 现有 UI 模式、组件和交互约束。
 - 技术设计未确认，不进入开发。
 - 数据模型、migration 和回滚策略未确认，不进入相关开发。
 - P0/P1 Review 问题未修复，不允许合并。
@@ -83,7 +97,7 @@ project/docs/**
 - MySQL 配置项：`spring.datasource.dynamic.datasource.master.url`、`username`、`password`。
 - Redis 配置项：`spring.data.redis.host`、`port`、`database`、`password`。
 - 后端端口：`server.port=82`，启动后可访问或检测 `http://localhost:82`。
-- 如果开发者未确认可运行，记录为“开发者自检待完成”，不默认执行脚本。
+- 如果开发者未确认可运行，状态为 `blocked_until_developer_confirmed_ready`，不进入后续阶段，也不默认执行脚本。
 
 前端自检命令：
 
@@ -102,9 +116,11 @@ IDEA 打开 project/
 运行 snowy-web-app/src/main/java/vip/xiaonuo/Application.java
 ```
 
-## 阶段 1：产品设计
+## 阶段 1：产品设计决策
 
-由 Product Agent 基于需求集合和框架能力输出 PRD、用户故事、MVP 范围和验收标准，并生成 HTML 版 PRD。
+由 Orchestrator 询问是否需要 PRD 和低保真原型。开发者可跳过。
+
+如果不跳过，由 Product Agent 基于需求集合和框架能力输出 PRD、用户故事、MVP 范围和验收标准，并生成 HTML 版 PRD。
 
 Product Agent 还必须输出可打开、可点击交互的低保真 HTML 原型。
 
@@ -139,9 +155,19 @@ HTML PRD 要求：
 - 不连接 Figma。
 - 保存到 `docs/design/`。
 
-## 阶段 2：UI/UX 设计
+如果跳过，必须记录：
 
-由 Design Agent 基于已确认的需求集合、HTML PRD 和可交互低保真 HTML 原型，生成设计系统并连接 Figma 生成可编辑设计图。
+- 跳过 PRD/原型的开发者决策。
+- 最小需求说明。
+- 功能范围。
+- 验收标准。
+- 风险和不在本次范围。
+
+## 阶段 2：UI/UX 设计决策
+
+由 Orchestrator 询问是否需要 UI/Figma 设计。开发者可跳过。
+
+如果不跳过，由 Design Agent 基于已确认的需求集合、HTML PRD 或最小需求说明、可交互低保真 HTML 原型或跳过记录，生成设计系统并连接 Figma 生成可编辑设计图。
 
 必须先运行项目适配的设计系统检索。检索关键词必须来自需求集合，而不是写死在 workflow 中。
 
@@ -159,9 +185,16 @@ Figma 设计图要求：
 - 中文界面必须使用 Figma 可正确渲染的中文字体，例如 `Noto Sans SC`，并通过截图检查无缺字、重叠、裁切。
 - 图片来源和替换策略必须写入设计摘要或 Handoff。
 
+如果跳过，必须记录：
+
+- 跳过 UI/Figma 的开发者决策。
+- 使用 Snowy 现有页面模式、组件、表格、表单、弹窗和权限按钮规范。
+- 本次功能的关键交互状态。
+- 移动端或后台适配要求。
+
 ## 阶段 3：技术设计
 
-由 Architect Agent 基于需求集合、框架文档、PRD、低保真原型和 UI 设计输出技术设计。
+由 Architect Agent 基于需求集合、框架文档、PRD 或最小需求说明、低保真原型或跳过记录、UI 设计或 Snowy UI 约束输出技术设计。
 
 必须明确：
 
@@ -189,7 +222,7 @@ Figma 设计图要求：
 
 ## 阶段 5：按用户价值切 Feature Slice
 
-由 Orchestrator 基于需求集合、框架文档、PRD、技术设计和数据设计拆分 feature slice。
+由 Orchestrator 基于需求集合、框架文档、PRD 或最小需求说明、技术设计和数据设计拆分 feature slice。
 
 不要按岗位切成“前端做全部页面、后端做全部接口”。应按一个可验收的业务闭环切。
 

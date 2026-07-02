@@ -150,28 +150,25 @@ Support two modes:
 
 ## Completion Report
 
-After using this skill, report:
+After using this skill, report the concise version by default:
 
 ```text
-Snowy framework run prompt:
-Read requirements:
-Read framework docs:
-Frontend run steps:
-Backend IDEA steps:
-Backend config file:
-Required MySQL settings:
-Required Redis settings:
-Developer self-check:
-Status:
-Next step:
+Snowy 自检提示已给出。
+前端：cd project/snowy-admin-web; npm install; npm run dev
+后端：IDEA 打开 project/，JDK/Maven 用 17，运行 Application.java
+配置：project/snowy-web-app/src/main/resources/application.properties
+状态：blocked_until_developer_confirmed_ready，等待开发者确认可运行
 ```
+
+Only expand the full requirements/framework document list, MySQL/Redis property names, and IDEA step-by-step setup when the user asks for details or reports a concrete environment issue.
 
 Status values:
 
 - `prompted`: run guide was provided; environment execution is left to the developer.
+- `blocked_until_developer_confirmed_ready`: run guide was provided, but the workflow must not continue until the developer confirms frontend and backend can run.
 - `developer_confirmed_ready`: developer confirms frontend and backend can run.
 - `developer_reported_blocked`: developer reports a concrete environment issue.
 
 ## Workflow Gate
 
-On the first project workflow execution, Orchestrator must provide this run prompt before Product Agent work. The workflow should not automatically execute environment validation. If the developer has not confirmed the framework can run, record this as a developer self-check pending item rather than running scripts by default.
+On the first project workflow execution, Orchestrator must provide this run prompt before Product Agent work. The workflow should not automatically execute environment validation. If the developer has not confirmed the framework can run, stop at `blocked_until_developer_confirmed_ready` rather than moving to Product, UI, technical design, or development.
