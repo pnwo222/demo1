@@ -14,6 +14,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 - 修改项目之前，先阅读本文件、`.codex/workflows/`、相关 `.codex/agents/*.md` 角色说明、`docs/requirements/` 下的全部需求文档，以及 `project/docs/` 下的框架说明和开发规范。
 - 首次执行项目工作流前，必须使用 `.codex/skills/snowy-framework-bootstrap` 向开发者提示：请先确认当前 Snowy 框架能否在本机正常运行。默认不由 Agent 自动执行环境安装、构建、启动或校验脚本，除非用户明确要求；开发者未确认前后端可运行前，不进入 PRD/UI/技术设计或开发阶段。
 - 工作流状态分为全局状态和需求状态：`docs/workflow/status.md` 只记录全局环境自检和需求工作项索引；每个需求或功能的阶段状态记录在 `docs/workflow/requirements/<需求ID>.md`。开发者回复“前后端已确认可运行”或等价表达后，Orchestrator 必须把全局框架运行自检状态更新为 `developer_confirmed_ready`，并记录确认来源和时间。PRD、UI、技术设计、开发、测试、审查、发布、验收等阶段进入、完成、跳过或阻塞时，必须更新对应需求状态文件。
+- 所有文本文件必须使用 UTF-8 编码保存，尤其是 `*.md`、`*.yml`、`*.yaml`、`*.json`、`*.toml`、`*.java`、`*.vue`、`*.ts`、`*.js`、`*.properties` 和 `docs/workflow/**` 状态文件。禁止用未显式编码的 PowerShell 写入中文文件；PowerShell 读取必须使用 `Get-Content -Encoding UTF8`，写入必须使用 `Set-Content -Encoding UTF8` 或 `Out-File -Encoding UTF8`。Agent 手工编辑优先使用 `apply_patch`，避免整文件重写导致乱码。
 - 后端启动前必须提示开发者确认 Java、MySQL、Redis 配置：Java 在 IDEA Project SDK、Modules SDK、Java Compiler、Maven importer、Maven runner 中都必须是 JDK 17；MySQL/Redis 配置位于 `project/snowy-web-app/src/main/resources/application.properties`，可由开发者自行修改，或在明确要求时由 Agent 按开发者提供的值修改。若只修改数据库名，只更新 MySQL JDBC URL 中 `host:port/` 后、`?` 前的库名。
 - 不直接在主分支上开发，功能改动使用独立 branch 或 worktree。
 - 不让开发 Agent 自己给自己放行，必须经过 Review、CI 和人工审批。
@@ -45,6 +46,15 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 | Performance Reviewer | 慢查询、重复请求、缓存、并发、前端性能 |
 | Maintainability Reviewer | 复杂度、重复代码、模块边界和可维护性 |
 | Release Agent | 发布说明、验收报告、灰度计划、发布后观察 |
+
+## 文件编码规范
+
+- 仓库文本文件统一使用 UTF-8；根目录 `.editorconfig` 已声明默认编码。
+- Markdown、workflow、agent、skill、需求、状态、Java、Vue、TypeScript、JavaScript、JSON、YAML、TOML、properties 文件都必须按 UTF-8 保存。
+- Windows PowerShell 读写中文文件时必须显式指定 `-Encoding UTF8`。
+- 不得使用 `Set-Content`、`Out-File`、重定向符号 `>`、`>>` 写入中文文件，除非显式指定 UTF-8 且确认不会整文件转码。
+- Agent 修改文件优先使用 `apply_patch`；需要整文件生成时，先确认目标文件编码，并在生成后用 UTF-8 读取检查是否乱码。
+- 如果发现 `�`、`锟斤拷`、`涓`、`鏂` 等乱码，应停止继续追加内容，先恢复或重写为 UTF-8 后再改动。
 
 ## 标准开发流程
 

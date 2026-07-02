@@ -12,7 +12,7 @@ flowchart TD
     D --> E[读取 .codex/agents/*.md]
     E --> F[读取 docs/requirements/**]
     F --> G[读取 project/docs/** 和 project/README.md]
-    G --> G1[使用 snowy-framework-bootstrap 检查和安装框架环境]
+    G --> G1[使用 snowy-framework-bootstrap 输出运行提示并等待开发者确认]
     G1 --> H{需求、框架和环境信息是否充分}
 
     H -- 否 --> H1[补充或澄清需求/框架文档]
@@ -119,11 +119,11 @@ flowchart TB
 ## 关键门禁
 
 - 未读取 `docs/requirements/**` 和 `project/docs/**`，不进入产品设计、技术设计或开发。
-- 首次执行流程前，未使用 `.codex/skills/snowy-framework-bootstrap` 完成框架环境检查、依赖安装和前后端可运行性验证，不进入产品设计、技术设计或开发。
+- 首次执行流程前，未使用 `.codex/skills/snowy-framework-bootstrap` 输出框架运行提示并取得开发者确认，不进入产品设计、技术设计或开发。
 - PRD 和低保真 HTML 原型未确认，不进入 UI 设计。
 - Figma UI 未确认，不进入技术设计。
 - 技术设计、数据模型、migration 和回滚策略未确认，不进入开发。
 - 开发必须基于 `project/` 现有 Snowy 框架增量实现，不按空白项目重建目录。
-- 涉及金额、权限、状态机、库存、订单、支付、退款、删除和批量操作的改动必须重点审查。
+- 涉及金额、权限、状态机、资源数量、业务单据、交易、逆向流程、删除和批量操作的改动必须重点审查。
 - 开发 Agent 不能自己给自己放行，必须经过 Review、CI 和人工审批。
 - P0 必须修复；P1 合并前应修复；CI 和发布检查未通过不进入全量发布。

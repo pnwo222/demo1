@@ -6,11 +6,11 @@
 - `project/pom.xml`
 - `project/snowy-admin-web/package.json`
 - `project/snowy-web-app/pom.xml`
-- `docs/requirements/food-delivery-platform.md`
+- `docs/requirements/**`
 
 ## 框架定位
 
-`project/` 已包含 Snowy/SnowyAdmin 快速开发平台，不是空白项目。后续外卖平台开发应基于该框架增量扩展，优先复用现有前端布局、路由、组件、权限、接口封装、后端插件化模块、公共工具、异常处理、数据访问和安全能力。
+`project/` 已包含 Snowy/SnowyAdmin 快速开发平台，不是空白项目。后续业务功能开发应基于该框架增量扩展，优先复用现有前端布局、路由、组件、权限、接口封装、后端插件化模块、公共工具、异常处理、数据访问和安全能力。
 
 框架主要技术栈：
 
@@ -66,7 +66,7 @@
 - `utils/`：工具方法。
 - `locales/`：国际化配置。
 
-外卖平台后台管理功能应优先按现有 `views`、`api`、`router` 和组件组织方式扩展。面向移动 H5 用户端时，应先评估 Snowy 现有 `client`、`mobile` 插件和前端路由/布局能否承载；若需新增独立 H5 应用，必须先由 Architect Agent 说明与现有管理端、后端插件、认证和接口契约的边界。
+后台管理功能应优先按现有 `views`、`api`、`router` 和组件组织方式扩展。面向移动端或用户侧功能时，应先评估 Snowy 现有 `client`、`mobile` 插件和前端路由/布局能否承载；若需新增独立应用，必须先由 Architect Agent 说明与现有管理端、后端插件、认证和接口契约的边界。
 
 ## 开发前必读
 
