@@ -6,65 +6,80 @@
 
 ```mermaid
 flowchart TD
-    A([需求或开发请求]) --> B[Orchestrator 声明阶段]
-    B --> B1[输出当前 Git 分支和工作区状态]
-    B1 --> B2{开发者确认当前分支为最终合并目标}
-    B2 -- 否 --> B3[切换分支或暂停]
-    B3 --> B1
-    B2 -- 是 --> B4[从当前分支创建需求集成分支]
-    B4 --> C[读取 AGENTS.md]
-    C --> D[读取 .codex/workflows/**]
-    D --> E[读取 .codex/agents/*.md]
-    E --> F[读取 docs/requirements/**]
-    F --> G[读取 project/docs/** 和 project/README.md]
-    G --> G1[使用 snowy-framework-bootstrap 输出运行提示并等待开发者确认]
-    G1 --> H{需求、框架和环境信息是否充分}
+    A([需求或开发请求]) --> B["Orchestrator 进入项目工作流"]
+    B --> C["读取 AGENTS.md、workflow、skill"]
+    C --> D["阶段 0: 开发环境检测"]
+    D --> D1["只读自检: Git、Node、npm、依赖、JDK17、Maven、IDEA、MySQL CLI、MySQL、Redis"]
+    D1 --> D2["输出检测清单: ✅ / ⚠️ / ❌"]
+    D2 --> D3["写入本机状态: docs/workflow/local-environment-status.md<br/>该文件被 .gitignore 忽略"]
+    D3 --> E{"环境选择"}
+    E -- "1 环境通过，进入分支确认" --> E1["阶段 0.1: 分支确认<br/>输出当前 Git 分支和工作区状态"]
+    E -- "2 环境有警告但继续" --> E1
+    E -- "3 环境阻塞先处理" --> D4["处理环境问题后重新自检"]
+    E -- "4 暂停" --> END0([暂停])
+    D4 --> D
+    E1 --> E2{"分支选择"}
+    E2 -- "1 以当前分支作为最终合并目标并继续" --> F["阶段 0.2: 创建需求集成分支"]
+    E2 -- "2 切换到其他分支" --> E1
+    E2 -- "3 暂停" --> END0
 
-    H -- 否 --> H1[补充或澄清需求/框架文档]
-    H1 --> F
+    F --> G["读取 docs/requirements/**"]
+    G --> H["读取 project/docs/**、project/docs/patterns/**、project/README.md"]
+    H --> I{"需求、框架和环境信息是否充分"}
+    I -- 否 --> I1["补充或澄清需求 / 框架文档"]
+    I1 --> G
 
-    H -- 是 --> I[Product Agent: PRD、验收标准、HTML PRD、低保真 HTML 原型]
-    I --> J{PRD 和低保真原型确认}
-    J -- 否 --> I
+    I -- 是 --> J{"选择开发模式"}
+    J -- "简单 CRUD 快速模式" --> J1["优先使用模式缓存<br/>可跳过 PRD/UI<br/>保留最小需求、字段、接口、表结构、验收和风险"]
+    J -- "标准 SDLC 模式" --> K{"是否需要 PRD / 低保真原型"}
+    J -- "高风险严格模式" --> J2["加强技术、数据、安全、QA、Review 门禁"]
+    J -- "自定义" --> J3["记录自定义流程和不可跳过风险"]
+    J1 --> N
+    J2 --> K
+    J3 --> K
 
-    J -- 是 --> K[Design Agent: 设计系统、Figma 可落地设计稿、Ready for Dev、Handoff]
-    K --> L{UI 设计确认}
-    L -- 否 --> K
+    K -- "生成" --> L["Product Agent: PRD、验收标准、HTML PRD、低保真 HTML 原型"]
+    K -- "跳过 PRD" --> K1["记录跳过原因和最小需求说明"]
+    L --> L1{"PRD / 原型确认"}
+    L1 -- 否 --> L
+    L1 -- 是 --> M{"是否需要 UI / Figma"}
+    K1 --> M
 
-    L -- 是 --> M[Architect Agent: 模块边界、API、状态机、安全、运维]
-    M --> N[Data Agent: 数据模型、Migration、索引、回滚、一致性]
-    N --> O{技术设计和数据设计确认}
-    O -- 否 --> M
+    M -- "生成" --> M1["Design Agent: 设计系统、Figma、Ready for Dev、Handoff"]
+    M -- "跳过 UI" --> M2["复用 Snowy 现有 UI 模式并记录约束"]
+    M1 --> M3{"UI 设计确认"}
+    M3 -- 否 --> M1
+    M3 -- 是 --> N
+    M2 --> N
 
-    O -- 是 --> P[Orchestrator: 按用户价值拆 Feature Slice]
-    P --> Q[套用 auto-dispatch-parallel-development.md]
-    Q --> R[生成任务图、依赖 DAG、并行 Wave、Owner、Branch/Worktree 策略]
-    R --> R1[从需求集成分支创建 worktree 开发分支/目录]
-    R1 --> S{用户或负责人确认开发计划}
-    S -- 否 --> P
-
-    S -- 是 --> T[Frontend/Backend/Data/QA/Security 等 Agent 并行或串行开发]
-    T --> U[本地质量门禁: lint、typecheck、test、build、migration、smoke]
-    U --> V{本地门禁通过或风险已记录}
+    N["Architect / Data: 模块边界、API、状态机、表结构、migration、回滚、安全"] --> O{"技术和数据方案确认"}
+    O -- 否 --> N
+    O -- 是 --> P["Orchestrator 拆 Feature Slice"]
+    P --> Q["生成任务图、DAG、Wave、Owner、Branch/Worktree 策略"]
+    Q --> R{"开发计划确认"}
+    R -- 否 --> P
+    R -- 是 --> S["从需求集成分支创建 worktree 开发分支 / 目录"]
+    S --> T["Frontend / Backend / Data / QA / Security 开发"]
+    T --> U["本地门禁: lint、typecheck、test、build、migration、smoke"]
+    U --> V{"门禁通过或风险已记录"}
     V -- 否 --> T
 
-    V -- 是 --> W[Worktree 提交并合并回需求集成分支]
-    W --> W1{需求集成分支验证无误}
-    W1 -- 否 --> T
-    W1 -- 是 --> W2{是否合并回最初当前分支}
-    W2 -- 否 --> X[Reviewer/Security/QA/Performance/Maintainability 审查]
-    W2 -- 是 --> W3[合并回最初当前分支]
-    W3 --> X[Reviewer/Security/QA/Performance/Maintainability 审查]
-    X --> Y{P0/P1 是否全部修复}
-    Y -- 否 --> T
-
-    Y -- 是 --> Z[CI: lint、test、build、安全扫描等]
-    Z --> AA{CI 和人工审批通过}
-    AA -- 否 --> T
-
-    AA -- 是 --> AB[预发验证、灰度发布、全量发布]
-    AB --> AC[发布后监控、验收、复盘]
-    AC --> AD([完成])
+    V -- 是 --> W["Worktree 提交并合并回需求集成分支"]
+    W --> X{"需求集成分支验证无误"}
+    X -- 否 --> T
+    X -- 是 --> Y{"是否合并回最初当前分支"}
+    Y -- 否 --> Z["保留在需求集成分支，等待人工决定"]
+    Y -- 是 --> Y1["合并回最初当前分支"]
+    Z --> AA["Reviewer / Security / QA / Performance / Maintainability 审查"]
+    Y1 --> AA
+    AA --> AB{"P0 / P1 全部修复"}
+    AB -- 否 --> T
+    AB -- 是 --> AC["CI: lint、test、build、安全扫描等"]
+    AC --> AD{"CI 和人工审批通过"}
+    AD -- 否 --> T
+    AD -- 是 --> AE["预发验证、灰度发布、全量发布"]
+    AE --> AF["发布后监控、验收、复盘"]
+    AF --> AG([完成])
 ```
 
 ## 并行开发子流程
@@ -130,10 +145,11 @@ flowchart TB
 ## 关键门禁
 
 - 未读取 `docs/requirements/**` 和 `project/docs/**`，不进入产品设计、技术设计或开发。
-- 未输出当前 Git 分支并取得开发者确认，不创建需求集成分支、worktree 或进入代码开发。
+- 未完成开发环境只读自检并输出 `✅`、`⚠️`、`❌` 清单，不进入分支确认。
+- 环境检测和分支确认必须分成两步；未输出当前 Git 分支并取得开发者确认，不创建需求集成分支、worktree、需求状态文件或进入代码开发。
 - 开发必须遵循 `当前分支 -> 需求集成分支 -> worktree 开发分支/目录 -> 合回需求集成分支 -> 询问是否合回当前分支`。
-- 首次执行流程前，未使用 `.codex/skills/snowy-framework-bootstrap` 输出框架运行提示并取得开发者确认，不进入产品设计、技术设计或开发。
-- 开发环境检测必须用列表展示 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务，并用 `✅`、`⚠️`、`❌` 标明结果。
+- 首次执行流程前，未使用 `.codex/skills/snowy-framework-bootstrap` 执行只读自检、输出框架运行提示并取得开发者确认，不进入产品设计、技术设计或开发。
+- 开发环境检测必须用列表展示 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务，并用 `✅`、`⚠️`、`❌` 标明结果；`检测：` 后必须换行，每个检测项独占一行。
 - 开发环境检测结果写入 `docs/workflow/local-environment-status.md`，该文件被 `.gitignore` 忽略，不提交到 Git；`docs/workflow/status.md` 保持可提交。
 - PRD 和低保真 HTML 原型未确认，不进入 UI 设计。
 - Figma UI 未确认，不进入技术设计。

@@ -2,7 +2,7 @@
 
 本工作流是通用项目流程，不绑定具体业务。业务目标、角色、核心链路、质量重点和高风险规则必须从 `docs/requirements/` 下的全部需求文档中读取；框架结构、目录映射、技术栈和开发规范必须从 `project/docs/` 下的框架文档和 `project/` 实际代码中读取。
 
-执行任何阶段前，Orchestrator 必须先输出当前 Git 分支和工作区状态，并让开发者确认是否以当前分支作为最终合并目标。开发者确认后，Orchestrator 再读取 `docs/requirements/` 下的全部需求文档、`project/docs/` 下的全部框架文档、`project/docs/patterns/` 下的框架模式缓存、`docs/workflow/status.md` 全局状态，以及当前需求对应的 `docs/workflow/requirements/<需求ID>.md`。如果当前需求还没有状态文件，必须先按 `docs/workflow/requirements/TEMPLATE.md` 创建。
+执行任何阶段前，Orchestrator 必须先执行“开发环境检测”，再执行“分支确认”。开发环境检测必须实际执行只读自检，输出 `✅`、`⚠️`、`❌` 列表，不得只提示开发者自行确认，也不得在该阶段询问分支确认。环境通过或开发者选择“环境有警告但继续”后，才进入分支确认，输出当前 Git 分支和工作区状态，并让开发者确认是否以当前分支作为最终合并目标。确认前属于只读阶段，不得创建需求集成分支、worktree、需求状态文件，不得登记需求索引，也不得修改业务代码。开发者确认后，Orchestrator 再读取 `docs/requirements/` 下的全部需求文档、`project/docs/` 下的全部框架文档、`project/docs/patterns/` 下的框架模式缓存、`docs/workflow/status.md` 全局状态，以及当前需求对应的 `docs/workflow/requirements/<需求ID>.md`。如果当前需求还没有状态文件，必须先按 `docs/workflow/requirements/TEMPLATE.md` 创建。
 
 ```text
 docs/requirements/**
@@ -44,8 +44,10 @@ project/docs/patterns/**
 
 触发规则：
 
-- 用户输入“完成/开发/实现/新增/修复/优化 + 某功能”时，必须视为项目工作流入口，先进入阶段 0 和 0.5，不得直接编码。
-- 进入阶段 0 前，必须先执行“当前分支确认”。输出 `git branch --show-current` 和 `git status --short` 的结果，并提供选择：以当前分支作为最终合并目标、切换到其他分支、暂停。
+- 用户输入“完成/开发/实现/新增/修复/优化 + 某功能”时，必须视为项目工作流入口，先进入阶段 0 开发环境检测，不得直接编码。
+- 阶段 0 必须执行“开发环境检测”。用 `✅`、`⚠️`、`❌` 列表展示 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务检测结果；检测结果必须在 `检测：` 后逐项换行，每项独占一行，禁止横向串联；提供逐行编号选择：环境通过进入分支确认、环境有警告但继续、环境阻塞先处理、暂停。
+- 阶段 0.1 才执行“分支确认”。输出 `git branch --show-current` 和 `git status --short` 的结果，提供逐行编号选择：以当前分支作为最终合并目标并继续、切换到其他分支、暂停。
+- 开发环境检测和分支确认都是只读阶段；状态为 `需确认` 时，不得创建需求集成分支、worktree、需求状态文件，不得登记需求索引，也不得修改业务代码。
 - 开发者确认当前分支后，工作流必须从该分支创建新的需求集成分支，例如 `codex/integration-<需求ID>` 或 `codex/<需求短名>`。
 - 后续代码开发必须从需求集成分支创建 worktree 开发分支/目录；worktree 开发完成并提交后，先合并回需求集成分支。
 - 需求集成分支验证无误后，Orchestrator 必须询问开发者是否合并回最初确认的当前分支，不得自动合并。
@@ -53,7 +55,7 @@ project/docs/patterns/**
 - PRD 和 UI 设计是可跳过决策点；用户明确说“跳过 PRD”“无需 PRD”“跳过 UI”“无需设计”“直接进入技术方案/开发”时，记录跳过项和原因，然后进入下一合适阶段。
 - 只有用户明确说“跳过工作流”“直接改代码”“无需 PRD/设计/技术方案”时，才允许跳过整个前置工作流。
 - 如果用户只给出功能名，例如“完成 某功能”，默认先输出简版阶段状态和一个范围确认问题。
-- 所有需要开发者确认的节点，优先使用 Codex 可点击选择项；如果当前环境没有选择控件，则输出编号选项，允许开发者输入编号或自由文本。
+- 所有需要开发者确认的节点，优先使用 Codex 可点击选择项；如果当前环境没有选择控件，则输出编号选项，允许开发者输入编号或自由文本。所有编号选择项必须逐行输出，不得内联到 `下一步` 同一行。所有检测项也必须逐行输出，不得内联到 `检测：` 同一行。
 - Orchestrator 必须提供开发模式选择：简单 CRUD 快速模式、标准 SDLC 模式、高风险严格模式、自定义。
 - 所有开发模式都必须读取 `project/docs/patterns/` 缓存。简单 CRUD 快速模式优先按缓存实现并减少重复探索；标准 SDLC 模式把缓存作为加速输入但仍保留完整设计、拆分和审查；高风险严格模式读取缓存后仍必须补读实际代码并加强审查。
 - 如果需求符合后台单表或少量表 CRUD，Orchestrator 必须推荐“简单 CRUD 快速模式”，并优先读取 `project/docs/patterns/*crud*`、`permission-sql-pattern.md`、`migration-sql-pattern.md`。
@@ -68,12 +70,52 @@ project/docs/patterns/**
 下一步：<下一阶段或一个确认问题>
 ```
 
+开发环境检测阶段必须使用固定列表输出，允许超过 5 行。`检测：` 后必须换行，每个检测项独占一行；不得输出分支确认选项：
+
+```text
+阶段：开发环境检测
+已读：<入口规则/技能/框架关键来源>
+检测：
+1. ✅/⚠️/❌ Git：<结果>
+2. ✅/⚠️/❌ Node.js：<结果>
+3. ✅/⚠️/❌ npm：<结果>
+4. ✅/⚠️/❌ 前端依赖：<结果>
+5. ✅/⚠️/❌ Java/JDK 17：<结果>
+6. ✅/⚠️/❌ Maven：<结果>
+7. ✅/⚠️/❌ IDEA：<结果或需确认>
+8. ✅/⚠️/❌ MySQL CLI：<结果>
+9. ✅/⚠️/❌ MySQL 服务：<结果>
+10. ✅/⚠️/❌ Redis 服务：<结果>
+状态：<可继续/需确认/阻塞>
+下一步：
+请选择：
+1. 环境通过，进入分支确认
+2. 环境有警告但继续
+3. 环境阻塞，先处理
+4. 暂停
+```
+
+分支确认阶段必须使用固定列表输出，不重复环境检测清单：
+
+```text
+阶段：分支确认
+已读：<入口规则/本机环境状态>
+分支：当前 <branch>
+工作区：<干净/有未提交改动，简述数量或关键文件>
+状态：<需确认/阻塞>
+下一步：
+请选择：
+1. 以当前分支作为最终合并目标并继续
+2. 切换到其他分支
+3. 暂停
+```
+
 确认节点必须同时提供推荐路径、跳过路径和自定义路径。默认选项：
 
 | 节点 | 选择项 |
 | --- | --- |
-| 当前分支确认 | 以当前分支作为最终合并目标；切换到其他分支；暂停 |
-| 环境自检 | 已确认环境可用；环境有警告但可继续；环境阻塞；稍后确认 |
+| 开发环境检测 | 环境通过，进入分支确认；环境有警告但继续；环境阻塞先处理；暂停 |
+| 分支确认 | 以当前分支作为最终合并目标并继续；切换到其他分支；暂停 |
 | 开发模式决策 | 简单 CRUD 快速模式；标准 SDLC 模式；高风险严格模式；自定义 |
 | PRD/原型决策 | 生成 PRD 和低保真原型；跳过 PRD，进入 UI 决策；跳过 PRD 和 UI，进入技术方案 |
 | UI/Figma 决策 | 生成 UI/Figma；跳过 UI，复用 Snowy 现有 UI；返回补充 PRD |
@@ -120,7 +162,8 @@ project/docs/patterns/**
 
 ## 阶段门禁
 
-- 未确认当前分支作为最终合并目标，不创建需求集成分支、worktree 或进入代码开发。
+- 环境检测未通过，且开发者未选择“环境有警告但继续”，不进入分支确认。
+- 未确认当前分支作为最终合并目标，不创建需求集成分支、worktree、需求状态文件，不登记需求索引，也不进入代码开发。
 - 未读取并确认 `docs/requirements/` 下全部需求文档，不进入产品设计。
 - 未读取并确认 `project/docs/` 下全部框架文档，不进入产品设计、技术设计或开发。
 - 未读取相关 `project/docs/patterns/` 模式缓存，不进入技术设计或开发。
@@ -129,7 +172,7 @@ project/docs/patterns/**
 - 开发者未确认开发环境可用时，任何需求都不进入 PRD/UI/技术设计或开发阶段；全局状态必须保持为 `blocked_until_developer_confirmed_ready`、`blocked_missing_mysql_cli` 或其他阻塞状态。
 - 当前会话没有开发环境检测通过结果或开发者当次确认时，不进入任何需求的 PRD/UI/技术设计或开发阶段；如果检测结果为 `blocked_missing_mysql_cli`，停在开发环境检测阶段。
 - 开发环境检测必须检测开发电脑是否存在可用 MySQL CLI。PowerShell 先执行 `Get-Command mysql`、`where.exe mysql` 和 `mysql --version`；PATH 找不到时，必须在常见安装目录搜索 `mysql.exe`，找到后用绝对路径执行 `mysql.exe --version`。本地或远程数据库都适用；PATH 和搜索都找不到可执行 MySQL CLI 时，全局状态记为 `blocked_missing_mysql_cli`，不进入后续阶段。
-- 开发环境检测默认用列表输出，不使用长段落；每项用 `✅`、`⚠️`、`❌` 标明结果。必检项包括 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务。检测结果写入 `docs/workflow/local-environment-status.md`，该文件不得提交到 Git。
+- 开发环境检测默认用列表输出，不使用长段落；每项用 `✅`、`⚠️`、`❌` 标明结果。必检项包括 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务。检测结果必须在 `检测：` 后逐项换行，每项独占一行，禁止用 `；`、`,` 或空格把多个检测项串在同一行。检测结果写入 `docs/workflow/local-environment-status.md`，该文件不得提交到 Git。
 - 全局环境自检已为 `developer_confirmed_ready` 时，后续需求不重复要求自检；只有框架依赖、JDK/Maven、数据库/Redis 配置、`mysql` 指令状态变化，或开发者报告环境失效时，才重置全局环境状态并重新提示。
 - 未确认是否需要 PRD/原型，不进入 Product 阶段或跳过记录。
 - 未确认是否需要 UI/Figma，不进入 Design 阶段或跳过记录。
@@ -141,26 +184,71 @@ project/docs/patterns/**
 - CI 和发布检查未通过，不进入全量发布。
 - 开发完成后未判断是否需要更新 `project/docs/patterns/` 缓存，不进入验收复盘。
 
-## 阶段 -1：当前分支确认
+## 阶段 0：开发环境检测
 
 由 Orchestrator 在任何需求工作流前执行。
 
 必须输出：
 
 ```text
-当前分支：
-工作区状态：
-拟作为最终合并目标：
+阶段：开发环境检测
+已读：
+检测：
+状态：
 下一步选择：
 ```
 
 选择项：
 
-1. 以当前分支作为最终合并目标。
+1. 环境通过，进入分支确认。
+2. 环境有警告但继续。
+3. 环境阻塞，先处理。
+4. 暂停。
+
+本阶段：
+
+- 不创建需求集成分支。
+- 不创建 worktree。
+- 不创建需求状态文件。
+- 不登记需求索引。
+- 不修改业务代码。
+
+## 阶段 0.1：分支确认
+
+仅在环境检测通过，或开发者选择“环境有警告但继续”后执行。
+
+必须输出：
+
+```text
+阶段：分支确认
+已读：
+分支：
+工作区：
+状态：
+下一步选择：
+```
+
+选择项：
+
+1. 以当前分支作为最终合并目标并继续。
 2. 切换到其他分支后再开始。
 3. 暂停。
 
-确认后：
+确认前：
+
+- 不创建需求集成分支。
+- 不创建 worktree。
+- 不创建需求状态文件。
+- 不登记需求索引。
+- 不修改业务代码。
+
+确认后进入阶段 0.2：
+
+- 记录原始当前分支为 `base_branch`。
+
+## 阶段 0.2：分支创建
+
+仅在分支确认后执行。
 
 - 记录原始当前分支为 `base_branch`。
 - 从 `base_branch` 创建需求集成分支，例如 `codex/integration-<需求ID>` 或 `codex/<需求短名>`。
@@ -168,7 +256,7 @@ project/docs/patterns/**
 - worktree 开发完成后合并回需求集成分支。
 - 需求集成分支验证通过后，再询问是否合并回 `base_branch`。
 
-## 阶段 0：需求和框架装载
+## 阶段 0.3：需求和框架装载
 
 由 Orchestrator Agent 执行。
 
@@ -191,11 +279,11 @@ project/docs/patterns/**
 
 ## 阶段 0.5：框架运行提示
 
-由 Orchestrator Agent 使用 `.codex/skills/snowy-framework-bootstrap` 输出开发者自检提示。默认不执行安装、构建、启动或环境校验脚本，除非用户明确要求。
+由 Orchestrator Agent 使用 `.codex/skills/snowy-framework-bootstrap` 输出开发者自检提示。必须执行只读环境检测并列出 `✅`、`⚠️`、`❌` 结果；默认不执行安装、构建、启动或会改变环境的脚本，除非用户明确要求。
 
 必须明确：
 
-- 已提示开发者先确认当前 Snowy 框架能否正常运行。
+- 已完成只读环境检测，并提示开发者根据检测结果确认当前 Snowy 框架能否正常运行。
 - 前端运行步骤：进入 `project/snowy-admin-web`，先执行 `npm install`，再执行 `npm run dev`，打开 Vite 输出地址，通常是 `http://localhost:5173`。
 - 后端运行步骤：用 IDEA 打开 `project/`，配置 JDK 17、Maven、Maven importer/runner，运行 `project/snowy-web-app/src/main/java/vip/xiaonuo/Application.java`。
 - Java 配置提示：Project SDK、Modules SDK、Java Compiler、Maven importer、Maven runner 均使用 JDK 17。

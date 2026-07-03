@@ -1,11 +1,11 @@
 ---
 name: snowy-framework-bootstrap
-description: Provide this repository's Snowy framework run guide before project workflow execution. Use when starting SDLC work, reminding developers to confirm the existing framework can run, explaining frontend npm install/npm run dev steps, explaining IDEA Maven/JDK backend startup, or listing MySQL/Redis configuration files and required settings. Do not automatically install, build, start, or verify the environment unless the user explicitly asks.
+description: Provide this repository's Snowy framework run guide before project workflow execution. Use when starting SDLC work, running the read-only environment checklist, reminding developers to confirm the existing framework can run, explaining frontend npm install/npm run dev steps, explaining IDEA Maven/JDK backend startup, or listing MySQL/Redis configuration files and required settings. Do not automatically install dependencies, build, start frontend/backend, or mutate the environment unless the user explicitly asks.
 ---
 
 # Snowy Framework Run Guide
 
-Use this skill before the first execution of the project workflow, when the global environment status is missing, or whenever a developer reports that the local Snowy framework can no longer run. The goal is to give a clear developer self-check prompt, not to run environment validation automatically.
+Use this skill before the first execution of the project workflow, when the global environment status is missing, or whenever a developer reports that the local Snowy framework can no longer run. The goal is to run the read-only environment checklist, list `✅`、`⚠️`、`❌` results, then give a clear developer self-check prompt. Checklist results must be line-broken under `检测：`, one item per line. Do not install dependencies, start services, build projects, import Maven, or mutate files except the ignored local status file unless the user explicitly asks.
 
 ## Required Inputs
 
@@ -34,10 +34,10 @@ project/snowy-web-app/src/main/resources/application.properties
 
 ## Developer Prompt
 
-Before Product/Design/Architect/Development stages, tell the developer:
+Before Product/Design/Architect/Development stages, first run the read-only checklist, write `docs/workflow/local-environment-status.md`, then tell the developer:
 
 ```text
-请先确认当前 Snowy 框架能否在你的本机正常运行。
+请根据上面的自检结果，确认当前 Snowy 框架能否在你的本机正常运行。
 
 前端：
 1. Git 可用
@@ -61,11 +61,11 @@ Before Product/Design/Architect/Development stages, tell the developer:
 10. 启动后访问或检测 http://localhost:82
 ```
 
-Do not run `npm install`, `npm run dev`, Maven import, backend startup, or port checks automatically unless the user explicitly requests execution. The `mysql` command check is part of the environment gate and may be executed when the workflow is validating whether it can continue.
+Do not run `npm install`, `npm run dev`, Maven import, backend startup, or build commands automatically unless the user explicitly requests execution. Read-only checks are allowed and required at the environment gate: command versions, executable path lookup, `node_modules` existence, and MySQL/Redis port reachability. Git branch/status belongs to the later branch confirmation stage, not the environment detection output.
 
 ## 环境检测输出布局
 
-环境检测结果必须优先使用列表，不输出大段说明。默认格式如下：
+环境检测结果必须优先使用列表，不输出大段说明。`检测：` 后必须换行，每个检测项独占一行；禁止写成 `检测：✅ Git ...；✅ Node ...；⚠️ Java ...`。默认格式如下：
 
 ```text
 阶段：开发环境检测
@@ -80,8 +80,15 @@ Do not run `npm install`, `npm run dev`, Maven import, backend startup, or port 
 7. ✅ Redis 服务：<host:port 可达>
 8. ⚠️ Java：<当前版本；要求 JDK 17；IDEA JDK 17 是否已确认>
 9. ⚠️ Maven：<CLI 状态；IDEA Maven 是否已确认>
-下一步：<一个明确动作>
+下一步：
+请选择：
+1. 环境通过，进入分支确认
+2. 环境有警告但继续
+3. 环境阻塞，先处理
+4. 暂停
 ```
+
+在该阶段，若状态为 `需确认`，只允许输出环境清单和环境选择项；不得输出当前分支确认选项；不得创建需求集成分支、worktree、需求状态文件，不得登记需求索引，也不得修改业务代码。
 
 状态符号含义：
 
@@ -274,7 +281,12 @@ After using this skill, report the concise version by default:
 7. ✅ Redis 服务：<host:port>
 8. ⚠️ Java：<CLI 版本与 IDEA JDK 17 确认状态>
 9. ⚠️ Maven：<CLI 状态与 IDEA Maven 确认状态>
-下一步：<一个明确动作>
+下一步：
+请选择：
+1. 环境通过，进入分支确认
+2. 环境有警告但继续
+3. 环境阻塞，先处理
+4. 暂停
 ```
 
 Only expand the full requirements/framework document list, MySQL/Redis property names, and IDEA step-by-step setup when the user asks for details or reports a concrete environment issue.
