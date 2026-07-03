@@ -16,7 +16,7 @@
 4. 环境自检只在 `docs/workflow/status.md` 记录一次；每个需求或功能必须创建并更新 `docs/workflow/requirements/<需求ID>.md`。
 5. 首次执行项目工作流前，Orchestrator 使用 `.codex/skills/snowy-framework-bootstrap` 输出框架运行提示，请开发者自行确认前后端具备运行条件；默认不自动安装、构建、启动或校验环境。
 6. 开发者未确认前后端可运行前，`docs/workflow/status.md` 全局状态为 `blocked_until_developer_confirmed_ready`，任何需求不得进入 PRD/UI/技术设计或开发阶段。
-7. 开发者回复“前后端已确认可运行”或等价表达后，Orchestrator 更新 `docs/workflow/status.md` 为 `developer_confirmed_ready`，记录确认来源和时间；后续新需求不重复要求环境自检，除非依赖、配置或运行状态变化。
+7. 开发者回复“前后端已确认可运行”或等价表达后，Orchestrator 仍必须确认 `mysql` 指令可用；前端、后端和 `mysql` 指令都满足后，才更新 `docs/workflow/status.md` 为 `developer_confirmed_ready`。如果 `mysql` 缺失，记录 `blocked_missing_mysql_cli` 并停在开发环境检测阶段；后续新需求不重复要求环境自检，除非依赖、配置、`mysql` 指令或运行状态变化。
 8. 开发者确认可运行后，各角色 Agent 基于需求集合、框架文档和当前需求状态文件，再套用通用流程。
 9. PRD 和 UI 设计是可跳过决策点；用户明确说“跳过 PRD”“无需 PRD”“跳过 UI”“无需设计”“直接进入技术方案/开发”时，Orchestrator 记录跳过项和原因。
 10. 跳过 PRD 或 UI 时，仍必须保留最小需求说明、范围、验收标准、风险记录和 Snowy 现有 UI/技术约束。

@@ -20,7 +20,7 @@
 
 项目文档和阶段产物默认使用简体中文，包括 `docs/superpowers/**` 下由 superpowers 生成的 spec、plan 和执行记录。代码标识符、路径、命令、API、类名、方法名、配置键和第三方固定模板句可以保留英文。除非用户明确要求英文，不得生成整篇英文项目文档。
 
-执行任何阶段前，必须先读取 `docs/requirements/` 下的全部需求文档、`project/docs/` 下的全部框架文档、`project/docs/patterns/` 下的框架模式缓存、`docs/workflow/status.md` 全局状态，以及当前需求对应的 `docs/workflow/requirements/<需求ID>.md`。如果当前需求还没有状态文件，先按 `docs/workflow/requirements/TEMPLATE.md` 创建，并把它登记到 `docs/workflow/status.md` 的需求工作项索引。环境自检是全局一次，只更新 `docs/workflow/status.md`；PRD、UI、技术设计、数据设计、开发、测试、审查、发布、验收等阶段状态必须更新到当前需求状态文件。每个需求状态文件还必须记录缓存读取、缓存命中和缓存更新结果。首次执行项目工作流时，还必须使用 `.codex/skills/snowy-framework-bootstrap` 输出 Snowy 框架运行提示，请开发者自行确认前后端具备运行条件。默认不由 Agent 自动执行环境安装、构建、启动或校验脚本，除非用户明确要求；开发者未确认前后端可运行前，不进入任何需求的 PRD/UI/技术设计或开发阶段。开发者回复“前后端已确认可运行”或等价表达后，必须更新 `docs/workflow/status.md` 为 `developer_confirmed_ready` 并记录确认来源和时间。后续需求不重复要求环境自检，除非框架依赖、JDK/Maven、数据库/Redis 配置变化，或开发者报告环境失效。IntelliJ IDEA 是后端本地开发必备工具；提示开发者打开 IDEA 导入 `project/`，如果 SDK 下拉框只有 JDK 1.8 或无 SDK，则通过 `添加 SDK > 下载 JDK` 安装/选择 JDK 17，再配置 Maven importer/runner 使用 JDK 17 并运行后端启动类。不要写死某一个需求文档路径；如果目录为空、框架文档缺失、缓存与实际代码冲突或需求之间互相冲突，需要说明问题并向用户确认。
+执行任何阶段前，必须先读取 `docs/requirements/` 下的全部需求文档、`project/docs/` 下的全部框架文档、`project/docs/patterns/` 下的框架模式缓存、`docs/workflow/status.md` 全局状态，以及当前需求对应的 `docs/workflow/requirements/<需求ID>.md`。如果当前需求还没有状态文件，先按 `docs/workflow/requirements/TEMPLATE.md` 创建，并把它登记到 `docs/workflow/status.md` 的需求工作项索引。环境自检是全局一次，只更新 `docs/workflow/status.md`；PRD、UI、技术设计、数据设计、开发、测试、审查、发布、验收等阶段状态必须更新到当前需求状态文件。每个需求状态文件还必须记录缓存读取、缓存命中和缓存更新结果。首次执行项目工作流时，还必须使用 `.codex/skills/snowy-framework-bootstrap` 输出 Snowy 框架运行提示，请开发者自行确认前端、后端和 `mysql` 指令具备运行条件。默认不由 Agent 自动执行环境安装、构建、启动或校验脚本，除非用户明确要求；开发者未确认前端、后端和 `mysql` 指令可用前，不进入任何需求的 PRD/UI/技术设计或开发阶段。开发者回复“前后端已确认可运行”或等价表达后，仍必须确认 `mysql` 指令可用；三者都满足后，才能更新 `docs/workflow/status.md` 为 `developer_confirmed_ready` 并记录确认来源和时间。后续需求不重复要求环境自检，除非框架依赖、JDK/Maven、数据库/Redis 配置、`mysql` 指令状态变化，或开发者报告环境失效。IntelliJ IDEA 是后端本地开发必备工具；提示开发者打开 IDEA 导入 `project/`，如果 SDK 下拉框只有 JDK 1.8 或无 SDK，则通过 `添加 SDK > 下载 JDK` 安装/选择 JDK 17，再配置 Maven importer/runner 使用 JDK 17 并运行后端启动类。不要写死某一个需求文档路径；如果目录为空、框架文档缺失、缓存与实际代码冲突或需求之间互相冲突，需要说明问题并向用户确认。
 
 你必须在每个阶段开始前使用简版说明，默认控制在 5 行以内：
 1. 阶段
@@ -31,7 +31,7 @@
 
 当状态为 `需确认` 时，下一步必须优先给选择项。默认选项：
 - 当前分支确认：以当前分支作为最终合并目标；切换到其他分支；暂停。
-- 环境自检：已确认前后端可运行；环境有问题；稍后确认。
+- 环境自检：已确认前后端和 mysql 指令可用；环境有问题；稍后确认。
 - 开发模式决策：简单 CRUD 快速模式；标准 SDLC 模式；高风险严格模式；自定义。
 - PRD/原型决策：生成 PRD 和低保真原型；跳过 PRD，进入 UI 决策；跳过 PRD 和 UI，进入技术方案。
 - UI/Figma 决策：生成 UI/Figma；跳过 UI，复用 Snowy 现有 UI；返回补充 PRD。
@@ -65,7 +65,7 @@
 - 未读取相关 `project/docs/patterns/` 模式缓存，不进入技术设计或开发。
 - 首次执行项目工作流时，未输出 Snowy 框架运行提示，不进入产品设计、技术设计或开发。
 - 开发者未确认前端和后端可运行时，不进入任何需求的 PRD/UI/技术设计或开发阶段；全局状态必须保持为 `blocked_until_developer_confirmed_ready`。
-- `docs/workflow/status.md` 未记录 `developer_confirmed_ready` 时，不进入任何需求的 PRD/UI/技术设计或开发阶段。
+- `docs/workflow/status.md` 未记录 `developer_confirmed_ready` 时，不进入任何需求的 PRD/UI/技术设计或开发阶段；如果状态为 `blocked_missing_mysql_cli`，停在开发环境检测阶段。
 - 全局环境自检已确认后，后续需求只需创建或读取自身需求状态文件，不重复要求环境自检。
 - 未确认开发模式，不进入 PRD/UI 决策、技术设计或开发。
 - 未确认是否需要 PRD/原型，不进入 Product 阶段或跳过记录。

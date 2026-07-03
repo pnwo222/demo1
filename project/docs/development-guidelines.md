@@ -77,7 +77,8 @@ project/snowy-common/        # 公共能力
 - 权限必须在后端校验，前端隐藏按钮不等于安全。
 - 金额使用整数分或 `BigDecimal`，禁止使用浮点数直接计算。
 - 状态机、外部回调、资源扣减、逆向流程、批量操作必须考虑幂等、事务、并发和审计。
-- 本地 MySQL、Redis 或完整运行环境缺失时，不阻断编码；必须记录未执行验证、预期验证命令和环境恢复后的验证步骤。
+- 不涉及数据库操作的后端编码，可在本地运行环境缺失时继续推进，并记录未执行验证、预期验证命令和环境恢复后的验证步骤。
+- 开发环境检测必须先检测开发电脑是否存在 `mysql` 指令；PowerShell 优先执行 `Get-Command mysql`，也可执行 `where.exe mysql` 和 `mysql --version`。本地或远程数据库都适用；未找到 `mysql` 时全局状态记为 `blocked_missing_mysql_cli`，不得进入 PRD/UI/技术设计或开发阶段。
 
 后端可选命令行检查：
 
@@ -93,6 +94,7 @@ mvn package
 
 - IDEA Project SDK、Modules SDK、Java Compiler、Maven importer、Maven runner 必须全部使用 JDK 17。
 - MySQL、Redis 配置位于 `project/snowy-web-app/src/main/resources/application.properties`。
+- 数据库操作需要本机可用的 `mysql` 指令；缺失时先安装 MySQL Client 或把 `mysql.exe` 所在目录加入 PATH。
 - MySQL 必填配置项：`spring.datasource.dynamic.datasource.master.url`、`spring.datasource.dynamic.datasource.master.username`、`spring.datasource.dynamic.datasource.master.password`。
 - 修改数据库名时，只修改 MySQL JDBC URL 中 `host:port/` 后、`?` 前的库名。例如 `jdbc:mysql://localhost:3306/snowy?...` 改为 `jdbc:mysql://localhost:3306/demo?...`。
 - Redis 必填配置项：`spring.data.redis.host`、`spring.data.redis.port`、`spring.data.redis.database`、`spring.data.redis.password`。

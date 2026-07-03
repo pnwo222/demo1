@@ -135,7 +135,7 @@ Orchestrator 根据任务依赖生成 DAG，并把任务分为 wave。
 - 没有依赖关系的任务可以并行。
 - 共享同一批核心文件的任务不并行写入。
 - API 契约和数据模型未稳定前，前后端只能基于 mock 或 contract 并行。
-- 后端运行环境、数据库或 MySQL 缺失时，不阻断后端任务开发；该任务标记为可编码、待环境验证。
+- 并行开发开始前必须读取全局开发环境检测结果；如果 `docs/workflow/status.md` 为 `blocked_missing_mysql_cli`，不得进入任何开发 wave。
 - 前端任务必须同步产出 mock 数据；后端不可用时，前端页面使用 mock 数据完成展示和交互验证。
 - 高风险状态、金额、权限、资源扣减类任务必须先完成技术设计和测试设计。
 - QA 和 Security 不等开发结束才开始，应从 Wave 1 起并行准备。
@@ -216,7 +216,8 @@ Owner：
 - migration 由 Data Agent 维护，Backend 不直接改。
 - 测试用例可由 QA 维护，开发 Agent 可补充贴近实现的单元测试。
 - 前端接口层必须支持真实 API 与 mock 数据切换，切换方式以项目现有配置、环境变量或 adapter 约定为准。
-- 后端因环境或 MySQL 缺失无法运行时，必须继续完成代码实现，并在任务状态中记录 `pending_environment_verification`。
+- 后端仅因运行环境缺失无法运行时，可继续完成不涉及数据库操作的代码实现，并在任务状态中记录 `pending_environment_verification`。
+- 全局状态为 `blocked_missing_mysql_cli` 时，必须停止并行开发计划，回到开发环境检测阶段。
 
 ## 阶段 5：日常同步
 
@@ -328,7 +329,8 @@ Wave：
 | 分支冲突 | Orchestrator 指派单一 owner 串行解决 |
 | 契约变更 | Architect 更新 contract，Frontend/Backend 重新同步 |
 | migration 失败 | Data Agent 回滚或补兼容 migration |
-| 后端环境或 MySQL 缺失 | Backend Agent 继续编码，补配置说明和待验证清单；Frontend Agent 使用 mock 数据推进 |
+| 后端运行环境缺失但不涉及数据库操作 | Backend Agent 继续编码，补配置说明和待验证清单；Frontend Agent 使用 mock 数据推进 |
+| 开发环境缺少 mysql 指令 | 全局状态标记 `blocked_missing_mysql_cli`，不进入任何开发 wave |
 | CI 失败 | 按失败类型路由给对应 Agent |
 | 测试不稳定 | QA Agent 标记 flaky，开发 Agent 修复根因 |
 | 安全高危 | Security Agent 阻断合并 |

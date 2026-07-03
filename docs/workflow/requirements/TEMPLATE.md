@@ -12,7 +12,7 @@
 | 创建时间 | <YYYY-MM-DD HH:mm +08:00> |
 | 当前阶段 | <阶段名称> |
 | 总状态 | <未开始/需确认/已开始/已完成/阻塞> |
-| 全局环境状态 | 引用 `docs/workflow/status.md`，必须为 `developer_confirmed_ready` 才能继续 |
+| 全局环境状态 | 引用 `docs/workflow/status.md`，必须为 `developer_confirmed_ready` 才能继续；`blocked_missing_mysql_cli` 时停在开发环境检测阶段 |
 | 当前确认方式 | 选择优先，输入兜底 |
 | 原始当前分支 | <base_branch> |
 | 需求集成分支 | <integration_branch> |

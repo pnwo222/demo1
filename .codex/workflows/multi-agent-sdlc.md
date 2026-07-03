@@ -73,7 +73,7 @@ project/docs/patterns/**
 | 节点 | 选择项 |
 | --- | --- |
 | 当前分支确认 | 以当前分支作为最终合并目标；切换到其他分支；暂停 |
-| 环境自检 | 已确认前后端可运行；环境有问题；稍后确认 |
+| 环境自检 | 已确认前后端和 mysql 指令可用；环境有问题；稍后确认 |
 | 开发模式决策 | 简单 CRUD 快速模式；标准 SDLC 模式；高风险严格模式；自定义 |
 | PRD/原型决策 | 生成 PRD 和低保真原型；跳过 PRD，进入 UI 决策；跳过 PRD 和 UI，进入技术方案 |
 | UI/Figma 决策 | 生成 UI/Figma；跳过 UI，复用 Snowy 现有 UI；返回补充 PRD |
@@ -126,9 +126,10 @@ project/docs/patterns/**
 - 未读取相关 `project/docs/patterns/` 模式缓存，不进入技术设计或开发。
 - 未确认开发模式，不进入 PRD/UI 决策、技术设计或开发。
 - 首次执行项目工作流时，未使用 `snowy-framework-bootstrap` 输出框架运行提示，不进入产品设计、技术设计或开发；默认不由 Agent 自动安装、构建、启动或校验环境。IntelliJ IDEA 是后端本地开发必备工具，必须提示开发者在 IDEA 中导入 `project/`、配置 JDK 17/Maven、确认 MySQL/Redis 配置并运行后端启动类。
-- 开发者未确认前端和后端可运行时，任何需求都不进入 PRD/UI/技术设计或开发阶段；全局状态必须保持为 `blocked_until_developer_confirmed_ready`。
-- `docs/workflow/status.md` 未记录 `developer_confirmed_ready` 时，不进入任何需求的 PRD/UI/技术设计或开发阶段。
-- 全局环境自检已为 `developer_confirmed_ready` 时，后续需求不重复要求自检；只有框架依赖、JDK/Maven、数据库/Redis 配置变化，或开发者报告环境失效时，才重置全局环境状态并重新提示。
+- 开发者未确认前端、后端和 `mysql` 指令可用时，任何需求都不进入 PRD/UI/技术设计或开发阶段；全局状态必须保持为 `blocked_until_developer_confirmed_ready` 或 `blocked_missing_mysql_cli`。
+- `docs/workflow/status.md` 未记录 `developer_confirmed_ready` 时，不进入任何需求的 PRD/UI/技术设计或开发阶段；如果状态为 `blocked_missing_mysql_cli`，停在开发环境检测阶段。
+- 开发环境检测必须检测开发电脑是否存在 `mysql` 指令。PowerShell 优先执行 `Get-Command mysql`，也可执行 `where.exe mysql` 和 `mysql --version`；本地或远程数据库都适用。未找到 `mysql` 时，全局状态记为 `blocked_missing_mysql_cli`，不进入后续阶段。
+- 全局环境自检已为 `developer_confirmed_ready` 时，后续需求不重复要求自检；只有框架依赖、JDK/Maven、数据库/Redis 配置、`mysql` 指令状态变化，或开发者报告环境失效时，才重置全局环境状态并重新提示。
 - 未确认是否需要 PRD/原型，不进入 Product 阶段或跳过记录。
 - 未确认是否需要 UI/Figma，不进入 Design 阶段或跳过记录。
 - 跳过 PRD 时，必须保留最小需求说明、范围、验收标准和风险记录。
@@ -203,7 +204,7 @@ project/docs/patterns/**
 - Redis 配置项：`spring.data.redis.host`、`port`、`database`、`password`。
 - 后端端口：`server.port=82`，启动后可访问或检测 `http://localhost:82`。
 - 如果开发者未确认可运行，全局状态为 `blocked_until_developer_confirmed_ready`，不进入任何需求后续阶段，也不默认执行脚本。
-- 开发者回复“前后端已确认可运行”或等价表达后，Orchestrator 必须更新 `docs/workflow/status.md`：框架运行自检为 `developer_confirmed_ready`，前端/后端运行确认为 `已确认`，并记录确认来源和时间。
+- 开发者回复“前后端已确认可运行”或等价表达后，Orchestrator 必须确认 `mysql` 指令可用；前端、后端和 `mysql` 指令都满足后，才能更新 `docs/workflow/status.md`：框架运行自检为 `developer_confirmed_ready`，前端/后端运行确认和 MySQL 指令检测均为 `已确认`，并记录确认来源和时间。
 - 该确认是全局一次确认；每个需求只在自身状态文件中引用该全局状态，不重复记录环境自检阶段。
 
 ## 阶段 0.6：开发模式选择
@@ -398,8 +399,9 @@ Backend Agent：
 
 - 实现 API、业务逻辑、权限、事务、幂等和审计。
 - 更新接口文档和测试。
-- 本地运行环境、数据库或 MySQL 缺失时，不阻断开发；先完成代码、接口契约、配置示例、migration 草案和未验证项记录。
-- 无法连接数据库时，必须在完成报告中说明未执行的验证、预期验证命令和恢复环境后的验证步骤。
+- 后端改动不涉及数据库操作时，本地运行环境缺失可记录风险后继续编码。
+- 后端改动涉及数据库操作时，必须确认全局开发环境检测中的 `mysql` 指令已通过；如果全局状态为 `blocked_missing_mysql_cli`，不进入后端开发、数据库相关开发、migration 执行或验证。
+- `mysql` 指令存在但无法连接数据库时，必须在完成报告中说明目标地址、未执行的验证、预期验证命令和恢复环境后的验证步骤；需要实际执行 SQL 的阶段保持阻塞。
 
 Data Agent：
 

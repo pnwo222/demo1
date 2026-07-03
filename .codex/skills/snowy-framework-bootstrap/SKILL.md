@@ -53,11 +53,28 @@ Before Product/Design/Architect/Development stages, tell the developer:
 5. 在 IDEA 的 Maven 设置中配置 Maven home
 6. Maven importer 和 runner 的 JDK/JRE 都选择 JDK 17
 7. 确认数据库和 Redis 配置；如需修改数据库名，修改 `application.properties` 中 MySQL JDBC URL 的库名段
-8. 运行 snowy-web-app 的 Application.java
-9. 启动后访问或检测 http://localhost:82
+8. 确认开发电脑存在 `mysql` 指令：`Get-Command mysql`、`where.exe mysql` 或 `mysql --version`
+9. 运行 snowy-web-app 的 Application.java
+10. 启动后访问或检测 http://localhost:82
 ```
 
-Do not run `npm install`, `npm run dev`, Maven import, backend startup, or port checks automatically unless the user explicitly requests execution.
+Do not run `npm install`, `npm run dev`, Maven import, backend startup, or port checks automatically unless the user explicitly requests execution. The `mysql` command check is part of the environment gate and may be executed when the workflow is validating whether it can continue.
+
+## 开发环境 MySQL 指令门禁
+
+这是全局开发环境检测的一部分，不跟随单个需求重复判断。
+
+Snowy 后端开发和数据库维护可能需要对本地或远程 MySQL 执行 SQL，因此进入 PRD/UI/技术设计或开发前，必须确认开发电脑存在 `mysql` 指令。
+
+检测命令：
+
+```powershell
+Get-Command mysql
+where.exe mysql
+mysql --version
+```
+
+如果未找到 `mysql`，将 `docs/workflow/status.md` 的全局状态记录为 `blocked_missing_mysql_cli`，不得进入任何需求的 PRD/UI/技术设计或开发阶段。
 
 ## Frontend Commands
 
@@ -173,7 +190,7 @@ Snowy 自检提示已给出。
 前端：cd project/snowy-admin-web; npm install; npm run dev
 后端：IDEA 打开 project/，JDK/Maven 用 17，运行 Application.java
 配置：project/snowy-web-app/src/main/resources/application.properties
-状态：blocked_until_developer_confirmed_ready，等待开发者确认可运行
+状态：blocked_until_developer_confirmed_ready 或 blocked_missing_mysql_cli，等待开发者确认可运行并安装 mysql 指令
 记录：docs/workflow/status.md
 ```
 
@@ -183,11 +200,12 @@ Status values:
 
 - `prompted`: run guide was provided; environment execution is left to the developer.
 - `blocked_until_developer_confirmed_ready`: run guide was provided, but the workflow must not continue until the developer confirms frontend and backend can run.
+- `blocked_missing_mysql_cli`: the workflow checked the development environment and did not find the `mysql` command; it must stop at environment validation.
 - `developer_confirmed_ready`: developer confirms frontend and backend can run.
 - `developer_reported_blocked`: developer reports a concrete environment issue.
 
 ## Workflow Gate
 
-On the first project workflow execution, Orchestrator must provide this run prompt before Product Agent work. The workflow should not automatically execute environment validation. If the developer has not confirmed the framework can run, stop at `blocked_until_developer_confirmed_ready` rather than moving to Product, UI, technical design, or development.
+On the first project workflow execution, Orchestrator must provide this run prompt before Product Agent work. The workflow should not automatically install dependencies or start services. It must check the `mysql` command as part of the development environment gate. If the developer has not confirmed the framework can run, stop at `blocked_until_developer_confirmed_ready`; if `mysql` is missing, stop at `blocked_missing_mysql_cli` rather than moving to Product, UI, technical design, or development.
 
-Persist only the global environment status in `docs/workflow/status.md`. When the developer replies "前后端已确认可运行" or an equivalent statement, update that file to `developer_confirmed_ready`, mark frontend/backend confirmation as confirmed, and record confirmation source and time. Do not create per-requirement stage records from this skill; later PRD/UI/technical/development stages belong in `docs/workflow/requirements/<需求ID>.md`.
+Persist only the global environment status in `docs/workflow/status.md`. When the developer replies "前后端已确认可运行" or an equivalent statement, confirm `mysql` is available before updating that file to `developer_confirmed_ready`; mark frontend/backend confirmation and MySQL command detection as confirmed, and record confirmation source and time. Do not create per-requirement stage records from this skill; later PRD/UI/technical/development stages belong in `docs/workflow/requirements/<需求ID>.md`.
