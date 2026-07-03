@@ -14,7 +14,6 @@
 
 | 需求ID | 需求名称 | 来源文档 | 状态文件 | 当前阶段 | 状态 |
 | --- | --- | --- | --- | --- | --- |
-| 20260702-1624-home-banner-management | 内容管理-首页banner管理功能 | `docs/requirements/纺院需求.md` | `docs/workflow/requirements/20260702-1624-home-banner-management.md` | PRD/原型决策 | 需确认 |
 
 ## 状态值
 
