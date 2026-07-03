@@ -43,6 +43,24 @@ git remote -v
 - 不建议在 `main` / `master` 直接提交功能代码。
 - 必须确认工作区里哪些文件属于本次任务。
 - 如果有用户已有改动，不能擅自纳入提交。
+- 如果本次开发使用 worktree，必须确认当前目录是 worktree 开发目录、需求集成分支目录，还是原始当前分支目录；不同目录的提交和合并目标不能混淆。
+
+### 1.5 分支链路确认
+
+本项目推荐链路：
+
+```text
+base_branch -> integration_branch -> worktree_branch/worktree_path
+worktree_branch -> integration_branch -> base_branch(需用户确认)
+```
+
+提交和合并规则：
+
+- worktree 开发目录提交到 `worktree_branch`。
+- `worktree_branch` 开发完成后，先合并到 `integration_branch`。
+- 在 `integration_branch` 完成验证。
+- 验证无误后，必须询问开发者是否合并回 `base_branch`。
+- 未获得确认，不得把 `integration_branch` 合并回 `base_branch`。
 
 ### 2. 创建或切换 feature branch
 

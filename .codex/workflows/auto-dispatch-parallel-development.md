@@ -40,6 +40,9 @@ Orchestrator 必须先读取并确认：
 - 技术设计和数据设计。
 - 当前仓库结构。
 - 当前分支和工作区状态。
+- 原始当前分支，即开发者确认的最终合并目标。
+- 需求集成分支。
+- worktree 开发分支和路径。
 - 已有脚本、测试、CI 和构建命令。
 - 前端目录和后端目录映射。当前默认基于 Snowy 框架识别：前端 `project/snowy-admin-web/`；后端启动 `project/snowy-web-app/`；插件实现 `project/snowy-plugin/`；插件 API `project/snowy-plugin-api/`；公共模块 `project/snowy-common/`。如果实际结构变化，必须说明映射关系。
 
@@ -55,6 +58,9 @@ PRD：
 技术设计：
 数据设计：
 当前分支：
+原始当前分支：
+需求集成分支：
+Worktree 分支/路径：
 工作区状态：
 是否允许进入任务编排：
 ```
@@ -147,6 +153,24 @@ Orchestrator 根据任务依赖生成 DAG，并把任务分为 wave。
 | 任务存在强依赖 | 后置任务等待前置任务产物 |
 | 任务只产出文档或测试计划 | 可在同一分支串行提交 |
 | 高风险核心链路 | 独立 branch，单独 PR，强制 Review |
+
+本项目默认分支/worktree 链路：
+
+```text
+base_branch(开发者确认的当前分支)
+  -> integration_branch(需求集成分支)
+      -> worktree_branch/worktree_path(实际开发)
+      -> merge back to integration_branch
+  -> 用户确认后再 merge back to base_branch
+```
+
+规则：
+
+- 不直接在 `base_branch` 写功能代码。
+- 需求开始后先从 `base_branch` 创建 `integration_branch`。
+- worktree 必须从 `integration_branch` 创建。
+- worktree 开发完成后先提交，再合并回 `integration_branch`。
+- `integration_branch` 完成验证后，必须询问开发者是否合回 `base_branch`，不得自动合并。
 
 分支命名：
 

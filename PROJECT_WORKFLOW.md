@@ -7,7 +7,12 @@
 ```mermaid
 flowchart TD
     A([需求或开发请求]) --> B[Orchestrator 声明阶段]
-    B --> C[读取 AGENTS.md]
+    B --> B1[输出当前 Git 分支和工作区状态]
+    B1 --> B2{开发者确认当前分支为最终合并目标}
+    B2 -- 否 --> B3[切换分支或暂停]
+    B3 --> B1
+    B2 -- 是 --> B4[从当前分支创建需求集成分支]
+    B4 --> C[读取 AGENTS.md]
     C --> D[读取 .codex/workflows/**]
     D --> E[读取 .codex/agents/*.md]
     E --> F[读取 docs/requirements/**]
@@ -34,7 +39,8 @@ flowchart TD
     O -- 是 --> P[Orchestrator: 按用户价值拆 Feature Slice]
     P --> Q[套用 auto-dispatch-parallel-development.md]
     Q --> R[生成任务图、依赖 DAG、并行 Wave、Owner、Branch/Worktree 策略]
-    R --> S{用户或负责人确认开发计划}
+    R --> R1[从需求集成分支创建 worktree 开发分支/目录]
+    R1 --> S{用户或负责人确认开发计划}
     S -- 否 --> P
 
     S -- 是 --> T[Frontend/Backend/Data/QA/Security 等 Agent 并行或串行开发]
@@ -42,8 +48,13 @@ flowchart TD
     U --> V{本地门禁通过或风险已记录}
     V -- 否 --> T
 
-    V -- 是 --> W[Git Agent: diff 检查、commit、push、PR]
-    W --> X[Reviewer/Security/QA/Performance/Maintainability 审查]
+    V -- 是 --> W[Worktree 提交并合并回需求集成分支]
+    W --> W1{需求集成分支验证无误}
+    W1 -- 否 --> T
+    W1 -- 是 --> W2{是否合并回最初当前分支}
+    W2 -- 否 --> X[Reviewer/Security/QA/Performance/Maintainability 审查]
+    W2 -- 是 --> W3[合并回最初当前分支]
+    W3 --> X[Reviewer/Security/QA/Performance/Maintainability 审查]
     X --> Y{P0/P1 是否全部修复}
     Y -- 否 --> T
 
@@ -119,6 +130,8 @@ flowchart TB
 ## 关键门禁
 
 - 未读取 `docs/requirements/**` 和 `project/docs/**`，不进入产品设计、技术设计或开发。
+- 未输出当前 Git 分支并取得开发者确认，不创建需求集成分支、worktree 或进入代码开发。
+- 开发必须遵循 `当前分支 -> 需求集成分支 -> worktree 开发分支/目录 -> 合回需求集成分支 -> 询问是否合回当前分支`。
 - 首次执行流程前，未使用 `.codex/skills/snowy-framework-bootstrap` 输出框架运行提示并取得开发者确认，不进入产品设计、技术设计或开发。
 - PRD 和低保真 HTML 原型未确认，不进入 UI 设计。
 - Figma UI 未确认，不进入技术设计。

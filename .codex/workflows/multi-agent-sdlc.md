@@ -2,7 +2,7 @@
 
 本工作流是通用项目流程，不绑定具体业务。业务目标、角色、核心链路、质量重点和高风险规则必须从 `docs/requirements/` 下的全部需求文档中读取；框架结构、目录映射、技术栈和开发规范必须从 `project/docs/` 下的框架文档和 `project/` 实际代码中读取。
 
-执行任何阶段前，Orchestrator 必须先读取 `docs/requirements/` 下的全部需求文档、`project/docs/` 下的全部框架文档、`project/docs/patterns/` 下的框架模式缓存、`docs/workflow/status.md` 全局状态，以及当前需求对应的 `docs/workflow/requirements/<需求ID>.md`。如果当前需求还没有状态文件，必须先按 `docs/workflow/requirements/TEMPLATE.md` 创建。
+执行任何阶段前，Orchestrator 必须先输出当前 Git 分支和工作区状态，并让开发者确认是否以当前分支作为最终合并目标。开发者确认后，Orchestrator 再读取 `docs/requirements/` 下的全部需求文档、`project/docs/` 下的全部框架文档、`project/docs/patterns/` 下的框架模式缓存、`docs/workflow/status.md` 全局状态，以及当前需求对应的 `docs/workflow/requirements/<需求ID>.md`。如果当前需求还没有状态文件，必须先按 `docs/workflow/requirements/TEMPLATE.md` 创建。
 
 ```text
 docs/requirements/**
@@ -25,6 +25,7 @@ project/docs/patterns/**
 - 状态文件必须记录阶段、状态、来源、产物、下一步和时间。
 - 不允许只在对话中说明阶段变化而不更新状态文件。
 - 每个需求状态文件必须记录缓存读取、缓存命中和缓存更新结果。
+- 每个需求状态文件必须记录原始当前分支、需求集成分支、worktree 开发分支、worktree 路径、合并状态和是否已询问合回原始分支。
 
 编码规则：
 
@@ -44,6 +45,10 @@ project/docs/patterns/**
 触发规则：
 
 - 用户输入“完成/开发/实现/新增/修复/优化 + 某功能”时，必须视为项目工作流入口，先进入阶段 0 和 0.5，不得直接编码。
+- 进入阶段 0 前，必须先执行“当前分支确认”。输出 `git branch --show-current` 和 `git status --short` 的结果，并提供选择：以当前分支作为最终合并目标、切换到其他分支、暂停。
+- 开发者确认当前分支后，工作流必须从该分支创建新的需求集成分支，例如 `codex/integration-<需求ID>` 或 `codex/<需求短名>`。
+- 后续代码开发必须从需求集成分支创建 worktree 开发分支/目录；worktree 开发完成并提交后，先合并回需求集成分支。
+- 需求集成分支验证无误后，Orchestrator 必须询问开发者是否合并回最初确认的当前分支，不得自动合并。
 - 对每个新功能，Orchestrator 必须分配需求ID，并在 `docs/workflow/status.md` 的需求索引中登记，在 `docs/workflow/requirements/<需求ID>.md` 中记录后续阶段。
 - PRD 和 UI 设计是可跳过决策点；用户明确说“跳过 PRD”“无需 PRD”“跳过 UI”“无需设计”“直接进入技术方案/开发”时，记录跳过项和原因，然后进入下一合适阶段。
 - 只有用户明确说“跳过工作流”“直接改代码”“无需 PRD/设计/技术方案”时，才允许跳过整个前置工作流。
@@ -67,6 +72,7 @@ project/docs/patterns/**
 
 | 节点 | 选择项 |
 | --- | --- |
+| 当前分支确认 | 以当前分支作为最终合并目标；切换到其他分支；暂停 |
 | 环境自检 | 已确认前后端可运行；环境有问题；稍后确认 |
 | 开发模式决策 | 简单 CRUD 快速模式；标准 SDLC 模式；高风险严格模式；自定义 |
 | PRD/原型决策 | 生成 PRD 和低保真原型；跳过 PRD，进入 UI 决策；跳过 PRD 和 UI，进入技术方案 |
@@ -114,6 +120,7 @@ project/docs/patterns/**
 
 ## 阶段门禁
 
+- 未确认当前分支作为最终合并目标，不创建需求集成分支、worktree 或进入代码开发。
 - 未读取并确认 `docs/requirements/` 下全部需求文档，不进入产品设计。
 - 未读取并确认 `project/docs/` 下全部框架文档，不进入产品设计、技术设计或开发。
 - 未读取相关 `project/docs/patterns/` 模式缓存，不进入技术设计或开发。
@@ -131,6 +138,33 @@ project/docs/patterns/**
 - P0/P1 Review 问题未修复，不允许合并。
 - CI 和发布检查未通过，不进入全量发布。
 - 开发完成后未判断是否需要更新 `project/docs/patterns/` 缓存，不进入验收复盘。
+
+## 阶段 -1：当前分支确认
+
+由 Orchestrator 在任何需求工作流前执行。
+
+必须输出：
+
+```text
+当前分支：
+工作区状态：
+拟作为最终合并目标：
+下一步选择：
+```
+
+选择项：
+
+1. 以当前分支作为最终合并目标。
+2. 切换到其他分支后再开始。
+3. 暂停。
+
+确认后：
+
+- 记录原始当前分支为 `base_branch`。
+- 从 `base_branch` 创建需求集成分支，例如 `codex/integration-<需求ID>` 或 `codex/<需求短名>`。
+- 后续 worktree 从需求集成分支创建。
+- worktree 开发完成后合并回需求集成分支。
+- 需求集成分支验证通过后，再询问是否合并回 `base_branch`。
 
 ## 阶段 0：需求和框架装载
 

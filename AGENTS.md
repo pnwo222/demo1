@@ -7,6 +7,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 ## 协作原则
 
 - 用户输入“完成/开发/实现/新增/修复/优化 + 某功能”时，必须视为项目工作流入口，先由 Orchestrator 走简版 SDLC 流程，不得直接进入代码实现。
+- 工作流开始前，Orchestrator 必须先输出当前 Git 分支和工作区状态，并让开发者确认是否以当前分支作为最终合并目标。未确认前，不创建需求分支、worktree 或进入代码开发。
 - PRD 和 UI 设计阶段可由开发者明确跳过。用户说“跳过 PRD”“无需 PRD”“跳过 UI”“无需设计”“直接进入技术方案/开发”等等价表达时，Orchestrator 必须记录跳过项和原因，然后进入下一合适阶段。
 - 所有需要开发者决策的节点，优先使用可点击选择项，而不是只让开发者手动输入。选择项必须覆盖推荐路径、跳过路径和自定义输入路径；如果当前 Codex 客户端不支持选择控件，则在文本中给出编号选项，允许开发者输入编号或自由文本。
 - 即使跳过 PRD 或 UI，也必须保留最小需求说明、范围、验收标准和风险记录；不得在业务规则、权限、数据或状态不清时直接编码。
@@ -17,7 +18,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 - 所有文本文件必须使用 UTF-8 编码保存，尤其是 `*.md`、`*.yml`、`*.yaml`、`*.json`、`*.toml`、`*.java`、`*.vue`、`*.ts`、`*.js`、`*.properties` 和 `docs/workflow/**` 状态文件。禁止用未显式编码的 PowerShell 写入中文文件；PowerShell 读取必须使用 `Get-Content -Encoding UTF8`，写入必须使用 `Set-Content -Encoding UTF8` 或 `Out-File -Encoding UTF8`。Agent 手工编辑优先使用 `apply_patch`，避免整文件重写导致乱码。
 - 项目内文档和阶段产物默认使用简体中文，包括 PRD、原型说明、技术方案、数据方案、开发计划、Review、测试计划、状态文件和 `docs/superpowers/**` 产物。代码标识符、路径、命令、API、类名、配置键、第三方固定模板句可以保留英文。除非用户明确要求英文，不得生成整篇英文项目文档。
 - 后端启动前必须提示开发者确认 Java、MySQL、Redis 配置：Java 在 IDEA Project SDK、Modules SDK、Java Compiler、Maven importer、Maven runner 中都必须是 JDK 17；MySQL/Redis 配置位于 `project/snowy-web-app/src/main/resources/application.properties`，可由开发者自行修改，或在明确要求时由 Agent 按开发者提供的值修改。若只修改数据库名，只更新 MySQL JDBC URL 中 `host:port/` 后、`?` 前的库名。
-- 不直接在主分支上开发，功能改动使用独立 branch 或 worktree。
+- 不直接在当前分支或主分支上开发。开发者确认当前分支后，工作流必须先从当前分支创建新的需求集成分支；后续代码开发从该新分支再创建 worktree 开发分支/目录。worktree 开发完成并提交后，先合并回需求集成分支；在需求集成分支验证无误后，再询问开发者是否合并回最初确认的当前分支。
 - 不让开发 Agent 自己给自己放行，必须经过 Review、CI 和人工审批。
 - 需求、业务规则、数据规则、权限规则不清时，不直接进入代码开发。
 - 前端优先复用现有组件、路由、状态管理和样式规范。
@@ -69,23 +70,27 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 ## 标准开发流程
 
 0. Orchestrator 先用简短格式声明当前阶段、关键输入、下一步和是否需要确认。
-1. Orchestrator 读取 `docs/requirements/` 下的全部需求文档，并读取 `project/docs/` 下的框架文档和 `project/docs/patterns/` 模式缓存。
-2. Orchestrator 使用 `.codex/skills/snowy-framework-bootstrap` 输出框架运行提示，要求开发者自行确认前端和后端能正常运行；未确认则停在本阶段。
-3. Orchestrator 提供开发模式选择：简单 CRUD 快速模式、标准 SDLC 模式、高风险严格模式、自定义。
-4. Orchestrator 询问是否需要 PRD 和 UI 设计；开发者可明确跳过。简单 CRUD 快速模式可默认跳过 PRD/UI，但必须保留最小需求说明、字段、接口、验收标准和风险记录。
-5. 如未跳过，Product Agent 基于需求和现有框架能力生成 PRD、验收标准、HTML PRD 和可交互低保真 HTML 原型。
-6. 如未跳过 UI，Design Agent 建立设计系统，并连接 Figma 生成可落地设计稿。
-7. Architect Agent 明确模块边界、状态机、API、数据模型、安全模型和可运维性。简单 CRUD 快速模式可用轻量技术方案替代完整架构文档。
-8. Data Agent 细化数据库模型、migration、索引、回滚和数据一致性策略。简单 CRUD 快速模式可合并到轻量技术方案或开发清单。
-9. Orchestrator 按用户价值拆 feature slice；简单 CRUD 快速模式可压缩为“后端+SQL+权限”“前端+mock”“验证+状态”三类任务。
-10. Orchestrator 套用 `.codex/workflows/auto-dispatch-parallel-development.md`，生成任务图、依赖 DAG、并行 wave、owner 分配、branch/worktree 策略和集成策略；简单 CRUD 快速模式只生成轻量执行清单。
-11. Frontend、Backend、Data、QA 等 Agent 在独立 branch 或 worktree 并行开发。
-12. 本地运行必要检查后提交 PR。
-13. Reviewer、Security、QA Agent 做审查。
-14. CI 运行 lint、typecheck、test、build、安全扫描等项目定义的质量门禁。
-15. 人工负责人审批后合并。
-16. 预发验证、灰度发布、全量发布。
-17. 发布后监控核心指标和用户反馈。
+1. Orchestrator 输出当前 Git 分支、工作区状态和拟作为最终合并目标的分支，等待开发者确认。
+2. 开发者确认后，Orchestrator 从当前分支创建新的需求集成分支，并记录原始分支和需求集成分支。
+3. Orchestrator 读取 `docs/requirements/` 下的全部需求文档，并读取 `project/docs/` 下的框架文档和 `project/docs/patterns/` 模式缓存。
+4. Orchestrator 使用 `.codex/skills/snowy-framework-bootstrap` 输出框架运行提示，要求开发者自行确认前端和后端能正常运行；未确认则停在本阶段。
+5. Orchestrator 提供开发模式选择：简单 CRUD 快速模式、标准 SDLC 模式、高风险严格模式、自定义。
+6. Orchestrator 询问是否需要 PRD 和 UI 设计；开发者可明确跳过。简单 CRUD 快速模式可默认跳过 PRD/UI，但必须保留最小需求说明、字段、接口、验收标准和风险记录。
+7. 如未跳过，Product Agent 基于需求和现有框架能力生成 PRD、验收标准、HTML PRD 和可交互低保真 HTML 原型。
+8. 如未跳过 UI，Design Agent 建立设计系统，并连接 Figma 生成可落地设计稿。
+9. Architect Agent 明确模块边界、状态机、API、数据模型、安全模型和可运维性。简单 CRUD 快速模式可用轻量技术方案替代完整架构文档。
+10. Data Agent 细化数据库模型、migration、索引、回滚和数据一致性策略。简单 CRUD 快速模式可合并到轻量技术方案或开发清单。
+11. Orchestrator 按用户价值拆 feature slice；简单 CRUD 快速模式可压缩为“后端+SQL+权限”“前端+mock”“验证+状态”三类任务。
+12. Orchestrator 套用 `.codex/workflows/auto-dispatch-parallel-development.md`，从需求集成分支创建 worktree 开发分支/目录，生成任务图、依赖 DAG、并行 wave、owner 分配和集成策略；简单 CRUD 快速模式只生成轻量执行清单。
+13. Frontend、Backend、Data、QA 等 Agent 在 worktree 开发分支/目录中开发并提交。
+14. worktree 开发完成后，合并回需求集成分支，并在需求集成分支验证。
+15. 需求集成分支确认无误后，Orchestrator 询问开发者是否合并回最初确认的当前分支。
+16. 本地运行必要检查后提交 PR。
+17. Reviewer、Security、QA Agent 做审查。
+18. CI 运行 lint、typecheck、test、build、安全扫描等项目定义的质量门禁。
+19. 人工负责人审批后合并。
+20. 预发验证、灰度发布、全量发布。
+21. 发布后监控核心指标和用户反馈。
 
 ## 通用 Definition of Done
 
@@ -127,6 +132,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 
 | 决策节点 | 默认选择项 |
 | --- | --- |
+| 当前分支确认 | 以当前分支作为最终合并目标；切换到其他分支；暂停 |
 | 环境自检 | 已确认前后端可运行；环境有问题；稍后确认 |
 | 开发模式决策 | 简单 CRUD 快速模式；标准 SDLC 模式；高风险严格模式；自定义 |
 | PRD/原型决策 | 生成 PRD 和低保真原型；跳过 PRD，进入 UI 决策；跳过 PRD 和 UI，进入技术方案 |
