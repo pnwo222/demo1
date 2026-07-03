@@ -19,3 +19,6 @@ Thumbs.db
 # /project
 
 /tmp-assets
+
+# Local developer workflow state
+docs/workflow/local-environment-status.md

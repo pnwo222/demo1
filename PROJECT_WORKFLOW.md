@@ -133,10 +133,12 @@ flowchart TB
 - 未输出当前 Git 分支并取得开发者确认，不创建需求集成分支、worktree 或进入代码开发。
 - 开发必须遵循 `当前分支 -> 需求集成分支 -> worktree 开发分支/目录 -> 合回需求集成分支 -> 询问是否合回当前分支`。
 - 首次执行流程前，未使用 `.codex/skills/snowy-framework-bootstrap` 输出框架运行提示并取得开发者确认，不进入产品设计、技术设计或开发。
+- 开发环境检测必须用列表展示 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务，并用 `✅`、`⚠️`、`❌` 标明结果。
+- 开发环境检测结果写入 `docs/workflow/local-environment-status.md`，该文件被 `.gitignore` 忽略，不提交到 Git；`docs/workflow/status.md` 保持可提交。
 - PRD 和低保真 HTML 原型未确认，不进入 UI 设计。
 - Figma UI 未确认，不进入技术设计。
 - 技术设计、数据模型、migration 和回滚策略未确认，不进入开发。
-- 开发环境检测必须检测 `mysql` 指令；未找到时记录全局状态 `blocked_missing_mysql_cli`，不进入 PRD/UI/技术设计或开发阶段。
+- 开发环境检测必须检测可用 MySQL CLI；PATH 找不到 `mysql` 时自动搜索常见安装目录中的 `mysql.exe` 并用绝对路径验证。PATH 和搜索都找不到时记录全局状态 `blocked_missing_mysql_cli`，不进入 PRD/UI/技术设计或开发阶段。
 - 开发必须基于 `project/` 现有 Snowy 框架增量实现，不按空白项目重建目录。
 - 涉及金额、权限、状态机、资源数量、业务单据、交易、逆向流程、删除和批量操作的改动必须重点审查。
 - 开发 Agent 不能自己给自己放行，必须经过 Review、CI 和人工审批。

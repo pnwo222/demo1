@@ -5,7 +5,9 @@
 - 后续开发是基于 `project/` 现有框架增量扩展，不从零创建独立的新项目结构。
 - Agent 执行工作流时必须同时读取需求文档和框架文档：`docs/requirements/**`、`project/docs/**`。
 - 开发前必须读取 `project/docs/patterns/**` 框架模式缓存；所有模式都读缓存。简单 CRUD 快速模式优先使用缓存减少重复探索；标准模式使用缓存加速但仍保留完整设计和审查；高风险严格模式读取缓存后仍需补读实际代码和高风险链路。
-- 首次执行项目工作流前，必须使用 `.codex/skills/snowy-framework-bootstrap` 输出框架运行提示，请开发者先自行确认当前 Snowy 框架能否正常运行。默认不由 Agent 自动执行环境安装、构建、启动或校验脚本，除非用户明确要求。开发者未确认前后端可运行前，不进入 PRD/UI/技术设计或开发阶段。IntelliJ IDEA 是后端本地开发必备工具，开发者必须在 IDEA 中导入 `project/`、配置 JDK 17/Maven 并运行后端启动类。
+- 首次执行项目工作流前，必须使用 `.codex/skills/snowy-framework-bootstrap` 输出框架运行提示，请开发者先自行确认当前 Snowy 框架能否正常运行。默认不由 Agent 自动执行环境安装、构建、启动或校验脚本，除非用户明确要求。开发环境清单未确认前，不进入 PRD/UI/技术设计或开发阶段。IntelliJ IDEA 是后端本地开发必备工具，开发者必须在 IDEA 中导入 `project/`、配置 JDK 17/Maven 并运行后端启动类。
+- 环境检测输出必须使用列表布局，每项以 `✅`、`⚠️`、`❌` 标明结果。必检项包括 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务。
+- 环境检测结果写入 `docs/workflow/local-environment-status.md`，该文件必须被 `.gitignore` 忽略，不提交到 Git；`docs/workflow/status.md` 仍是可提交的项目级状态和需求索引。
 - 修改代码前先识别目标功能应落在哪个 Snowy 模块、插件或前端目录，并在阶段输出中说明映射关系。
 - 修改代码后必须判断是否需要更新 `project/docs/patterns/`；如果新增了可复用框架模式、例外规则或更好的模板，必须同步更新缓存。
 - 修改代码前必须确认 Git 分支链路：先确认当前分支作为最终合并目标，再创建需求集成分支，实际开发从需求集成分支创建 worktree 开发分支/目录；worktree 完成后先合并回需求集成分支，验证无误后再询问是否合并回最初当前分支。
@@ -35,6 +37,14 @@
 ```text
 project/snowy-admin-web/
 ```
+
+前端必需环境：
+
+- Git。
+- Node.js，建议 18+。
+- npm；本项目存在 `package-lock.json`，默认使用 npm。
+- `node_modules`；首次运行前执行 `npm install`。
+- Vite dev server；执行 `npm run dev` 后打开输出地址，通常是 `http://localhost:5173`。
 
 开发要求：
 
@@ -68,6 +78,15 @@ project/snowy-plugin-api/    # 插件 API 契约
 project/snowy-common/        # 公共能力
 ```
 
+后端必需环境：
+
+- IntelliJ IDEA，用于打开 `project/` 并运行后端启动类。
+- JDK 17；IDEA Project SDK、Modules SDK、Java Compiler、Maven importer、Maven runner 均必须使用 JDK 17。
+- Maven；本项目无 `mvnw`，可使用命令行 Maven，或使用 IDEA Maven home/importer/runner。
+- MySQL 服务和 MySQL CLI；CLI 可来自 PATH，也可使用搜索到的 `mysql.exe` 绝对路径。
+- Redis 服务。
+- 后端配置文件：`project/snowy-web-app/src/main/resources/application.properties`。
+
 开发要求：
 
 - Controller、Service、Mapper、Entity、Param、Result、Provider 等分层遵循目标插件已有结构。
@@ -78,7 +97,7 @@ project/snowy-common/        # 公共能力
 - 金额使用整数分或 `BigDecimal`，禁止使用浮点数直接计算。
 - 状态机、外部回调、资源扣减、逆向流程、批量操作必须考虑幂等、事务、并发和审计。
 - 不涉及数据库操作的后端编码，可在本地运行环境缺失时继续推进，并记录未执行验证、预期验证命令和环境恢复后的验证步骤。
-- 开发环境检测必须先检测开发电脑是否存在 `mysql` 指令；PowerShell 优先执行 `Get-Command mysql`，也可执行 `where.exe mysql` 和 `mysql --version`。本地或远程数据库都适用；未找到 `mysql` 时全局状态记为 `blocked_missing_mysql_cli`，不得进入 PRD/UI/技术设计或开发阶段。
+- 开发环境检测必须先检测开发电脑是否存在可用 MySQL CLI；PowerShell 先执行 `Get-Command mysql`、`where.exe mysql` 和 `mysql --version`。PATH 找不到时，必须在常见安装目录搜索 `mysql.exe`，找到后用绝对路径执行 `mysql.exe --version`。本地或远程数据库都适用；PATH 和搜索都找不到可执行 MySQL CLI 时全局状态记为 `blocked_missing_mysql_cli`，不得进入 PRD/UI/技术设计或开发阶段。
 
 后端可选命令行检查：
 

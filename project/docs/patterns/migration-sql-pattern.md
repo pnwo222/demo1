@@ -71,5 +71,5 @@ CREATE TABLE `<TABLE_NAME>` (
 
 - 至少提供 migration 草案文件到 `docs/data/`。
 - 如直接修改 `_sql/snowy_mysql.sql`，仍需在需求状态文件记录修改点。
-- migration 前必须确认全局开发环境检测已通过；如果 `docs/workflow/status.md` 为 `blocked_missing_mysql_cli`，不得进入数据库相关开发、migration 执行或验证。
+- migration 前必须确认本机开发环境检测已通过；如果 `docs/workflow/local-environment-status.md` 为 `blocked_missing_mysql_cli`，不得进入数据库相关开发、migration 执行或验证。
 - 删除字段、改字段类型、清洗数据等破坏性 migration 不允许走快速模式。

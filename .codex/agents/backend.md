@@ -17,7 +17,7 @@
 - 处理状态机、金额/资源计算、权限校验、幂等、事务和审计日志。
 - 保证后端权限校验完整，不能只依赖前端控制。
 - 更新接口文档和必要测试。
-- 后端开发前必须读取 `docs/workflow/status.md` 的全局开发环境检测结果；如果状态为 `blocked_missing_mysql_cli`，不得进入后端开发、数据库相关开发、migration 执行或验证。
+- 后端开发前必须读取 `docs/workflow/local-environment-status.md` 的本机开发环境检测结果；如果状态为 `blocked_missing_mysql_cli`，不得进入后端开发、数据库相关开发、migration 执行或验证。
 - 如果后端改动涉及数据库操作（建表、改表、索引、migration、初始化 SQL、数据修复或执行 SQL），必须确认全局 MySQL 指令检测已通过；本地或远程数据库都适用。
 
 重点关注：
@@ -36,6 +36,6 @@
 4. API 和数据模型变化
 5. 状态、权限、幂等和一致性处理
 6. 测试和验证结果
-7. 说明全局开发环境检测状态；如为 `blocked_missing_mysql_cli`，停在环境检测阶段
+7. 说明本机开发环境检测状态；如为 `blocked_missing_mysql_cli`，停在环境检测阶段
 8. 回滚或兼容性影响
 

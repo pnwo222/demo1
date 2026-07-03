@@ -13,8 +13,8 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 - 即使跳过 PRD 或 UI，也必须保留最小需求说明、范围、验收标准和风险记录；不得在业务规则、权限、数据或状态不清时直接编码。
 - 只有用户明确说“跳过工作流”“直接改代码”“无需 PRD/设计/技术方案”时，才允许跳过整个前置工作流；跳过原因必须在回复中简短记录。
 - 修改项目之前，先阅读本文件、`.codex/workflows/`、相关 `.codex/agents/*.md` 角色说明、`docs/requirements/` 下的全部需求文档，以及 `project/docs/` 下的框架说明、开发规范和 `project/docs/patterns/` 框架模式缓存。
-- 首次执行项目工作流前，必须使用 `.codex/skills/snowy-framework-bootstrap` 向开发者提示：请先确认当前 Snowy 框架能否在本机正常运行。默认不由 Agent 自动执行环境安装、构建、启动或校验脚本，除非用户明确要求；开发者未确认前后端可运行前，不进入 PRD/UI/技术设计或开发阶段。
-- 工作流状态分为全局状态和需求状态：`docs/workflow/status.md` 只记录全局环境自检、MySQL 指令检测和需求工作项索引；每个需求或功能的阶段状态记录在 `docs/workflow/requirements/<需求ID>.md`。开发者回复“前后端已确认可运行”或等价表达后，Orchestrator 还必须确认开发环境中 `mysql` 指令可用；前后端和 `mysql` 指令都满足后，才能把全局框架运行自检状态更新为 `developer_confirmed_ready`，并记录确认来源和时间。PRD、UI、技术设计、开发、测试、审查、发布、验收等阶段进入、完成、跳过或阻塞时，必须更新对应需求状态文件。
+- 首次执行项目工作流前，必须使用 `.codex/skills/snowy-framework-bootstrap` 向开发者提示：请先确认当前 Snowy 框架能否在本机正常运行。默认不由 Agent 自动执行环境安装、构建、启动或校验脚本，除非用户明确要求；开发环境清单未确认前，不进入 PRD/UI/技术设计或开发阶段。
+- 工作流状态分为全局状态、开发者本机环境状态和需求状态：`docs/workflow/status.md` 记录可提交的项目级状态和需求工作项索引；`docs/workflow/local-environment-status.md` 记录当前开发者本机环境检测结果，必须被 `.gitignore` 忽略，不得提交到 Git；每个需求或功能的阶段状态记录在 `docs/workflow/requirements/<需求ID>.md`。开发者回复“前后端已确认可运行”或等价表达后，Orchestrator 必须按环境检测清单确认 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务；检测结果写入 `docs/workflow/local-environment-status.md`。PRD、UI、技术设计、开发、测试、审查、发布、验收等阶段进入、完成、跳过或阻塞时，必须更新对应需求状态文件。
 - 所有文本文件必须使用 UTF-8 编码保存，尤其是 `*.md`、`*.yml`、`*.yaml`、`*.json`、`*.toml`、`*.java`、`*.vue`、`*.ts`、`*.js`、`*.properties` 和 `docs/workflow/**` 状态文件。禁止用未显式编码的 PowerShell 写入中文文件；PowerShell 读取必须使用 `Get-Content -Encoding UTF8`，写入必须使用 `Set-Content -Encoding UTF8` 或 `Out-File -Encoding UTF8`。Agent 手工编辑优先使用 `apply_patch`，避免整文件重写导致乱码。
 - 项目内文档和阶段产物默认使用简体中文，包括 PRD、原型说明、技术方案、数据方案、开发计划、Review、测试计划、状态文件和 `docs/superpowers/**` 产物。代码标识符、路径、命令、API、类名、配置键、第三方固定模板句可以保留英文。除非用户明确要求英文，不得生成整篇英文项目文档。
 - 后端启动前必须提示开发者确认 Java、MySQL、Redis 配置：Java 在 IDEA Project SDK、Modules SDK、Java Compiler、Maven importer、Maven runner 中都必须是 JDK 17；MySQL/Redis 配置位于 `project/snowy-web-app/src/main/resources/application.properties`，可由开发者自行修改，或在明确要求时由 Agent 按开发者提供的值修改。若只修改数据库名，只更新 MySQL JDBC URL 中 `host:port/` 后、`?` 前的库名。
@@ -24,7 +24,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 - 前端优先复用现有组件、路由、状态管理和样式规范。
 - 后端优先遵循现有分层架构、接口规范、异常处理和事务规范。
 - 开发阶段默认基于 `project/` 下已有框架进行增量开发，不按全新项目重新搭建。当前框架映射为：前端 `project/snowy-admin-web/`；后端启动模块 `project/snowy-web-app/`；后端业务插件 `project/snowy-plugin/`；后端插件 API `project/snowy-plugin-api/`；公共模块 `project/snowy-common/`。如实际结构变化，Orchestrator 必须先更新并说明映射关系。
-- 开发环境自检必须检测开发电脑是否存在 `mysql` 指令；PowerShell 优先执行 `Get-Command mysql`，也可执行 `where.exe mysql` 和 `mysql --version`。本地或远程数据库都适用；未找到 `mysql` 时，全局状态记为 `blocked_missing_mysql_cli`，不得进入后续 PRD/UI/技术设计或开发阶段。
+- 开发环境自检必须检测开发电脑是否存在可用 MySQL CLI。PowerShell 先执行 `Get-Command mysql`、`where.exe mysql` 和 `mysql --version`；PATH 找不到时，必须在常见安装目录搜索 `mysql.exe`，找到后用绝对路径执行 `mysql.exe --version`。本地或远程数据库都适用；PATH 和搜索都找不到可执行 MySQL CLI 时，全局状态记为 `blocked_missing_mysql_cli`，不得进入后续 PRD/UI/技术设计或开发阶段。
 - 前端开发必须同步维护 mock 数据；当后端接口无法连接、未完成或本地环境不可用时，页面应使用 mock 数据展示主流程和关键状态。
 - 后续新增需求或修改需求的代码后，必须判断是否需要更新 `project/docs/patterns/` 框架模式缓存；如果新增了可复用的后端、前端、权限、SQL、测试或流程模式，必须同步更新对应缓存文档，并在需求状态文件记录“缓存读取/命中/更新”。
 - 开发前必须提供开发模式选择：简单 CRUD 快速模式、标准 SDLC 模式、高风险严格模式、自定义。所有模式都必须读取 `project/docs/patterns/` 缓存；区别是快速模式以缓存为主路径减少探索，标准模式把缓存作为加速输入并继续完整设计，严格模式在读取缓存后仍做更深审查和验证。
@@ -99,7 +99,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 - `docs/requirements/` 下的需求文档已全部读取，并在产物中列出已引用的需求来源。
 - `project/docs/` 下的框架说明和开发规范已全部读取，并在技术产物中列出已引用的框架来源。
 - `project/docs/patterns/` 下相关框架模式缓存已读取；开发完成后已判断是否需要更新缓存，并在需求状态文件中记录结果。
-- 首次流程已输出 Snowy 框架运行提示，并在 `docs/workflow/status.md` 记录开发者是否确认前端、后端和 `mysql` 指令可用；环境自检是全局一次，未确认或 `mysql` 缺失时任何需求不得进入后续阶段。
+- 首次流程已输出 Snowy 框架运行提示，并在 `docs/workflow/status.md` 记录开发环境检测清单；环境自检是全局一次，未确认或存在阻塞项时任何需求不得进入后续阶段。
 - PRD 或最小需求说明已确认；如跳过 PRD，已记录跳过原因。
 - 如未跳过 PRD，HTML 版 PRD 已生成并可打开。
 - 如未跳过原型，可交互低保真 HTML 原型已生成并可打开，主路径页面切换、关键按钮和核心状态可点击验证。
@@ -133,7 +133,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 | 决策节点 | 默认选择项 |
 | --- | --- |
 | 当前分支确认 | 以当前分支作为最终合并目标；切换到其他分支；暂停 |
-| 环境自检 | 已确认前后端和 mysql 指令可用；环境有问题；稍后确认 |
+| 环境自检 | 已确认环境可用；环境有警告但可继续；环境阻塞；稍后确认 |
 | 开发模式决策 | 简单 CRUD 快速模式；标准 SDLC 模式；高风险严格模式；自定义 |
 | PRD/原型决策 | 生成 PRD 和低保真原型；跳过 PRD，进入 UI 决策；跳过 PRD 和 UI，进入技术方案 |
 | UI/Figma 决策 | 生成 UI/Figma；跳过 UI，复用 Snowy 现有 UI；返回补充 PRD |

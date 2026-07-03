@@ -19,7 +19,7 @@ project/docs/patterns/**
 
 状态记录规则：
 
-- 环境自检是全局状态，只记录在 `docs/workflow/status.md`。
+- 项目级状态记录在 `docs/workflow/status.md`；当前开发者本机环境检测结果记录在 `docs/workflow/local-environment-status.md`，该文件必须被 `.gitignore` 忽略，不提交到 Git。
 - 需求、PRD、UI、技术设计、数据设计、开发、测试、审查、发布、验收等阶段是需求状态，必须记录在 `docs/workflow/requirements/<需求ID>.md`。
 - 每个阶段进入、完成、跳过或阻塞时，Orchestrator 必须更新对应状态文件。
 - 状态文件必须记录阶段、状态、来源、产物、下一步和时间。
@@ -73,7 +73,7 @@ project/docs/patterns/**
 | 节点 | 选择项 |
 | --- | --- |
 | 当前分支确认 | 以当前分支作为最终合并目标；切换到其他分支；暂停 |
-| 环境自检 | 已确认前后端和 mysql 指令可用；环境有问题；稍后确认 |
+| 环境自检 | 已确认环境可用；环境有警告但可继续；环境阻塞；稍后确认 |
 | 开发模式决策 | 简单 CRUD 快速模式；标准 SDLC 模式；高风险严格模式；自定义 |
 | PRD/原型决策 | 生成 PRD 和低保真原型；跳过 PRD，进入 UI 决策；跳过 PRD 和 UI，进入技术方案 |
 | UI/Figma 决策 | 生成 UI/Figma；跳过 UI，复用 Snowy 现有 UI；返回补充 PRD |
@@ -126,9 +126,10 @@ project/docs/patterns/**
 - 未读取相关 `project/docs/patterns/` 模式缓存，不进入技术设计或开发。
 - 未确认开发模式，不进入 PRD/UI 决策、技术设计或开发。
 - 首次执行项目工作流时，未使用 `snowy-framework-bootstrap` 输出框架运行提示，不进入产品设计、技术设计或开发；默认不由 Agent 自动安装、构建、启动或校验环境。IntelliJ IDEA 是后端本地开发必备工具，必须提示开发者在 IDEA 中导入 `project/`、配置 JDK 17/Maven、确认 MySQL/Redis 配置并运行后端启动类。
-- 开发者未确认前端、后端和 `mysql` 指令可用时，任何需求都不进入 PRD/UI/技术设计或开发阶段；全局状态必须保持为 `blocked_until_developer_confirmed_ready` 或 `blocked_missing_mysql_cli`。
-- `docs/workflow/status.md` 未记录 `developer_confirmed_ready` 时，不进入任何需求的 PRD/UI/技术设计或开发阶段；如果状态为 `blocked_missing_mysql_cli`，停在开发环境检测阶段。
-- 开发环境检测必须检测开发电脑是否存在 `mysql` 指令。PowerShell 优先执行 `Get-Command mysql`，也可执行 `where.exe mysql` 和 `mysql --version`；本地或远程数据库都适用。未找到 `mysql` 时，全局状态记为 `blocked_missing_mysql_cli`，不进入后续阶段。
+- 开发者未确认开发环境可用时，任何需求都不进入 PRD/UI/技术设计或开发阶段；全局状态必须保持为 `blocked_until_developer_confirmed_ready`、`blocked_missing_mysql_cli` 或其他阻塞状态。
+- 当前会话没有开发环境检测通过结果或开发者当次确认时，不进入任何需求的 PRD/UI/技术设计或开发阶段；如果检测结果为 `blocked_missing_mysql_cli`，停在开发环境检测阶段。
+- 开发环境检测必须检测开发电脑是否存在可用 MySQL CLI。PowerShell 先执行 `Get-Command mysql`、`where.exe mysql` 和 `mysql --version`；PATH 找不到时，必须在常见安装目录搜索 `mysql.exe`，找到后用绝对路径执行 `mysql.exe --version`。本地或远程数据库都适用；PATH 和搜索都找不到可执行 MySQL CLI 时，全局状态记为 `blocked_missing_mysql_cli`，不进入后续阶段。
+- 开发环境检测默认用列表输出，不使用长段落；每项用 `✅`、`⚠️`、`❌` 标明结果。必检项包括 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务。检测结果写入 `docs/workflow/local-environment-status.md`，该文件不得提交到 Git。
 - 全局环境自检已为 `developer_confirmed_ready` 时，后续需求不重复要求自检；只有框架依赖、JDK/Maven、数据库/Redis 配置、`mysql` 指令状态变化，或开发者报告环境失效时，才重置全局环境状态并重新提示。
 - 未确认是否需要 PRD/原型，不进入 Product 阶段或跳过记录。
 - 未确认是否需要 UI/Figma，不进入 Design 阶段或跳过记录。
@@ -198,13 +199,14 @@ project/docs/patterns/**
 - 前端运行步骤：进入 `project/snowy-admin-web`，先执行 `npm install`，再执行 `npm run dev`，打开 Vite 输出地址，通常是 `http://localhost:5173`。
 - 后端运行步骤：用 IDEA 打开 `project/`，配置 JDK 17、Maven、Maven importer/runner，运行 `project/snowy-web-app/src/main/java/vip/xiaonuo/Application.java`。
 - Java 配置提示：Project SDK、Modules SDK、Java Compiler、Maven importer、Maven runner 均使用 JDK 17。
+- 环境检测列表：Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务。
 - 后端配置文件：`project/snowy-web-app/src/main/resources/application.properties`。
 - MySQL 配置项：`spring.datasource.dynamic.datasource.master.url`、`username`、`password`。
 - 修改数据库名：只修改 MySQL JDBC URL 中 `host:port/` 后、`?` 前的库名，例如 `jdbc:mysql://localhost:3306/snowy?...` 改为 `jdbc:mysql://localhost:3306/demo?...`。
 - Redis 配置项：`spring.data.redis.host`、`port`、`database`、`password`。
 - 后端端口：`server.port=82`，启动后可访问或检测 `http://localhost:82`。
 - 如果开发者未确认可运行，全局状态为 `blocked_until_developer_confirmed_ready`，不进入任何需求后续阶段，也不默认执行脚本。
-- 开发者回复“前后端已确认可运行”或等价表达后，Orchestrator 必须确认 `mysql` 指令可用；前端、后端和 `mysql` 指令都满足后，才能更新 `docs/workflow/status.md`：框架运行自检为 `developer_confirmed_ready`，前端/后端运行确认和 MySQL 指令检测均为 `已确认`，并记录确认来源和时间。
+- 开发者回复“前后端已确认可运行”或等价表达后，Orchestrator 必须补齐环境清单检测，并把检测结果、版本号、路径、端口可达性和警告项写入 `docs/workflow/local-environment-status.md`；该文件必须保持本地私有，不得提交到 Git。
 - 该确认是全局一次确认；每个需求只在自身状态文件中引用该全局状态，不重复记录环境自检阶段。
 
 ## 阶段 0.6：开发模式选择
