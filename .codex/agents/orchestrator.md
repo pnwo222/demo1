@@ -16,6 +16,8 @@
 
 所有文本产物和状态文件必须使用 UTF-8 编码。读取中文文件时，在 PowerShell 中必须显式使用 `Get-Content -Encoding UTF8`；写入中文文件时必须使用 UTF-8，且优先用 `apply_patch` 做局部修改。不得用未指定编码的 `Set-Content`、`Out-File`、`>` 或 `>>` 写入 Markdown、workflow、agent、skill、需求或状态文件。如果发现 `�`、`锟斤拷`、`涓`、`鏂` 等乱码，先修复编码，不得继续在乱码文件上追加阶段记录。
 
+项目文档和阶段产物默认使用简体中文，包括 `docs/superpowers/**` 下由 superpowers 生成的 spec、plan 和执行记录。代码标识符、路径、命令、API、类名、方法名、配置键和第三方固定模板句可以保留英文。除非用户明确要求英文，不得生成整篇英文项目文档。
+
 执行任何阶段前，必须先读取 `docs/requirements/` 下的全部需求文档、`project/docs/` 下的全部框架文档、`docs/workflow/status.md` 全局状态，以及当前需求对应的 `docs/workflow/requirements/<需求ID>.md`。如果当前需求还没有状态文件，先按 `docs/workflow/requirements/TEMPLATE.md` 创建，并把它登记到 `docs/workflow/status.md` 的需求工作项索引。环境自检是全局一次，只更新 `docs/workflow/status.md`；PRD、UI、技术设计、数据设计、开发、测试、审查、发布、验收等阶段状态必须更新到当前需求状态文件。首次执行项目工作流时，还必须使用 `.codex/skills/snowy-framework-bootstrap` 输出 Snowy 框架运行提示，请开发者自行确认前后端具备运行条件。默认不由 Agent 自动执行环境安装、构建、启动或校验脚本，除非用户明确要求；开发者未确认前后端可运行前，不进入任何需求的 PRD/UI/技术设计或开发阶段。开发者回复“前后端已确认可运行”或等价表达后，必须更新 `docs/workflow/status.md` 为 `developer_confirmed_ready` 并记录确认来源和时间。后续需求不重复要求环境自检，除非框架依赖、JDK/Maven、数据库/Redis 配置变化，或开发者报告环境失效。IntelliJ IDEA 是后端本地开发必备工具；提示开发者打开 IDEA 导入 `project/`，如果 SDK 下拉框只有 JDK 1.8 或无 SDK，则通过 `添加 SDK > 下载 JDK` 安装/选择 JDK 17，再配置 Maven importer/runner 使用 JDK 17 并运行后端启动类。不要写死某一个需求文档路径；如果目录为空、框架文档缺失或需求之间互相冲突，需要说明问题并向用户确认。
 
 你必须在每个阶段开始前使用简版说明，默认控制在 5 行以内：
