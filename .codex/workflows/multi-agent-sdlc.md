@@ -2,13 +2,14 @@
 
 本工作流是通用项目流程，不绑定具体业务。业务目标、角色、核心链路、质量重点和高风险规则必须从 `docs/requirements/` 下的全部需求文档中读取；框架结构、目录映射、技术栈和开发规范必须从 `project/docs/` 下的框架文档和 `project/` 实际代码中读取。
 
-执行任何阶段前，Orchestrator 必须先读取 `docs/requirements/` 下的全部需求文档、`project/docs/` 下的全部框架文档、`docs/workflow/status.md` 全局状态，以及当前需求对应的 `docs/workflow/requirements/<需求ID>.md`。如果当前需求还没有状态文件，必须先按 `docs/workflow/requirements/TEMPLATE.md` 创建。
+执行任何阶段前，Orchestrator 必须先读取 `docs/requirements/` 下的全部需求文档、`project/docs/` 下的全部框架文档、`project/docs/patterns/` 下的框架模式缓存、`docs/workflow/status.md` 全局状态，以及当前需求对应的 `docs/workflow/requirements/<需求ID>.md`。如果当前需求还没有状态文件，必须先按 `docs/workflow/requirements/TEMPLATE.md` 创建。
 
 ```text
 docs/requirements/**
 docs/workflow/status.md
 docs/workflow/requirements/<需求ID>.md
 project/docs/**
+project/docs/patterns/**
 .codex/skills/snowy-framework-bootstrap/**
 ```
 
@@ -23,6 +24,7 @@ project/docs/**
 - 每个阶段进入、完成、跳过或阻塞时，Orchestrator 必须更新对应状态文件。
 - 状态文件必须记录阶段、状态、来源、产物、下一步和时间。
 - 不允许只在对话中说明阶段变化而不更新状态文件。
+- 每个需求状态文件必须记录缓存读取、缓存命中和缓存更新结果。
 
 编码规则：
 
@@ -47,6 +49,9 @@ project/docs/**
 - 只有用户明确说“跳过工作流”“直接改代码”“无需 PRD/设计/技术方案”时，才允许跳过整个前置工作流。
 - 如果用户只给出功能名，例如“完成 某功能”，默认先输出简版阶段状态和一个范围确认问题。
 - 所有需要开发者确认的节点，优先使用 Codex 可点击选择项；如果当前环境没有选择控件，则输出编号选项，允许开发者输入编号或自由文本。
+- Orchestrator 必须提供开发模式选择：简单 CRUD 快速模式、标准 SDLC 模式、高风险严格模式、自定义。
+- 所有开发模式都必须读取 `project/docs/patterns/` 缓存。简单 CRUD 快速模式优先按缓存实现并减少重复探索；标准 SDLC 模式把缓存作为加速输入但仍保留完整设计、拆分和审查；高风险严格模式读取缓存后仍必须补读实际代码并加强审查。
+- 如果需求符合后台单表或少量表 CRUD，Orchestrator 必须推荐“简单 CRUD 快速模式”，并优先读取 `project/docs/patterns/*crud*`、`permission-sql-pattern.md`、`migration-sql-pattern.md`。
 
 阶段开始前默认使用简版输出，控制在 5 行以内：
 
@@ -63,12 +68,31 @@ project/docs/**
 | 节点 | 选择项 |
 | --- | --- |
 | 环境自检 | 已确认前后端可运行；环境有问题；稍后确认 |
+| 开发模式决策 | 简单 CRUD 快速模式；标准 SDLC 模式；高风险严格模式；自定义 |
 | PRD/原型决策 | 生成 PRD 和低保真原型；跳过 PRD，进入 UI 决策；跳过 PRD 和 UI，进入技术方案 |
 | UI/Figma 决策 | 生成 UI/Figma；跳过 UI，复用 Snowy 现有 UI；返回补充 PRD |
 | 技术方案确认 | 确认并进入开发拆分；需要调整；返回补充需求 |
 | 数据方案确认 | 确认并进入开发拆分；需要调整；本次无数据变更 |
 | 开发完成确认 | 进入测试；继续开发；暂停 |
 | 验收确认 | 验收通过；有问题需修复；记录风险后通过 |
+
+## 开发模式决策
+
+开发模式在框架装载和环境自检之后、PRD/UI 决策之前确认。
+
+| 模式 | 适用条件 | 缓存读取 | 产物和门禁 |
+| --- | --- | --- | --- |
+| 简单 CRUD 快速模式 | 后台管理单表或少量表 CRUD；常规分页、搜索、新增、编辑、删除；无复杂状态机、金额、资源扣减、外部回调或敏感数据高风险 | 必读并优先使用 `backend-crud-pattern.md`、`frontend-crud-pattern.md`、`permission-sql-pattern.md`、`migration-sql-pattern.md` | 可跳过 PRD/UI；保留最小需求说明、字段/接口/表结构、轻量开发清单、基础验证和缓存更新记录 |
+| 标准 SDLC 模式 | 一般业务功能、跨前后端、有业务规则或交互流程 | 必读全部相关缓存；缓存用于加速理解，但仍要输出技术方案、数据方案、Feature Slice、DAG/Wave | 常规 PRD/UI 可选、技术设计、数据设计、任务拆分、开发、测试、审查 |
+| 高风险严格模式 | 涉及金额、核心权限、状态机、资源扣减、外部回调、敏感数据、删除或批量高风险操作 | 必读缓存，但必须补读实际代码和高风险链路，不得只按缓存套模板 | 强制补齐技术/数据/安全/QA 设计，多类 Review，严格门禁 |
+| 自定义 | 开发者明确指定 | 至少读取相关缓存并记录取舍 | 按开发者确认执行，风险不可省略 |
+
+简单 CRUD 快速模式的默认执行清单：
+
+1. 需求确认、模块定位、字段/接口/表结构确认。
+2. 后端 CRUD、SQL、权限点。
+3. 前端 API、列表、表单、mock fallback。
+4. 构建/检查、状态记录、缓存更新判断。
 
 只有在用户要求详细输出、审计报告、阶段材料清单，或出现阻塞/高风险时，才展开完整字段：
 
@@ -92,6 +116,8 @@ project/docs/**
 
 - 未读取并确认 `docs/requirements/` 下全部需求文档，不进入产品设计。
 - 未读取并确认 `project/docs/` 下全部框架文档，不进入产品设计、技术设计或开发。
+- 未读取相关 `project/docs/patterns/` 模式缓存，不进入技术设计或开发。
+- 未确认开发模式，不进入 PRD/UI 决策、技术设计或开发。
 - 首次执行项目工作流时，未使用 `snowy-framework-bootstrap` 输出框架运行提示，不进入产品设计、技术设计或开发；默认不由 Agent 自动安装、构建、启动或校验环境。IntelliJ IDEA 是后端本地开发必备工具，必须提示开发者在 IDEA 中导入 `project/`、配置 JDK 17/Maven、确认 MySQL/Redis 配置并运行后端启动类。
 - 开发者未确认前端和后端可运行时，任何需求都不进入 PRD/UI/技术设计或开发阶段；全局状态必须保持为 `blocked_until_developer_confirmed_ready`。
 - `docs/workflow/status.md` 未记录 `developer_confirmed_ready` 时，不进入任何需求的 PRD/UI/技术设计或开发阶段。
@@ -104,6 +130,7 @@ project/docs/**
 - 数据模型、migration 和回滚策略未确认，不进入相关开发。
 - P0/P1 Review 问题未修复，不允许合并。
 - CI 和发布检查未通过，不进入全量发布。
+- 开发完成后未判断是否需要更新 `project/docs/patterns/` 缓存，不进入验收复盘。
 
 ## 阶段 0：需求和框架装载
 
@@ -113,6 +140,7 @@ project/docs/**
 
 - 已读取的需求文档清单。
 - 已读取的框架文档清单。
+- 已读取的框架模式缓存清单。
 - 当前框架目录映射。
 - 项目目标。
 - 技术栈。
@@ -121,6 +149,7 @@ project/docs/**
 - 高风险规则。
 - 质量门禁。
 - 必须复用的现有框架能力。
+- 缓存是否命中、是否需要补读实际代码。
 
 如果需求文档缺失、框架文档缺失或内容不足，先补齐对应文档，不进入后续阶段。
 
@@ -142,6 +171,17 @@ project/docs/**
 - 如果开发者未确认可运行，全局状态为 `blocked_until_developer_confirmed_ready`，不进入任何需求后续阶段，也不默认执行脚本。
 - 开发者回复“前后端已确认可运行”或等价表达后，Orchestrator 必须更新 `docs/workflow/status.md`：框架运行自检为 `developer_confirmed_ready`，前端/后端运行确认为 `已确认`，并记录确认来源和时间。
 - 该确认是全局一次确认；每个需求只在自身状态文件中引用该全局状态，不重复记录环境自检阶段。
+
+## 阶段 0.6：开发模式选择
+
+由 Orchestrator 提供选择项：
+
+1. 简单 CRUD 快速模式。
+2. 标准 SDLC 模式。
+3. 高风险严格模式。
+4. 自定义。
+
+如果 Orchestrator 判断需求符合简单 CRUD，应推荐快速模式，但最终由开发者确认。确认后必须写入当前需求状态文件。
 
 前端自检命令：
 

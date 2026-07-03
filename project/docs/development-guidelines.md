@@ -4,10 +4,28 @@
 
 - 后续开发是基于 `project/` 现有框架增量扩展，不从零创建独立的新项目结构。
 - Agent 执行工作流时必须同时读取需求文档和框架文档：`docs/requirements/**`、`project/docs/**`。
+- 开发前必须读取 `project/docs/patterns/**` 框架模式缓存；所有模式都读缓存。简单 CRUD 快速模式优先使用缓存减少重复探索；标准模式使用缓存加速但仍保留完整设计和审查；高风险严格模式读取缓存后仍需补读实际代码和高风险链路。
 - 首次执行项目工作流前，必须使用 `.codex/skills/snowy-framework-bootstrap` 输出框架运行提示，请开发者先自行确认当前 Snowy 框架能否正常运行。默认不由 Agent 自动执行环境安装、构建、启动或校验脚本，除非用户明确要求。开发者未确认前后端可运行前，不进入 PRD/UI/技术设计或开发阶段。IntelliJ IDEA 是后端本地开发必备工具，开发者必须在 IDEA 中导入 `project/`、配置 JDK 17/Maven 并运行后端启动类。
 - 修改代码前先识别目标功能应落在哪个 Snowy 模块、插件或前端目录，并在阶段输出中说明映射关系。
+- 修改代码后必须判断是否需要更新 `project/docs/patterns/`；如果新增了可复用框架模式、例外规则或更好的模板，必须同步更新缓存。
 - 优先复用现有组件、接口封装、权限体系、异常处理、分页、字典、日志、审计、配置、文件和消息能力。
 - 不清楚业务规则、权限规则、状态机、金额规则、库存或资源一致性时，不直接进入代码开发。
+
+## 编码规范
+
+- 所有文本文件统一使用 UTF-8 编码，遵循仓库根目录 `.editorconfig`。
+- Markdown、需求文档、workflow、agent、skill、状态文件、Java、Vue、TypeScript、JavaScript、JSON、YAML、TOML、properties 都必须按 UTF-8 保存。
+- Windows PowerShell 读取中文文件必须使用 `Get-Content -Encoding UTF8`。
+- Windows PowerShell 写入中文文件必须使用 `Set-Content -Encoding UTF8` 或 `Out-File -Encoding UTF8`；不允许使用未指定编码的 `>`、`>>`、`Set-Content`、`Out-File` 更新中文文件。
+- Agent 修改 Markdown 和状态文件时优先使用 `apply_patch` 做局部修改，不整文件重写。
+- 如果文件中出现 `�`、`锟斤拷`、`涓`、`鏂` 等乱码，先修复编码，不继续追加记录。
+
+## 输出语言规范
+
+- 项目文档和阶段产物默认使用简体中文。
+- PRD、原型说明、技术方案、数据方案、开发计划、测试计划、Review、验收记录、状态文件和 `docs/superpowers/**` 产物必须默认中文。
+- 代码标识符、文件路径、命令、API、类名、方法名、配置键和 SQL 标识符可以保留英文。
+- 使用 superpowers 或第三方英文模板时，最终落盘文件必须转成中文，除非开发者明确要求英文。
 
 ## 前端规范
 
@@ -112,8 +130,10 @@ Orchestrator 在进入任意阶段前必须读取并输出：
 
 - `docs/requirements/` 下的全部需求文档清单。
 - `project/docs/` 下的全部框架文档清单。
+- `project/docs/patterns/` 下相关缓存文档清单。
 - 本次涉及的前端、后端、数据模块路径映射。
 - 需要复用或遵循的现有框架能力。
+- 缓存是否命中，以及开发后是否更新缓存。
 
 各专业 Agent 的输入材料必须包含框架文档摘要，不允许只拿需求文档直接按空白项目生成方案。
 

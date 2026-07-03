@@ -11,7 +11,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 - 所有需要开发者决策的节点，优先使用可点击选择项，而不是只让开发者手动输入。选择项必须覆盖推荐路径、跳过路径和自定义输入路径；如果当前 Codex 客户端不支持选择控件，则在文本中给出编号选项，允许开发者输入编号或自由文本。
 - 即使跳过 PRD 或 UI，也必须保留最小需求说明、范围、验收标准和风险记录；不得在业务规则、权限、数据或状态不清时直接编码。
 - 只有用户明确说“跳过工作流”“直接改代码”“无需 PRD/设计/技术方案”时，才允许跳过整个前置工作流；跳过原因必须在回复中简短记录。
-- 修改项目之前，先阅读本文件、`.codex/workflows/`、相关 `.codex/agents/*.md` 角色说明、`docs/requirements/` 下的全部需求文档，以及 `project/docs/` 下的框架说明和开发规范。
+- 修改项目之前，先阅读本文件、`.codex/workflows/`、相关 `.codex/agents/*.md` 角色说明、`docs/requirements/` 下的全部需求文档，以及 `project/docs/` 下的框架说明、开发规范和 `project/docs/patterns/` 框架模式缓存。
 - 首次执行项目工作流前，必须使用 `.codex/skills/snowy-framework-bootstrap` 向开发者提示：请先确认当前 Snowy 框架能否在本机正常运行。默认不由 Agent 自动执行环境安装、构建、启动或校验脚本，除非用户明确要求；开发者未确认前后端可运行前，不进入 PRD/UI/技术设计或开发阶段。
 - 工作流状态分为全局状态和需求状态：`docs/workflow/status.md` 只记录全局环境自检和需求工作项索引；每个需求或功能的阶段状态记录在 `docs/workflow/requirements/<需求ID>.md`。开发者回复“前后端已确认可运行”或等价表达后，Orchestrator 必须把全局框架运行自检状态更新为 `developer_confirmed_ready`，并记录确认来源和时间。PRD、UI、技术设计、开发、测试、审查、发布、验收等阶段进入、完成、跳过或阻塞时，必须更新对应需求状态文件。
 - 所有文本文件必须使用 UTF-8 编码保存，尤其是 `*.md`、`*.yml`、`*.yaml`、`*.json`、`*.toml`、`*.java`、`*.vue`、`*.ts`、`*.js`、`*.properties` 和 `docs/workflow/**` 状态文件。禁止用未显式编码的 PowerShell 写入中文文件；PowerShell 读取必须使用 `Get-Content -Encoding UTF8`，写入必须使用 `Set-Content -Encoding UTF8` 或 `Out-File -Encoding UTF8`。Agent 手工编辑优先使用 `apply_patch`，避免整文件重写导致乱码。
@@ -25,6 +25,8 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 - 开发阶段默认基于 `project/` 下已有框架进行增量开发，不按全新项目重新搭建。当前框架映射为：前端 `project/snowy-admin-web/`；后端启动模块 `project/snowy-web-app/`；后端业务插件 `project/snowy-plugin/`；后端插件 API `project/snowy-plugin-api/`；公共模块 `project/snowy-common/`。如实际结构变化，Orchestrator 必须先更新并说明映射关系。
 - 后端开发时，若本地运行环境、数据库或 MySQL 缺失，不阻断代码开发；先完成 API、业务逻辑、数据结构、配置说明和可运行性降级记录，再标注未执行的验证项。
 - 前端开发必须同步维护 mock 数据；当后端接口无法连接、未完成或本地环境不可用时，页面应使用 mock 数据展示主流程和关键状态。
+- 后续新增需求或修改需求的代码后，必须判断是否需要更新 `project/docs/patterns/` 框架模式缓存；如果新增了可复用的后端、前端、权限、SQL、测试或流程模式，必须同步更新对应缓存文档，并在需求状态文件记录“缓存读取/命中/更新”。
+- 开发前必须提供开发模式选择：简单 CRUD 快速模式、标准 SDLC 模式、高风险严格模式、自定义。所有模式都必须读取 `project/docs/patterns/` 缓存；区别是快速模式以缓存为主路径减少探索，标准模式把缓存作为加速输入并继续完整设计，严格模式在读取缓存后仍做更深审查和验证。
 - 涉及资金、权限、状态机、库存或资源、用户数据、删除和批量操作的改动必须重点审查。
 - 所有功能都必须有验收标准、测试结果和残余风险说明。
 
@@ -67,22 +69,23 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 ## 标准开发流程
 
 0. Orchestrator 先用简短格式声明当前阶段、关键输入、下一步和是否需要确认。
-1. Orchestrator 读取 `docs/requirements/` 下的全部需求文档，并读取 `project/docs/` 下的框架文档。
+1. Orchestrator 读取 `docs/requirements/` 下的全部需求文档，并读取 `project/docs/` 下的框架文档和 `project/docs/patterns/` 模式缓存。
 2. Orchestrator 使用 `.codex/skills/snowy-framework-bootstrap` 输出框架运行提示，要求开发者自行确认前端和后端能正常运行；未确认则停在本阶段。
-3. Orchestrator 询问是否需要 PRD 和 UI 设计；开发者可明确跳过。
-4. 如未跳过，Product Agent 基于需求和现有框架能力生成 PRD、验收标准、HTML PRD 和可交互低保真 HTML 原型。
-5. 如未跳过 UI，Design Agent 建立设计系统，并连接 Figma 生成可落地设计稿。
-6. Architect Agent 明确模块边界、状态机、API、数据模型、安全模型和可运维性。
-7. Data Agent 细化数据库模型、migration、索引、回滚和数据一致性策略。
-8. Orchestrator 按用户价值拆 feature slice。
-9. Orchestrator 套用 `.codex/workflows/auto-dispatch-parallel-development.md`，生成任务图、依赖 DAG、并行 wave、owner 分配、branch/worktree 策略和集成策略。
-10. Frontend、Backend、Data、QA 等 Agent 在独立 branch 或 worktree 并行开发。
-11. 本地运行必要检查后提交 PR。
-12. Reviewer、Security、QA Agent 做审查。
-13. CI 运行 lint、typecheck、test、build、安全扫描等项目定义的质量门禁。
-14. 人工负责人审批后合并。
-15. 预发验证、灰度发布、全量发布。
-16. 发布后监控核心指标和用户反馈。
+3. Orchestrator 提供开发模式选择：简单 CRUD 快速模式、标准 SDLC 模式、高风险严格模式、自定义。
+4. Orchestrator 询问是否需要 PRD 和 UI 设计；开发者可明确跳过。简单 CRUD 快速模式可默认跳过 PRD/UI，但必须保留最小需求说明、字段、接口、验收标准和风险记录。
+5. 如未跳过，Product Agent 基于需求和现有框架能力生成 PRD、验收标准、HTML PRD 和可交互低保真 HTML 原型。
+6. 如未跳过 UI，Design Agent 建立设计系统，并连接 Figma 生成可落地设计稿。
+7. Architect Agent 明确模块边界、状态机、API、数据模型、安全模型和可运维性。简单 CRUD 快速模式可用轻量技术方案替代完整架构文档。
+8. Data Agent 细化数据库模型、migration、索引、回滚和数据一致性策略。简单 CRUD 快速模式可合并到轻量技术方案或开发清单。
+9. Orchestrator 按用户价值拆 feature slice；简单 CRUD 快速模式可压缩为“后端+SQL+权限”“前端+mock”“验证+状态”三类任务。
+10. Orchestrator 套用 `.codex/workflows/auto-dispatch-parallel-development.md`，生成任务图、依赖 DAG、并行 wave、owner 分配、branch/worktree 策略和集成策略；简单 CRUD 快速模式只生成轻量执行清单。
+11. Frontend、Backend、Data、QA 等 Agent 在独立 branch 或 worktree 并行开发。
+12. 本地运行必要检查后提交 PR。
+13. Reviewer、Security、QA Agent 做审查。
+14. CI 运行 lint、typecheck、test、build、安全扫描等项目定义的质量门禁。
+15. 人工负责人审批后合并。
+16. 预发验证、灰度发布、全量发布。
+17. 发布后监控核心指标和用户反馈。
 
 ## 通用 Definition of Done
 
@@ -90,6 +93,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 
 - `docs/requirements/` 下的需求文档已全部读取，并在产物中列出已引用的需求来源。
 - `project/docs/` 下的框架说明和开发规范已全部读取，并在技术产物中列出已引用的框架来源。
+- `project/docs/patterns/` 下相关框架模式缓存已读取；开发完成后已判断是否需要更新缓存，并在需求状态文件中记录结果。
 - 首次流程已输出 Snowy 框架运行提示，并在 `docs/workflow/status.md` 记录开发者是否确认前端和后端可运行；环境自检是全局一次，未确认时任何需求不得进入后续阶段。
 - PRD 或最小需求说明已确认；如跳过 PRD，已记录跳过原因。
 - 如未跳过 PRD，HTML 版 PRD 已生成并可打开。
@@ -124,11 +128,21 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 | 决策节点 | 默认选择项 |
 | --- | --- |
 | 环境自检 | 已确认前后端可运行；环境有问题；稍后确认 |
+| 开发模式决策 | 简单 CRUD 快速模式；标准 SDLC 模式；高风险严格模式；自定义 |
 | PRD/原型决策 | 生成 PRD 和低保真原型；跳过 PRD，进入 UI 决策；跳过 PRD 和 UI，进入技术方案 |
 | UI/Figma 决策 | 生成 UI/Figma；跳过 UI，复用 Snowy 现有 UI；返回补充 PRD |
 | 技术方案确认 | 确认并进入开发拆分；需要调整；返回补充需求 |
 | 开发完成确认 | 进入测试；继续开发；暂停 |
 | 验收确认 | 验收通过；有问题需修复；记录风险后通过 |
+
+## 开发模式
+
+| 模式 | 适用场景 | 缓存使用 | 任务粒度 |
+| --- | --- | --- | --- |
+| 简单 CRUD 快速模式 | 后台单表或少量表 CRUD，常规分页、搜索、新增、编辑、删除，无复杂状态机和高风险规则 | 必读并优先按缓存实现，只补读少量参考代码 | 后端+SQL+权限、前端+mock、验证+状态 |
+| 标准 SDLC 模式 | 一般功能、多个模块、有一定业务规则或交互流程 | 必读，作为加速输入；仍输出完整技术/数据/任务拆分 | 正常 Feature Slice、DAG、Wave |
+| 高风险严格模式 | 金额、权限、状态机、资源扣减、外部回调、敏感数据、批量高风险操作 | 必读，但不能替代实际代码审查和安全/QA 深查 | 更细任务、更强 Review/QA/Security |
+| 自定义 | 开发者指定流程 | 按用户选择，但不得跳过必要缓存读取和风险记录 | 按确认结果 |
 
 只有在用户要求“详细输出”“审计报告”“阶段材料清单”或出现阻塞/风险时，才展开完整字段：
 
@@ -203,3 +217,4 @@ project/
 - `project/snowy-plugin-api/`：插件 API 契约和跨插件调用接口。
 - `project/snowy-common/`：公共实体、工具、异常、分页、拦截器等基础能力。
 - `project/docs/`：框架内容介绍、开发规范和后续开发前必须读取的框架文档。
+- `project/docs/patterns/`：框架预读缓存，记录后端 CRUD、前端 CRUD、权限 SQL、migration 和缓存更新规则。
