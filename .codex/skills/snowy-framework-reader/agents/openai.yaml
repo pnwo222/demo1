@@ -1,0 +1,4 @@
+interface:
+  display_name: "Snowy Framework Reader"
+  short_description: "读取 Snowy 框架代码并维护高命中缓存"
+  default_prompt: "Use $snowy-framework-reader to read the Snowy framework, update framework caches, and identify which modules and capabilities a requirement should reuse."

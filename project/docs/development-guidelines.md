@@ -4,7 +4,7 @@
 
 - 后续开发是基于 `project/` 现有框架增量扩展，不从零创建独立的新项目结构。
 - Agent 执行工作流时必须同时读取需求文档和框架文档：`docs/requirements/**`、`project/docs/**`。
-- 开发前必须读取 `project/docs/patterns/**` 框架模式缓存；所有模式都读缓存。简单 CRUD 快速模式优先使用缓存减少重复探索；标准模式使用缓存加速但仍保留完整设计和审查；高风险严格模式读取缓存后仍需补读实际代码和高风险链路。
+- 开发前必须使用 `.codex/skills/snowy-framework-reader` 读取 `project/docs/patterns/**` 框架模式缓存和必要的实际代码；所有模式都读缓存。简单 CRUD 快速模式优先使用缓存减少重复探索；标准模式使用缓存加速但仍保留完整设计和审查；高风险严格模式读取缓存后仍需补读实际代码和高风险链路。
 - 首次执行项目工作流前，必须使用 `.codex/skills/snowy-framework-bootstrap` 先执行只读环境自检，并用 `✅`、`⚠️`、`❌` 列出 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务结果，再请开发者确认当前 Snowy 框架能否正常运行。默认不由 Agent 自动执行环境安装、构建、启动或校验脚本，除非用户明确要求。开发环境清单未确认前，不进入 PRD/UI/技术设计或开发阶段。IntelliJ IDEA 是后端本地开发必备工具，开发者必须在 IDEA 中导入 `project/`、配置 JDK 17/Maven 并运行后端启动类。
 - 环境检测输出必须使用列表布局，每项以 `✅`、`⚠️`、`❌` 标明结果。`检测：` 后必须换行，每个检测项独占一行，禁止用分号、逗号或空格串成一整段。必检项包括 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务。
 - 环境检测结果写入 `docs/workflow/local-environment-status.md`，该文件必须被 `.gitignore` 忽略，不提交到 Git；`docs/workflow/status.md` 仍是可提交的项目级状态和需求索引。

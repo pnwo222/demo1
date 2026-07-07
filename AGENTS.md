@@ -13,7 +13,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 - 所有需要开发者决策的节点，优先使用可点击选择项，而不是只让开发者手动输入。选择项必须覆盖推荐路径、跳过路径和自定义输入路径；如果当前 Codex 客户端不支持选择控件，则在文本中给出编号选项，允许开发者输入编号或自由文本。编号选项必须逐行输出，不得挤在 `下一步` 同一行。
 - 即使跳过 PRD 或 UI，也必须保留最小需求说明、范围、验收标准和风险记录；不得在业务规则、权限、数据或状态不清时直接编码。
 - 只有用户明确说“跳过工作流”“直接改代码”“无需 PRD/设计/技术方案”时，才允许跳过整个前置工作流；跳过原因必须在回复中简短记录。
-- 修改项目之前，先阅读本文件、`.codex/workflows/`、相关 `.codex/agents/*.md` 角色说明、`docs/requirements/` 下的全部需求文档，以及 `project/docs/` 下的框架说明、开发规范和 `project/docs/patterns/` 框架模式缓存。
+- 修改项目之前，先阅读本文件、`.codex/workflows/`、相关 `.codex/agents/*.md` 角色说明、`docs/requirements/` 下的全部需求文档，并使用 `.codex/skills/snowy-framework-reader` 读取 `project/` 框架、`project/docs/` 框架说明、开发规范和 `project/docs/patterns/` 框架模式缓存。
 - 首次执行项目工作流前，必须使用 `.codex/skills/snowy-framework-bootstrap` 先执行只读环境自检，并用 `✅`、`⚠️`、`❌` 列出 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务结果，再提示开发者确认当前 Snowy 框架能否在本机正常运行。检测结果必须在 `检测：` 后逐项换行，每个检测项独占一行，禁止用分号、逗号或空格串成一整段。默认不由 Agent 自动执行环境安装、构建、启动或校验脚本，除非用户明确要求；开发环境清单未确认前，不进入 PRD/UI/技术设计或开发阶段。
 - 工作流状态分为全局状态、开发者本机环境状态和需求状态：`docs/workflow/status.md` 记录可提交的项目级状态和需求工作项索引；`docs/workflow/local-environment-status.md` 记录当前开发者本机环境检测结果，必须被 `.gitignore` 忽略，不得提交到 Git；每个需求或功能的阶段状态记录在 `docs/workflow/requirements/<需求ID>.md`。开发者回复“前后端已确认可运行”或等价表达后，Orchestrator 必须按环境检测清单确认 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务；检测结果写入 `docs/workflow/local-environment-status.md`。PRD、UI、技术设计、开发、测试、审查、发布、验收、分支和合并等单需求阶段进入、完成、跳过或阻塞时，必须更新对应需求状态文件。
 - 所有文本文件必须使用 UTF-8 编码保存，尤其是 `*.md`、`*.yml`、`*.yaml`、`*.json`、`*.toml`、`*.java`、`*.vue`、`*.ts`、`*.js`、`*.properties` 和 `docs/workflow/**` 状态文件。禁止用未显式编码的 PowerShell 写入中文文件；PowerShell 读取必须使用 `Get-Content -Encoding UTF8`，写入必须使用 `Set-Content -Encoding UTF8` 或 `Out-File -Encoding UTF8`。Agent 手工编辑优先使用 `apply_patch`，避免整文件重写导致乱码。
@@ -28,7 +28,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 - 开发环境自检必须检测开发电脑是否存在可用 MySQL CLI。PowerShell 先执行 `Get-Command mysql`、`where.exe mysql` 和 `mysql --version`；PATH 找不到时，必须在常见安装目录搜索 `mysql.exe`，找到后用绝对路径执行 `mysql.exe --version`。本地或远程数据库都适用；PATH 和搜索都找不到可执行 MySQL CLI 时，全局状态记为 `blocked_missing_mysql_cli`，不得进入后续 PRD/UI/技术设计或开发阶段。
 - 前端开发必须同步维护 mock 数据；当后端接口无法连接、未完成或本地环境不可用时，页面应使用 mock 数据展示主流程和关键状态。
 - 后续新增需求或修改需求的代码后，必须判断是否需要更新 `project/docs/patterns/` 框架模式缓存；如果新增了可复用的后端、前端、权限、SQL、测试或流程模式，必须同步更新对应缓存文档，并在需求状态文件记录“缓存读取/命中/更新”。
-- 开发前必须提供开发模式选择：简单 CRUD 快速模式、标准 SDLC 模式、高风险严格模式、自定义。所有模式都必须读取 `project/docs/patterns/` 缓存；区别是快速模式以缓存为主路径减少探索，标准模式把缓存作为加速输入并继续完整设计，严格模式在读取缓存后仍做更深审查和验证。
+- 开发前必须提供开发模式选择：简单 CRUD 快速模式、标准 SDLC 模式、高风险严格模式、自定义。所有模式都必须使用 `.codex/skills/snowy-framework-reader` 读取 `project/docs/patterns/` 缓存；区别是快速模式以缓存为主路径减少探索，标准模式把缓存作为加速输入并继续完整设计，严格模式在读取缓存后仍做更深审查和验证。
 - 涉及资金、权限、状态机、库存或资源、用户数据、删除和批量操作的改动必须重点审查。
 - 所有功能都必须有验收标准、测试结果和残余风险说明。
 

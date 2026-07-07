@@ -11,6 +11,9 @@
 | `permission-sql-pattern.md` | 菜单、按钮权限、API 权限、角色关系 SQL 模式 | `_sql/snowy_mysql.sql` |
 | `migration-sql-pattern.md` | 表结构、字段、索引、初始化 SQL 约定 | `_sql/snowy_mysql.sql` 和 `BIZ_NOTICE` |
 | `cache-update-rules.md` | 缓存何时读取、何时刷新、后续需求如何回写 | 本项目工作流约定 |
+| `framework-inventory.md` | 框架技术栈、运行入口、前后端目录、数据和权限入口 | `project/README.md`、`project/pom.xml`、`package.json`、`application.properties` |
+| `module-map.md` | 后端插件、插件 API、前端目录和新需求落点映射 | `snowy-plugin`、`snowy-plugin-api`、`snowy-admin-web/src` |
+| `feature-capability-map.md` | 已有功能能力、可复用模块、缓存命中规则 | auth/biz/client/dev/gen/mobile/sys 代码和 `_sql/snowy_mysql.sql` |
 
 ## 使用规则
 

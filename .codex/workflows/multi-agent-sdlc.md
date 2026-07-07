@@ -9,6 +9,7 @@ docs/requirements/**
 docs/workflow/status.md
 docs/workflow/requirements/<需求ID>.md
 project/docs/**
+.codex/skills/snowy-framework-reader/**
 project/docs/patterns/**
 .codex/skills/snowy-framework-bootstrap/**
 ```
@@ -57,7 +58,7 @@ project/docs/patterns/**
 - 如果用户只给出功能名，例如“完成 某功能”，默认先输出简版阶段状态和一个范围确认问题。
 - 所有需要开发者确认的节点，优先使用 Codex 可点击选择项；如果当前环境没有选择控件，则输出编号选项，允许开发者输入编号或自由文本。所有编号选择项必须逐行输出，不得内联到 `下一步` 同一行。所有检测项也必须逐行输出，不得内联到 `检测：` 同一行。
 - Orchestrator 必须提供开发模式选择：简单 CRUD 快速模式、标准 SDLC 模式、高风险严格模式、自定义。
-- 所有开发模式都必须读取 `project/docs/patterns/` 缓存。简单 CRUD 快速模式优先按缓存实现并减少重复探索；标准 SDLC 模式把缓存作为加速输入但仍保留完整设计、拆分和审查；高风险严格模式读取缓存后仍必须补读实际代码并加强审查。
+- 所有开发模式都必须使用 `.codex/skills/snowy-framework-reader` 读取 `project/docs/patterns/` 缓存。简单 CRUD 快速模式优先按缓存实现并减少重复探索；标准 SDLC 模式把缓存作为加速输入但仍保留完整设计、拆分和审查；高风险严格模式读取缓存后仍必须补读实际代码并加强审查。
 - 如果需求符合后台单表或少量表 CRUD，Orchestrator 必须推荐“简单 CRUD 快速模式”，并优先读取 `project/docs/patterns/*crud*`、`permission-sql-pattern.md`、`migration-sql-pattern.md`。
 
 阶段开始前默认使用简版输出，控制在 5 行以内：
