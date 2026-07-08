@@ -33,7 +33,7 @@
 | 需求和框架装载 | 已完成 | `docs/requirements/纺院需求.md`、`docs/tenders/纺院标书技术部分.extract.txt`、`docs/tenders/assets/纺院标书技术部分/` | 标书解析、框架缓存读取 | 2026-07-08 10:38 +08:00 |
 | 开发模式决策 | 已完成 | 高风险严格模式 | 用户选择 1 | 2026-07-08 10:40 +08:00 |
 | PRD/原型决策 | 已完成 | 生成 PRD 和低保真原型 | 用户选择 1 | 2026-07-08 10:43 +08:00 |
-| Product 产物 | 已完成 | `docs/prd/20260708-fyy-prd.html`、`docs/design/20260708-fyy-admin-low-fidelity.html`、`docs/design/20260708-fyy-h5-low-fidelity.html` | Product Agent | 2026-07-08 10:43 +08:00 |
+| Product 产物 | 已完成（按新版工作流返工） | `docs/prd/20260708-fyy-prd.html`、`docs/design/20260708-fyy-admin-low-fidelity.html`、`docs/design/20260708-fyy-h5-low-fidelity.html` | Product Agent；用户要求重新走 PRD 流程 | 2026-07-08 11:38 +08:00 |
 | UI/Figma 决策 | 需确认 | - | 待用户选择 | - |
 | Design 产物 | 未开始 | - | - | - |
 | 最小需求说明 | 已完成 | `docs/requirements/纺院需求.md` | 标书需求拆解 | 2026-07-08 10:38 +08:00 |
@@ -62,10 +62,10 @@
 
 ```text
 节点: UI/Figma 决策
-推荐选项: 跳过 UI，复用 Snowy 现有 UI
-其他选项: 生成 UI/Figma；返回补充 PRD；自定义
+推荐选项: 生成 UI/Figma
+其他选项: 跳过 UI，复用 Snowy 现有 UI；返回补充 PRD/原型；自定义
 自定义输入: 支持
-记录时间: 2026-07-08 10:43 +08:00
+记录时间: 2026-07-08 11:38 +08:00
 ```
 
 ## 框架缓存记录
@@ -129,4 +129,15 @@ Worktree 合回需求集成分支: 未开始
 产物: docs/prd/20260708-fyy-prd.html; docs/design/20260708-fyy-admin-low-fidelity.html; docs/design/20260708-fyy-h5-low-fidelity.html
 下一步: UI/Figma 决策
 时间: 2026-07-08 10:43 +08:00
+```
+
+```text
+阶段: Product 产物返工
+状态: 已完成
+来源: 用户反馈原型与需求差距大；用户要求“我修改了工作流，请重新走 prd 流程”；AGENTS.md；.codex/workflows/multi-agent-sdlc.md；.codex/agents/product.md
+产物: 覆盖重写 docs/prd/20260708-fyy-prd.html; 覆盖重写 docs/design/20260708-fyy-admin-low-fidelity.html; 覆盖重写 docs/design/20260708-fyy-h5-low-fidelity.html
+覆盖: PRD 增加原型需求覆盖矩阵；后管原型覆盖学校端、管理端、接口建设、PAM 管理；H5 原型覆盖 H5-001~H5-013 / T0R12~T0R23；原型补充字段、操作、状态、异常和权限入口
+验证: 三个 HTML 文件存在；UTF-8 读取未发现常见乱码；覆盖矩阵关键编号可检索；后管和 H5 原型内嵌脚本语法检查通过
+下一步: UI/Figma 决策
+时间: 2026-07-08 11:38 +08:00
 ```

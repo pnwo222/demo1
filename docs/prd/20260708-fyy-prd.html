@@ -5,169 +5,158 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>纺院一卡通专区软件 PRD</title>
   <style>
-    :root { --ink:#172033; --muted:#667085; --line:#d9dee8; --brand:#1f7a8c; --accent:#d1495b; --soft:#f5f7fb; --ok:#16845b; --warn:#b7791f; }
-    * { box-sizing:border-box; }
-    body { margin:0; font-family: "Microsoft YaHei", Arial, sans-serif; color:var(--ink); background:#fff; line-height:1.65; }
-    header { padding:34px 48px 28px; background:#0f2430; color:#fff; }
-    header p { color:#c9d8df; max-width:980px; margin:8px 0 0; }
-    main { max-width:1180px; margin:0 auto; padding:30px 34px 64px; }
-    h1 { margin:0; font-size:30px; letter-spacing:0; }
-    h2 { margin:34px 0 12px; padding-bottom:8px; border-bottom:2px solid var(--line); font-size:22px; }
-    h3 { margin:24px 0 10px; font-size:18px; color:#0f4652; }
-    .meta, .grid { display:grid; gap:12px; }
-    .meta { grid-template-columns:repeat(4, minmax(0, 1fr)); margin-top:20px; }
-    .card { border:1px solid var(--line); border-radius:8px; padding:14px 16px; background:#fff; }
-    .soft { background:var(--soft); }
-    .label { color:var(--muted); font-size:13px; }
-    .value { font-weight:700; margin-top:4px; }
-    table { width:100%; border-collapse:collapse; margin:12px 0 18px; table-layout:fixed; }
-    th, td { border:1px solid var(--line); padding:9px 10px; vertical-align:top; word-break:break-word; }
-    th { background:#eef3f7; text-align:left; }
-    .pill { display:inline-block; padding:2px 8px; border-radius:999px; background:#e7f4f0; color:var(--ok); font-size:12px; font-weight:700; }
-    .risk { background:#fff3e2; color:var(--warn); }
-    .danger { background:#ffe8ec; color:var(--accent); }
-    ul { margin-top:8px; }
-    .toc { display:grid; grid-template-columns:repeat(5, minmax(0, 1fr)); gap:10px; margin:20px 0; }
-    .toc a { border:1px solid var(--line); border-radius:8px; padding:10px 12px; text-decoration:none; color:var(--ink); background:#fff; }
-    .flow { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
-    .step { padding:8px 10px; background:#eef7f8; border:1px solid #c8e3e8; border-radius:8px; }
-    .arrow { color:var(--muted); }
-    @media print { header { background:#fff; color:#000; border-bottom:1px solid #ddd; } header p { color:#555; } main { max-width:none; padding:20px; } .toc { display:none; } }
-    @media (max-width:800px){ header{padding:24px;} main{padding:20px;} .meta,.toc{grid-template-columns:1fr;} table{font-size:13px;} }
+    :root{--ink:#182230;--muted:#667085;--line:#d9e0ea;--bg:#f6f8fb;--brand:#1f7a8c;--brand2:#0f4652;--risk:#b42318;--warn:#b54708;--ok:#067647}
+    *{box-sizing:border-box}body{margin:0;font-family:"Microsoft YaHei",Arial,sans-serif;color:var(--ink);line-height:1.65;background:#fff}header{background:#102534;color:#fff;padding:34px 48px}header p{color:#c6d4dd;max-width:1100px;margin:8px 0 0}main{max-width:1240px;margin:0 auto;padding:30px 34px 72px}h1{margin:0;font-size:30px}h2{margin:34px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--line);font-size:22px}h3{margin:24px 0 10px;color:var(--brand2);font-size:18px}.meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:20px}.card{border:1px solid var(--line);border-radius:8px;padding:14px;background:#fff}.soft{background:var(--bg)}.label{font-size:13px;color:var(--muted)}.value{font-weight:700;margin-top:3px}.toc{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:18px 0}.toc a{text-decoration:none;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:9px 10px;background:#fff}table{width:100%;border-collapse:collapse;margin:12px 0 18px;table-layout:fixed}th,td{border:1px solid var(--line);padding:9px 10px;vertical-align:top;word-break:break-word}th{background:#eef3f7;text-align:left}.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;background:#e7f4f0;color:var(--ok)}.warn{background:#fff4e5;color:var(--warn)}.danger{background:#fee4e2;color:var(--risk)}.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.step{border:1px solid #b9dfe6;background:#eff9fb;border-radius:8px;padding:8px 10px}.arrow{color:var(--muted)}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.small{font-size:13px;color:var(--muted)}@media(max-width:900px){header{padding:24px}main{padding:20px}.meta,.toc,.grid3{grid-template-columns:1fr}table{font-size:13px}}@media print{header{background:#fff;color:#000;border-bottom:1px solid #ddd}.toc{display:none}main{max-width:none;padding:18px}}
   </style>
 </head>
 <body>
-  <header>
-    <h1>纺院一卡通专区软件 PRD</h1>
-    <p>基于标书《纺院标书技术部分.docx》和需求拆解文档形成，覆盖 H5/移动端学校专区、学校端后管、管理端后管、接口对接和 PAM 人员管理模块。</p>
-    <div class="meta">
-      <div class="card soft"><div class="label">需求ID</div><div class="value">20260708-1038-fyy</div></div>
-      <div class="card soft"><div class="label">开发模式</div><div class="value">高风险严格模式</div></div>
-      <div class="card soft"><div class="label">框架</div><div class="value">Snowy Admin + 待补充 H5</div></div>
-      <div class="card soft"><div class="label">日期</div><div class="value">2026-07-08</div></div>
+<header>
+  <h1>纺院一卡通专区软件 PRD</h1>
+  <p>按更新后的工作流重新生成。业务来源为 `docs/requirements/纺院需求.md` 与标书提取文本，原型必须覆盖全部功能点、页面、菜单、字段、操作、状态、异常和权限场景。</p>
+  <div class="meta">
+    <div class="card soft"><div class="label">需求ID</div><div class="value">20260708-1038-fyy</div></div>
+    <div class="card soft"><div class="label">开发模式</div><div class="value">高风险严格模式</div></div>
+    <div class="card soft"><div class="label">框架</div><div class="value">Snowy Admin + H5 框架待补充</div></div>
+    <div class="card soft"><div class="label">更新时间</div><div class="value">2026-07-08</div></div>
+  </div>
+</header>
+<main>
+  <nav class="toc">
+    <a href="#overview">概览</a><a href="#roles">角色</a><a href="#flows">流程</a><a href="#scope">范围</a><a href="#menus">菜单</a><a href="#matrix">覆盖矩阵</a>
+  </nav>
+
+  <section id="overview">
+    <h2>需求概览</h2>
+    <div class="grid3">
+      <div class="card"><b>H5/移动端学校专区</b><br>面向师生和访客，覆盖首页、学校信息、资讯公告、访客预约、校园启航、图书借阅、我的记录、服务消息和卡包。</div>
+      <div class="card"><b>学校端后管</b><br>面向学校运营，覆盖高校首页、师生管理、内容管理、申领记录、设备监控、信息查询和用户管理。</div>
+      <div class="card"><b>管理端/接口/PAM</b><br>面向平台治理和设备协同，覆盖组织权限、日志审计、一卡通后管对接、校园类接口、PAM 人员设备授权。</div>
     </div>
-  </header>
-  <main>
-    <nav class="toc">
-      <a href="#goal">目标</a><a href="#roles">角色</a><a href="#scope">范围</a><a href="#menus">后管菜单</a><a href="#acceptance">验收</a>
-    </nav>
+    <h3>目标</h3>
+    <ul>
+      <li>通过宁波一卡通 APP 学校专区完成校园服务统一入口。</li>
+      <li>通过学校端后管实现内容快速发布、数据实时更新和学校维度管理。</li>
+      <li>通过管理端后管实现多学校组织、权限、日志、接口和运营数据治理。</li>
+      <li>通过接口与 PAM 模块支撑社保卡/码、校园卡、掌静脉和门禁/消费/图书等场景融合。</li>
+    </ul>
+  </section>
 
-    <section id="goal">
-      <h2>背景与目标</h2>
-      <p>建设宁波市高校“一卡通”专区软件，实现社保卡、社保码、校园卡、掌静脉、人脸等认证与支付场景融合。系统需要支撑师生移动端服务、学校端运营管理、平台级管理、跨系统数据对接和 PAM 人员设备协同。</p>
-      <div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr));">
-        <div class="card"><b>服务体验</b><br>师生在 APP 学校专区完成资讯、通知、访客预约、校园启航、图书借阅和个人记录查看。</div>
-        <div class="card"><b>学校治理</b><br>学校端管理内容、师生、社保卡申领、设备状态和各类记录查询。</div>
-        <div class="card"><b>平台管控</b><br>管理端统一学校组织、用户角色、权限菜单、日志审计、接口监控与数据排行。</div>
-      </div>
-    </section>
+  <section id="roles">
+    <h2>用户角色</h2>
+    <table>
+      <tr><th>角色</th><th>访问范围</th><th>核心任务</th><th>权限和风险</th></tr>
+      <tr><td>师生</td><td>本人 H5 数据</td><td>查看内容、办理启航、查图书、看记录、展示校园码/社保卡信息</td><td>本人数据隔离、动态码防重放</td></tr>
+      <tr><td>访客</td><td>本人预约</td><td>提交访客预约、查看审核状态、凭社保卡/码入校</td><td>身份证和手机号脱敏</td></tr>
+      <tr><td>学校管理员</td><td>本校后管</td><td>查看看板、维护师生/用户、查看记录、管理设备</td><td>本校数据隔离</td></tr>
+      <tr><td>内容管理员</td><td>本校内容</td><td>维护 banner、应用、模块、公告、文章、活动</td><td>审核、上下线、可见身份</td></tr>
+      <tr><td>数据查询员</td><td>本校查询</td><td>查询/导出申领、访客、通行、消费、图书记录</td><td>导出审计、敏感字段脱敏</td></tr>
+      <tr><td>平台管理员</td><td>全部学校</td><td>学校、用户、角色、模块、菜单、一卡通对接治理</td><td>核心权限 P0 风险</td></tr>
+      <tr><td>设备运维员</td><td>授权设备</td><td>监控设备、远程配置、查询通信日志</td><td>远程指令审计</td></tr>
+      <tr><td>审计员</td><td>授权日志</td><td>查看访问日志、操作日志、外部调用日志</td><td>敏感参数不可明文展示</td></tr>
+    </table>
+  </section>
 
-    <section id="roles">
-      <h2>用户角色</h2>
-      <table>
-        <tr><th>角色</th><th>范围</th><th>核心诉求</th><th>高风险点</th></tr>
-        <tr><td>师生</td><td>本人移动端数据</td><td>快速认证、查看记录、使用校园服务</td><td>本人数据隔离、校园码安全</td></tr>
-        <tr><td>访客</td><td>本人预约</td><td>提交预约、查看审核结果、凭码入校</td><td>身份证/手机号保护</td></tr>
-        <tr><td>学校管理员</td><td>本校数据</td><td>维护内容、师生、记录、设备和用户</td><td>学校维度数据隔离</td></tr>
-        <tr><td>平台管理员</td><td>全部学校</td><td>组织、用户、权限、日志和接口治理</td><td>越权、批量操作、审计</td></tr>
-        <tr><td>设备运维员</td><td>授权设备</td><td>查看设备状态、异常和远程配置</td><td>远程指令安全</td></tr>
-        <tr><td>审计员</td><td>授权日志</td><td>追踪访问、操作和外部调用</td><td>敏感参数脱敏</td></tr>
-      </table>
-    </section>
+  <section id="flows">
+    <h2>核心用户流程</h2>
+    <h3>师生移动端服务流程</h3>
+    <div class="flow"><span class="step">进入一卡通 APP</span><span class="arrow">→</span><span class="step">学校专区首页</span><span class="arrow">→</span><span class="step">选择服务</span><span class="arrow">→</span><span class="step">读取本人身份</span><span class="arrow">→</span><span class="step">调用学校/一卡通接口</span><span class="arrow">→</span><span class="step">展示结果或提交审核</span></div>
+    <h3>内容发布流程</h3>
+    <div class="flow"><span class="step">内容管理员新增</span><span class="arrow">→</span><span class="step">填写字段/可见范围</span><span class="arrow">→</span><span class="step">审核</span><span class="arrow">→</span><span class="step">定时/即时发布</span><span class="arrow">→</span><span class="step">APP 端展示</span><span class="arrow">→</span><span class="step">下架/过期</span></div>
+    <h3>数据与认证接口流程</h3>
+    <div class="flow"><span class="step">学校初始化数据</span><span class="arrow">→</span><span class="step">字段校验</span><span class="arrow">→</span><span class="step">身份去重</span><span class="arrow">→</span><span class="step">人员同步</span><span class="arrow">→</span><span class="step">社保卡/码认证</span><span class="arrow">→</span><span class="step">通行/交易记录回流</span></div>
+  </section>
 
-    <section>
-      <h2>核心流程</h2>
-      <h3>H5 服务流程</h3>
-      <div class="flow">
-        <span class="step">APP 进入学校专区</span><span class="arrow">→</span><span class="step">读取登录态/身份</span><span class="arrow">→</span><span class="step">展示首页内容</span><span class="arrow">→</span><span class="step">进入服务模块</span><span class="arrow">→</span><span class="step">调用学校/一卡通接口</span><span class="arrow">→</span><span class="step">记录查询或业务提交</span>
-      </div>
-      <h3>数据对接流程</h3>
-      <div class="flow">
-        <span class="step">学校初始化数据</span><span class="arrow">→</span><span class="step">字段校验</span><span class="arrow">→</span><span class="step">身份去重</span><span class="arrow">→</span><span class="step">异常拦截</span><span class="arrow">→</span><span class="step">同步一卡通</span><span class="arrow">→</span><span class="step">持卡信息回传</span>
-      </div>
-    </section>
+  <section id="scope">
+    <h2>功能范围与版本</h2>
+    <table>
+      <tr><th>范围</th><th>MVP</th><th>V1</th><th>V2/待确认</th></tr>
+      <tr><td>H5/移动端</td><td>首页、公告资讯、访客预约、校园启航、图书检索、我的记录静态/接口联调页</td><td>服务消息、卡包、校园码、记录详情、异常态</td><td>地图 GIS、图书预约/续借、金融账户深度办理</td></tr>
+      <tr><td>学校端后管</td><td>内容、师生、申领、设备、信息查询、用户管理完整菜单和 CRUD/查询原型</td><td>审核、导出、数据看板、权限按钮</td><td>多学校租户策略和高级统计</td></tr>
+      <tr><td>管理端后管</td><td>系统首页、组织、用户、角色、模块、菜单、日志、一卡通对接</td><td>接口监控、审核中心、系统监控</td><td>运营排行和异常智能告警</td></tr>
+      <tr><td>接口/PAM</td><td>接口清单、字段、状态、错误和日志原型</td><td>幂等、重试、验签、设备远程配置</td><td>算法特征库承载边界待确认</td></tr>
+    </table>
+  </section>
 
-    <section id="scope">
-      <h2>功能范围</h2>
-      <table>
-        <tr><th>分组</th><th>功能</th><th>说明</th><th>风险等级</th></tr>
-        <tr><td>H5/移动端</td><td>首页、学校简介、专业介绍、校园地图、招生咨询、通知公告、资讯、访客预约、校园启航、图书借阅、我的、APP 消息、卡包</td><td>嵌入宁波一卡通 APP，当前标记 H5 框架待补充。</td><td><span class="pill risk">P1</span></td></tr>
-        <tr><td>学校端后管</td><td>高校首页、师生管理、内容管理、申领记录、设备监控、信息查询、用户管理</td><td>基于 Snowy 管理端，支持本校数据运营。</td><td><span class="pill risk">P1</span></td></tr>
-        <tr><td>管理端后管</td><td>系统首页、组织架构、权限管理、日志管理、一卡通后管对接</td><td>复用 Snowy sys/dev 权限和日志能力。</td><td><span class="pill danger">P0/P1</span></td></tr>
-        <tr><td>接口对接</td><td>学院初始化、人员管理、信息核验、人员同步、社保码/卡认证、交易推送/接收</td><td>需定义接口协议、幂等、验签、错误码和补偿。</td><td><span class="pill danger">P0/P1</span></td></tr>
-        <tr><td>PAM</td><td>组织人员、生物信息、特征库、设备/人员分组、通行同步、导入导出、远程运维、日志、分级授权</td><td>涉及生物特征、设备命令和通行数据。</td><td><span class="pill danger">P0/P1</span></td></tr>
-      </table>
-    </section>
+  <section id="menus">
+    <h2>后管菜单设计</h2>
+    <table>
+      <tr><th>端</th><th>菜单层级</th><th>菜单名称</th><th>路由</th><th>权限标识</th><th>入口位置/角色</th></tr>
+      <tr><td>学校端</td><td>一级</td><td>高校首页</td><td>/biz/fyy/dashboard</td><td>fyySchoolDashboard</td><td>未来校园 / 学校管理员、数据查询员</td></tr>
+      <tr><td>学校端</td><td>分组/二级</td><td>师生管理：学生、教职工、历史学生</td><td>/biz/fyy/student 等</td><td>fyyStudent 等</td><td>未来校园 / 学校管理员</td></tr>
+      <tr><td>学校端</td><td>分组/二级</td><td>内容管理：banner、应用、模块、公告、文章、活动</td><td>/biz/fyy/banner 等</td><td>fyyBanner 等</td><td>未来校园 / 内容管理员</td></tr>
+      <tr><td>学校端</td><td>一级/二级</td><td>申领记录、设备监控、访客/通行/消费/图书记录、用户管理</td><td>/biz/fyy/*</td><td>fyy*Record 等</td><td>未来校园 / 数据查询员、设备运维员</td></tr>
+      <tr><td>管理端</td><td>一级/分组</td><td>系统首页、组织架构、权限管理、日志管理、一卡通后管对接</td><td>/biz/fyy/platform-*</td><td>fyyPlatform*</td><td>未来校园管理 / 平台管理员、审计员、接口运维员</td></tr>
+    </table>
+  </section>
 
-    <section id="menus">
-      <h2>后管菜单设计</h2>
-      <h3>学校端：未来校园</h3>
-      <table>
-        <tr><th>层级</th><th>菜单</th><th>路由</th><th>权限标识</th><th>可见角色</th></tr>
-        <tr><td>一级</td><td>高校首页</td><td>/biz/fyy/dashboard</td><td>fyySchoolDashboard</td><td>学校管理员、数据查询员</td></tr>
-        <tr><td>分组</td><td>师生管理</td><td>/biz/fyy/teacher-student</td><td>fyyTeacherStudent</td><td>学校管理员</td></tr>
-        <tr><td>二级</td><td>学生管理 / 教职工管理 / 历史学生管理</td><td>/biz/fyy/student 等</td><td>fyyStudent 等</td><td>学校管理员、数据查询员</td></tr>
-        <tr><td>分组</td><td>内容管理</td><td>/biz/fyy/content</td><td>fyyContent</td><td>内容管理员</td></tr>
-        <tr><td>二级</td><td>首页 banner、应用上线、首页模块、公告、文章、活动</td><td>/biz/fyy/banner 等</td><td>fyyBanner 等</td><td>内容管理员</td></tr>
-        <tr><td>一级</td><td>设备状态监控</td><td>/biz/fyy/device-monitor</td><td>fyyDeviceMonitor</td><td>设备运维员</td></tr>
-        <tr><td>分组</td><td>信息查询</td><td>/biz/fyy/query</td><td>fyyQuery</td><td>数据查询员</td></tr>
-      </table>
-      <h3>管理端：未来校园管理</h3>
-      <table>
-        <tr><th>层级</th><th>菜单</th><th>路由</th><th>权限标识</th><th>可见角色</th></tr>
-        <tr><td>一级</td><td>系统首页</td><td>/biz/fyy/platform-dashboard</td><td>fyyPlatformDashboard</td><td>平台管理员、平台运营</td></tr>
-        <tr><td>分组</td><td>组织架构</td><td>/biz/fyy/platform-org</td><td>fyyPlatformOrg</td><td>平台管理员</td></tr>
-        <tr><td>分组</td><td>权限管理</td><td>/biz/fyy/platform-permission</td><td>fyyPlatformPermission</td><td>平台管理员</td></tr>
-        <tr><td>分组</td><td>日志管理</td><td>/biz/fyy/platform-log</td><td>fyyPlatformLog</td><td>审计员</td></tr>
-        <tr><td>一级</td><td>一卡通后管对接</td><td>/biz/fyy/nb-card-admin-sync</td><td>fyyNbCardAdminSync</td><td>接口运维员</td></tr>
-      </table>
-    </section>
+  <section>
+    <h2>状态、异常和业务规则</h2>
+    <table>
+      <tr><th>领域</th><th>状态</th><th>异常</th><th>规则</th></tr>
+      <tr><td>内容</td><td>草稿、待审核、已发布、已下架、已过期</td><td>缺图、审核驳回、展示期冲突</td><td>APP 只展示已发布且在展示期内内容；banner 状态按日期计算。</td></tr>
+      <tr><td>人员</td><td>在校/在职、历史、注册、绑卡、持卡、金融账户激活</td><td>身份重复、核验失败、同步失败</td><td>人员以身份标识去重，敏感字段脱敏展示。</td></tr>
+      <tr><td>接口</td><td>待同步、同步中、成功、失败、待重试</td><td>超时、验签失败、字段错误、重复流水</td><td>外部接口必须有调用日志、错误码、幂等键和重试策略。</td></tr>
+      <tr><td>交易</td><td>已接收、已推送、失败、重复、异常</td><td>金额不一致、重复推送、流水缺失</td><td>金额/流水属于 P1，高风险设计需补对账或风险接受。</td></tr>
+      <tr><td>PAM/设备</td><td>在线、离线、故障、告警、配置中、配置成功、配置失败</td><td>通信中断、认证失败率异常、离线补传失败</td><td>远程配置必须二次确认、回执和审计。</td></tr>
+    </table>
+  </section>
 
-    <section>
-      <h2>状态与业务规则</h2>
-      <table>
-        <tr><th>领域</th><th>状态/规则</th><th>说明</th></tr>
-        <tr><td>内容</td><td>草稿、待审核、已发布、已下架、已过期</td><td>APP 端仅展示已发布且在展示期内的内容；banner 展示状态按展示开始/结束日期计算。</td></tr>
-        <tr><td>人员</td><td>在校/在职、历史、注册状态、绑卡状态、省内持卡状态、金融账户激活状态</td><td>人员状态来自学校数据中台和社保卡体系，后管以展示和筛选为主。</td></tr>
-        <tr><td>接口</td><td>待同步、同步中、成功、失败、待重试</td><td>批量同步需错误清单、幂等键和重试策略。</td></tr>
-        <tr><td>交易</td><td>已接收、已推送、失败、重复、异常</td><td>支付流水号必须唯一或具备幂等约束。</td></tr>
-        <tr><td>设备</td><td>在线、离线、故障、告警、配置下发中、配置成功、配置失败</td><td>远程配置必须记录操作人、参数摘要、回执和结果。</td></tr>
-      </table>
-    </section>
+  <section>
+    <h2>非功能需求</h2>
+    <ul>
+      <li>权限：菜单、按钮、API 权限需与 Snowy `SYS_RESOURCE`、`SYS_RELATION`、`@SaCheckPermission`、`hasPerm` 对齐。</li>
+      <li>安全：身份证、手机号、社保卡、校园码、生物特征、交易流水默认敏感；日志不得记录密钥、token、完整身份证或完整生物模板。</li>
+      <li>可靠性：接口支持超时、重试、幂等、异常清单和外部调用日志。</li>
+      <li>可审计：导出、删除、批量操作、远程设备配置、角色授权、交易查询必须记录操作日志。</li>
+      <li>适配：后管遵循 Snowy 管理端布局；H5 暂标记 H5 框架待补充，并保留移动端信息架构和触控流程。</li>
+    </ul>
+  </section>
 
-    <section>
-      <h2>非功能需求</h2>
-      <ul>
-        <li>权限：后端必须校验权限，前端按钮隐藏不能作为安全边界。</li>
-        <li>数据隔离：学校端默认只能访问本校数据，平台端按角色授权访问。</li>
-        <li>隐私：身份证号、手机号、社保卡号、生物特征、交易流水按敏感级别脱敏、加密和审计。</li>
-        <li>接口可靠性：外部接口需记录调用日志、耗时、状态、错误码，支持失败重试和人工排查。</li>
-        <li>导出：批量导出需权限、条件留痕、敏感字段脱敏，必要时加水印。</li>
-        <li>可运维：设备异常、接口失败、同步失败需要可查询、可告警、可追踪。</li>
-      </ul>
-    </section>
+  <section>
+    <h2>验收标准</h2>
+    <table>
+      <tr><th>编号</th><th>验收项</th><th>标准</th></tr>
+      <tr><td>A-001</td><td>PRD 完整性</td><td>包含背景、角色、流程、范围、菜单、状态、异常、验收、埋点、风险和不做范围。</td></tr>
+      <tr><td>A-002</td><td>后管原型</td><td>覆盖学校端、管理端、接口监控、PAM 页面；体现 Snowy 菜单、查询表单、表格、抽屉、权限按钮、状态和异常。</td></tr>
+      <tr><td>A-003</td><td>H5 原型</td><td>覆盖 H5-001 到 H5-013，每个功能有页面或流程，包含关键字段、操作、状态和异常提示。</td></tr>
+      <tr><td>A-004</td><td>覆盖矩阵</td><td>PRD 和原型中能追溯全部 T0R12-T0R51 功能点；未覆盖项必须说明原因。</td></tr>
+      <tr><td>A-005</td><td>高风险记录</td><td>身份、交易、权限、批量导出、设备远程配置、生物特征均列入高风险后续设计。</td></tr>
+    </table>
+  </section>
 
-    <section id="acceptance">
-      <h2>验收标准</h2>
-      <table>
-        <tr><th>编号</th><th>验收项</th><th>通过标准</th></tr>
-        <tr><td>A-001</td><td>需求完整性</td><td>五大范围均有功能清单、角色、菜单或接口说明、风险记录。</td></tr>
-        <tr><td>A-002</td><td>后管菜单</td><td>学校端和管理端菜单层级、名称、路由、权限标识、角色均明确。</td></tr>
-        <tr><td>A-003</td><td>移动端原型</td><td>H5 原型独立输出，并标记 H5 框架待补充。</td></tr>
-        <tr><td>A-004</td><td>后管原型</td><td>后管原型体现 Snowy 菜单、查询表单、表格、抽屉、状态和权限按钮。</td></tr>
-        <tr><td>A-005</td><td>安全风险</td><td>身份认证、敏感数据、交易、设备远程控制、导出和权限均进入高风险设计清单。</td></tr>
-      </table>
-    </section>
+  <section>
+    <h2>埋点和成功指标</h2>
+    <table>
+      <tr><th>指标</th><th>口径</th><th>用途</th></tr>
+      <tr><td>专区访问量/活跃用户</td><td>按学校、日期、身份统计</td><td>判断学校专区使用情况。</td></tr>
+      <tr><td>绑卡率/金融账户激活率</td><td>学生、教职工分组统计</td><td>衡量社保卡融合进度。</td></tr>
+      <tr><td>访客预约通过率</td><td>提交、审核通过、未通过、取消</td><td>衡量访客流程效率。</td></tr>
+      <tr><td>接口成功率和平均耗时</td><td>按接口、学校、时间统计</td><td>接口运维和 SLA。</td></tr>
+      <tr><td>设备在线率/告警数</td><td>按设备、区域、学校统计</td><td>PAM 运维治理。</td></tr>
+    </table>
+  </section>
 
-    <section>
-      <h2>不在本期范围</h2>
-      <ul>
-        <li>纯硬件采购、安装施工、材质和环境参数验收。</li>
-        <li>未提供协议的第三方系统真实联调。</li>
-        <li>掌静脉算法本身研发。</li>
-        <li>未确认 H5 框架前的移动端工程实现。</li>
-      </ul>
-    </section>
-  </main>
+  <section id="matrix">
+    <h2>原型需求覆盖矩阵</h2>
+    <table>
+      <tr><th>范围</th><th>需求编号</th><th>功能点</th><th>对应原型页面/弹窗</th><th>关键字段/操作/状态</th><th>覆盖</th></tr>
+      <tr><td>H5</td><td>H5-001~H5-013 / T0R12~T0R23</td><td>首页、学校简介、专业、地图、招生、公告、资讯、访客、启航、图书、我的、服务消息、卡包</td><td>H5 原型左侧模块导航和 13 个页面</td><td>列表/详情/表单/记录/认证/消息/卡包/异常提示</td><td><span class="pill">已覆盖</span></td></tr>
+      <tr><td>学校端</td><td>ADM-S-001~020 / T0R24~T0R30</td><td>高校首页、师生、内容、申领、设备、信息查询、用户</td><td>后管原型“学校端”分组页面</td><td>筛选、表格、导出、状态、抽屉、权限按钮</td><td><span class="pill">已覆盖</span></td></tr>
+      <tr><td>管理端</td><td>ADM-P-001~013 / T0R31~T0R35</td><td>系统首页、组织、用户、权限、日志、一卡通后管对接</td><td>后管原型“管理端”分组页面</td><td>树表、授权、日志、接口状态、异常</td><td><span class="pill">已覆盖</span></td></tr>
+      <tr><td>接口</td><td>API-001~008 / T0R36~T0R43</td><td>学院、人员、核验、同步、社保码/卡认证、交易推送/接收</td><td>后管原型“接口建设”页面</td><td>接口状态、错误码、幂等、验签、重试、日志</td><td><span class="pill">已覆盖</span></td></tr>
+      <tr><td>PAM</td><td>PAM-001~008 / T0R44~T0R51</td><td>组织人员、生物信息、特征库、分组授权、通行同步、导入导出、远程运维、日志、分级授权</td><td>后管原型“PAM 管理”页面</td><td>设备/人员组、通行、导出、远程配置、日志、角色</td><td><span class="pill">已覆盖</span></td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>不在本期范围</h2>
+    <ul>
+      <li>硬件采购数量、材质、温湿度、供电和安装施工验收。</li>
+      <li>掌静脉算法研发；只定义软件侧特征库、采集、授权、日志和接口边界。</li>
+      <li>未提供接口文档前的真实第三方系统联调。</li>
+      <li>未确认 H5 工程框架前的移动端代码实现。</li>
+    </ul>
+  </section>
+</main>
 </body>
 </html>
