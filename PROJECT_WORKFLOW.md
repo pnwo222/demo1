@@ -40,7 +40,7 @@ flowchart TD
 
     K -- "生成" --> L["Product Agent: PRD、验收标准、HTML PRD、低保真 HTML 原型"]
     L --> L0{"是否涉及后管 / 后台 / 管理端 / 运营端"}
-    L0 -- 是 --> L2["套用 admin-prototype-design-workflow<br/>输出 Snowy 后管拟真原型、框架参考清单、菜单映射、CRUD 形式和覆盖矩阵"]
+    L0 -- 是 --> L2["套用 admin-prototype-design-workflow<br/>复制 prototype-demo-framework 模板并遵守 Demo 设计规则<br/>输出 Snowy 后管拟真原型、框架参考清单、菜单映射、CRUD 形式和覆盖矩阵"]
     L0 -- 否 --> L1{"PRD / 原型确认"}
     L2 --> L1
     K -- "跳过 PRD" --> K1["记录跳过原因和最小需求说明"]
@@ -155,7 +155,7 @@ flowchart TB
 - 开发环境检测必须用列表展示 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务，并用 `✅`、`⚠️`、`❌` 标明结果；`检测：` 后必须换行，每个检测项独占一行。
 - 开发环境检测结果写入 `docs/workflow/local-environment-status.md`，该文件被 `.gitignore` 忽略，不提交到 Git；`docs/workflow/status.md` 保持可提交。
 - PRD 和低保真 HTML 原型未确认，不进入 UI 设计。
-- 涉及后管、后台、管理端或运营端且未跳过原型时，必须套用 `.codex/workflows/admin-prototype-design-workflow.md`，输出 Snowy 后管拟真原型、框架参考清单、菜单映射、CRUD 形式选择和覆盖矩阵；未通过不得进入 UI 设计、技术设计或开发。
+- 涉及后管、后台、管理端或运营端且未跳过原型时，必须套用 `.codex/workflows/admin-prototype-design-workflow.md`，并从 `docs/design/prototype-demo-framework/index.html` 复制模板生成后管原型，同时符合 Demo 原型设计规则，输出 Snowy 后管拟真原型、框架参考清单、菜单映射、CRUD 形式选择和覆盖矩阵；未按模板生成、未符合设计规则或未通过门禁不得进入 UI 设计、技术设计或开发。
 - Figma UI 未确认，不进入技术设计。
 - 技术设计、数据模型、migration 和回滚策略未确认，不进入开发。
 - 开发环境检测必须检测可用 MySQL CLI；PATH 找不到 `mysql` 时自动搜索常见安装目录中的 `mysql.exe` 并用绝对路径验证。PATH 和搜索都找不到时记录全局状态 `blocked_missing_mysql_cli`，不进入 PRD/UI/技术设计或开发阶段。

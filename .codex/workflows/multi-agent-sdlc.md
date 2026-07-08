@@ -342,7 +342,7 @@ IDEA 打开 project/
 
 Product Agent 还必须输出可打开、可点击交互的低保真 HTML 原型。低保真原型必须参考当前框架的信息架构和交互模式，不得做成过度简陋的纯线框；后管原型和 H5/移动端原型必须拆成不同 HTML 文件。原型必须严格覆盖需求集合中的全部功能点，不允许只做代表性页面或最小演示。
 
-如需求涉及后管、后台、管理端或运营端，Product Agent 必须先套用 `.codex/workflows/admin-prototype-design-workflow.md`，基于真实 Snowy 框架布局和 CRUD 模式生成后管拟真原型。
+如需求涉及后管、后台、管理端或运营端，Product Agent 必须先套用 `.codex/workflows/admin-prototype-design-workflow.md`，并复制 `docs/design/prototype-demo-framework/index.html` 作为后管原型模板，再按需求替换系统标题、Logo、菜单、字段、数据和流程。不得从空白 HTML、通用后台模板或纯静态页面重新绘制后管原型。
 
 PRD 必须包含：
 
@@ -374,7 +374,8 @@ HTML PRD 要求：
 - 不依赖构建工具、后端接口或登录态。
 - 能点击演示主路径页面切换、关键按钮和核心状态变化。
 - 必须参考现有框架：后管参考 Snowy 管理端菜单、标签页、查询表单、表格、分页、工具栏、弹窗/抽屉、权限按钮和状态反馈；H5/移动端参考项目中已有或后续补充的 H5 框架。
-- 后管原型必须执行 `.codex/workflows/admin-prototype-design-workflow.md`，并输出框架参考清单、菜单映射、CRUD 形式选择和原型需求覆盖矩阵。
+- 后管原型必须执行 `.codex/workflows/admin-prototype-design-workflow.md`，从 `docs/design/prototype-demo-framework/index.html` 复制模板生成，并输出框架参考清单、菜单映射、CRUD 形式选择和原型需求覆盖矩阵。
+- 后管原型 HTML 必须保留 Demo 框架关键结构：`prototypeMeta`、Vue + Ant Design Vue CDN、`.snowy-sider`、`.snowy-header`、`.tabs-row`、查询卡片、工具栏、`a-table`、`a-drawer`、`a-modal`、图片上传预设和组件预设页面；缺少时不得进入 UI 设计、技术设计或开发。
 - 如同时涉及后管和 H5/移动端，必须分别保存为后管原型和 H5/移动端原型，例如 `docs/design/<需求ID>-admin-low-fidelity.html` 与 `docs/design/<需求ID>-h5-low-fidelity.html`。
 - 如果 H5 框架尚未补充，H5/移动端原型必须单独保留移动端信息结构和交互草案，并标记 `H5 框架待补充`。
 - 如涉及后管、后台、管理端或运营端，必须体现菜单入口、所在层级和页面切换关系。
