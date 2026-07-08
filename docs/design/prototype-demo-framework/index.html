@@ -1,0 +1,953 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snowy 后管原型 Demo 框架</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/reset.css" />
+  <style>
+    :root {
+      --sidebar: #001529;
+      --sidebar-soft: #031f3a;
+      --brand: #1677ff;
+      --page: #f5f7fb;
+      --line: #edf0f5;
+      --text-soft: #667085;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--page);
+      color: #1f2937;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+    }
+    #app { min-height: 100vh; }
+    .app-shell { min-height: 100vh; }
+    .brand {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 16px;
+      color: #fff;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      white-space: nowrap;
+    }
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: var(--brand);
+      color: #fff;
+      font-weight: 800;
+    }
+    .snowy-sider {
+      background: var(--sidebar) !important;
+      box-shadow: 2px 0 10px rgba(15, 23, 42, .08);
+    }
+    .snowy-sider .ant-menu {
+      background: var(--sidebar);
+      color: rgba(255,255,255,.76);
+      border-inline-end: 0;
+    }
+    .snowy-sider .ant-menu-submenu-title,
+    .snowy-sider .ant-menu-item { border-radius: 0; margin-inline: 0; width: 100%; }
+    .snowy-sider .ant-menu-item-selected {
+      background: #0b3a72 !important;
+      color: #fff;
+      border-left: 3px solid var(--brand);
+    }
+    .snowy-header {
+      height: 56px;
+      padding: 0 18px;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-left, .header-right { display: flex; align-items: center; gap: 14px; }
+    .icon-action {
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      color: #475467;
+      cursor: pointer;
+    }
+    .icon-action:hover { background: #f2f4f7; color: var(--brand); }
+    .mini-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1em;
+      min-width: 1em;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .tabs-row {
+      height: 44px;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      gap: 8px;
+    }
+    .content {
+      padding: 16px;
+      overflow: auto;
+    }
+    .query-card,
+    .table-card,
+    .tree-card {
+      background: #fff;
+      border: 1px solid #e8edf3;
+      border-radius: 4px;
+    }
+    .query-card { padding: 16px 16px 12px; margin-bottom: 14px; }
+    .table-card { padding: 16px; }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .toolbar-left,
+    .toolbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .cover {
+      width: 92px;
+      height: 46px;
+      border-radius: 4px;
+      object-fit: cover;
+      border: 1px solid #d9e2ef;
+      display: block;
+      background: #f3f4f6;
+    }
+    .cover-empty {
+      width: 92px;
+      height: 46px;
+      border-radius: 4px;
+      border: 1px dashed #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #98a2b3;
+      background: #fafafa;
+      font-size: 12px;
+    }
+    .page-title {
+      margin: 0 0 12px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .muted { color: var(--text-soft); }
+    .tree-layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 14px;
+    }
+    .tree-card { padding: 14px; }
+    .resource-node {
+      padding: 8px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .resource-node:hover,
+    .resource-node.active { background: #eef5ff; color: var(--brand); }
+    .drawer-cover {
+      width: 180px;
+      height: 90px;
+      border-radius: 4px;
+      object-fit: cover;
+      border: 1px solid #e5e7eb;
+      background: #f8fafc;
+    }
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .preset-card {
+      background: #fff;
+      border: 1px solid #e8edf3;
+      border-radius: 4px;
+      padding: 14px;
+    }
+    .preset-card h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+    }
+    .preset-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 32px;
+      flex-wrap: wrap;
+    }
+    .text-ellipsis {
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .file-thumb {
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      background: #667085;
+    }
+    .file-thumb.pdf { background: #ef4444; }
+    .file-thumb.xls { background: #16a34a; }
+    .file-thumb.doc { background: #2563eb; }
+    .upload-preview {
+      width: 102px;
+      height: 102px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+      display: block;
+    }
+    @media (max-width: 960px) {
+      .tree-layout { grid-template-columns: 1fr; }
+      .preset-grid { grid-template-columns: 1fr; }
+      .snowy-sider { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/dayjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/advancedFormat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/customParseFormat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/localeData.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/quarterOfYear.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/weekday.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/weekOfYear.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/weekYear.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/antd.min.js"></script>
+  <script>
+    const { createApp, ref, reactive, computed, h } = Vue;
+    const prototypeMeta = {
+      systemName: '示例管理系统',
+      logoText: '示',
+      logoImage: ''
+    };
+
+    const demoImages = [
+      'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="184" height="92"><defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#1677ff"/><stop offset="1" stop-color="#69b1ff"/></linearGradient></defs><rect width="184" height="92" rx="8" fill="url(#g)"/><circle cx="142" cy="34" r="20" fill="rgba(255,255,255,.35)"/><path d="M20 64l30-28 24 22 18-15 36 31H20z" fill="rgba(255,255,255,.8)"/></svg>'),
+      'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="184" height="92"><rect width="184" height="92" rx="8" fill="#12b76a"/><rect x="18" y="18" width="86" height="12" rx="6" fill="rgba(255,255,255,.75)"/><rect x="18" y="42" width="132" height="8" rx="4" fill="rgba(255,255,255,.45)"/><rect x="18" y="58" width="104" height="8" rx="4" fill="rgba(255,255,255,.45)"/></svg>'),
+      ''
+    ];
+
+    const seedRows = [
+      { id: 1, title: '校园资讯首页 Banner', cover: demoImages[0], category: '首页 Banner', position: '后台首页', sort: 10, status: true, audit: '已发布', createdAt: '2026-07-08 09:30', summary: '展示校园资讯和重点通知。' },
+      { id: 2, title: '暑期校园开放通知', cover: '', category: '通知公告', position: '学校专区', sort: 20, status: false, audit: '已下架', createdAt: '2026-07-07 16:12', summary: '假期开放安排和入校说明。' },
+      { id: 3, title: '专业介绍更新', cover: demoImages[1], category: '专业介绍', position: '后台首页', sort: 30, status: true, audit: '待审核', createdAt: '2026-07-06 11:05', summary: '专业介绍内容更新入口。' },
+      { id: 4, title: '招生咨询入口', cover: demoImages[0], category: '招生服务', position: '学校专区', sort: 40, status: true, audit: '已发布', createdAt: '2026-07-05 14:20', summary: '招生咨询和访客预约入口。' }
+    ];
+    const userAvatar = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="80" height="80" rx="40" fill="#1677ff"/><circle cx="40" cy="31" r="14" fill="white" opacity=".9"/><path d="M18 68c4-15 39-15 44 0" fill="white" opacity=".9"/></svg>');
+    const componentRows = [
+      { id: 'u1', avatar: userAvatar, account: 'admin', name: '系统管理员', gender: '男', phone: '13800000001', org: '信息中心', role: '管理员', status: true, progress: 92, engine: '本地存储', fileType: 'pdf', fileName: '校园专区方案.pdf', size: '2.4 MB', remark: '拥有完整管理权限，可维护菜单、角色与内容。' },
+      { id: 'u2', avatar: '', account: 'operator', name: '运营人员', gender: '女', phone: '13800000002', org: '招生办公室', role: '运营人员', status: true, progress: 68, engine: '对象存储', fileType: 'xls', fileName: '访客预约导入模板.xlsx', size: '520 KB', remark: '负责内容发布、招生咨询和访客预约审核。' },
+      { id: 'u3', avatar: userAvatar, account: 'auditor', name: '审核人员', gender: '男', phone: '13800000003', org: '教务处', role: '审核人员', status: false, progress: 35, engine: '本地存储', fileType: 'doc', fileName: '通知公告审核记录.docx', size: '890 KB', remark: '负责公告审核、数据复核和发布状态确认。' }
+    ];
+
+    const app = createApp({
+      setup() {
+        const collapsed = ref(false);
+        const currentPage = ref('banner');
+        const activeTab = ref('首页 Banner');
+        const selectedKeys = ref(['banner']);
+        const openKeys = ref(['business', 'content', 'student', 'system']);
+        const tableSize = ref('middle');
+        const selectedRowKeys = ref([]);
+        const rows = ref(seedRows.map(item => ({ ...item })));
+        const query = reactive({ keyword: '', category: undefined, status: undefined, dateRange: [] });
+        const advanced = ref(false);
+        const drawerOpen = ref(false);
+        const drawerMode = ref('add');
+        const formState = reactive({ id: null, title: '', category: '首页 Banner', position: '后台首页', sort: 10, status: true, audit: '待审核', cover: demoImages[0], summary: '', uploadFiles: [{ uid: 'init', name: '示例封面.png', status: 'done', url: demoImages[0] }] });
+        const detailRecord = ref(null);
+        const importOpen = ref(false);
+        const columnOpen = ref(false);
+        const previewOpen = ref(false);
+        const previewImage = ref('');
+        const previewTitle = ref('');
+        const menuDrawerOpen = ref(false);
+        const menuForm = reactive({ parent: '内容管理', name: '首页 Banner', path: '/content/banner', permissionName: '首页 Banner 管理', visible: true, sort: 20 });
+        const activeResource = ref('首页 Banner');
+        const checkedColumns = ref(['title', 'cover', 'category', 'position', 'sort', 'audit', 'status', 'action']);
+        const pagination = reactive({ current: 1, pageSize: 10 });
+
+        const menuItems = [
+          { key: 'business', label: '业务运营', children: [
+            { key: 'content', label: '内容管理', children: [
+              { key: 'banner', label: '首页 Banner' },
+              { key: 'notice', label: '通知公告', children: [
+                { key: 'noticeList', label: '公告列表' },
+                { key: 'noticeAudit', label: '发布审核' }
+              ] }
+            ] },
+            { key: 'student', label: '师生管理', children: [
+              { key: 'students', label: '学生管理' },
+              { key: 'teachers', label: '教职工管理' },
+              { key: 'historyStudents', label: '历史学生管理' }
+            ] }
+          ] },
+          { key: 'system', label: '系统能力', children: [
+            { key: 'resources', label: '资源权限', children: [
+              { key: 'menuResource', label: '菜单资源' },
+              { key: 'operationPermission', label: '操作权限' },
+              { key: 'roleGrant', label: '角色授权' },
+              { key: 'components', label: '组件预设' }
+            ] }
+          ] }
+        ];
+
+        const baseColumns = [
+          { title: '标题', dataIndex: 'title', key: 'title', width: 190 },
+          { title: '封面图', dataIndex: 'cover', key: 'cover', width: 116 },
+          { title: '栏目', dataIndex: 'category', key: 'category', width: 110 },
+          { title: '发布位置', dataIndex: 'position', key: 'position', width: 110 },
+          { title: '排序', dataIndex: 'sort', key: 'sort', width: 70, sorter: (a, b) => a.sort - b.sort },
+          { title: '发布状态', dataIndex: 'audit', key: 'audit', width: 100 },
+          { title: '启停', dataIndex: 'status', key: 'status', width: 90 },
+          { title: '创建时间', dataIndex: 'createdAt', key: 'createdAt', width: 172 },
+          { title: '操作', key: 'action', fixed: 'right', width: 170 }
+        ];
+        const columns = computed(() => baseColumns.filter(col => checkedColumns.value.includes(col.key)));
+        const componentColumns = [
+          { title: '头像', dataIndex: 'avatar', key: 'avatar', width: 78, align: 'center' },
+          { title: '账号', dataIndex: 'account', key: 'account', width: 110 },
+          { title: '姓名', dataIndex: 'name', key: 'name', width: 110 },
+          { title: '性别', dataIndex: 'gender', key: 'gender', width: 90 },
+          { title: '机构', dataIndex: 'org', key: 'org', width: 130 },
+          { title: '角色', dataIndex: 'role', key: 'role', width: 120 },
+          { title: '状态', dataIndex: 'status', key: 'status', width: 120 },
+          { title: '完成度', dataIndex: 'progress', key: 'progress', width: 150 },
+          { title: '文件', dataIndex: 'fileName', key: 'fileName', width: 230 },
+          { title: '备注', dataIndex: 'remark', key: 'remark', width: 260 },
+          { title: '操作', key: 'action', fixed: 'right', width: 170 }
+        ];
+
+        const filteredRows = computed(() => {
+          let result = rows.value.slice();
+          if (query.keyword) result = result.filter(row => row.title.includes(query.keyword.trim()));
+          if (query.category) result = result.filter(row => row.category === query.category);
+          if (query.status !== undefined) result = result.filter(row => row.status === query.status);
+          if (query.dateRange && query.dateRange.length === 2) {
+            const start = dayjs(query.dateRange[0]).startOf('day');
+            const end = dayjs(query.dateRange[1]).endOf('day');
+            result = result.filter(row => dayjs(row.createdAt).isAfter(start) && dayjs(row.createdAt).isBefore(end));
+          }
+          return result;
+        });
+
+        const pageTitle = computed(() => currentPage.value === 'menuResource' ? '菜单资源' : activeTab.value);
+        const rowSelection = computed(() => ({
+          selectedRowKeys: selectedRowKeys.value,
+          onChange: keys => selectedRowKeys.value = keys
+        }));
+
+        const showMessage = (type, text) => antd.message[type](text);
+        const setPage = ({ key }) => {
+          selectedKeys.value = [key];
+          const names = {
+            banner: '首页 Banner',
+            noticeList: '公告列表',
+            noticeAudit: '发布审核',
+            students: '学生管理',
+            teachers: '教职工管理',
+            historyStudents: '历史学生管理',
+            menuResource: '菜单资源',
+            operationPermission: '操作权限',
+            roleGrant: '角色授权',
+            components: '组件预设'
+          };
+          activeTab.value = names[key] || '首页 Banner';
+          currentPage.value = key === 'menuResource' ? 'menuResource' : key === 'components' ? 'components' : 'banner';
+          showMessage('success', '已切换到' + activeTab.value);
+        };
+        const onOpenChange = keys => openKeys.value = keys;
+        const search = () => {
+          pagination.current = 1;
+          showMessage('success', '查询完成');
+        };
+        const reset = () => {
+          query.keyword = '';
+          query.category = undefined;
+          query.status = undefined;
+          query.dateRange = [];
+          pagination.current = 1;
+          showMessage('success', '查询条件已重置');
+        };
+        const refresh = () => showMessage('success', '列表已刷新');
+        const exportData = () => showMessage('success', '导出任务已创建');
+        const batchDelete = () => {
+          if (!selectedRowKeys.value.length) {
+            showMessage('warning', '请先选择需要删除的数据');
+            return;
+          }
+          antd.Modal.confirm({
+            title: '删除确认',
+            content: '确定要删除选中的数据吗？删除后列表将自动刷新。',
+            okText: '确定',
+            cancelText: '取消',
+            onOk() {
+              rows.value = rows.value.filter(row => !selectedRowKeys.value.includes(row.id));
+              selectedRowKeys.value = [];
+              showMessage('success', '删除成功');
+            }
+          });
+        };
+        const removeRow = record => {
+          antd.Modal.confirm({
+            title: '删除确认',
+            content: '确定要删除“' + record.title + '”吗？',
+            okText: '确定',
+            cancelText: '取消',
+            onOk() {
+              rows.value = rows.value.filter(row => row.id !== record.id);
+              selectedRowKeys.value = selectedRowKeys.value.filter(id => id !== record.id);
+              showMessage('success', '删除成功');
+            }
+          });
+        };
+        const openAdd = () => {
+          drawerMode.value = 'add';
+          Object.assign(formState, { id: null, title: '', category: '首页 Banner', position: '后台首页', sort: 10, status: true, audit: '待审核', cover: demoImages[0], summary: '', uploadFiles: demoImages[0] ? [{ uid: 'demo-1', name: '示例封面.png', status: 'done', url: demoImages[0] }] : [] });
+          drawerOpen.value = true;
+        };
+        const openEdit = record => {
+          drawerMode.value = 'edit';
+          Object.assign(formState, { ...record, uploadFiles: record.cover ? [{ uid: String(record.id), name: record.title + '.png', status: 'done', url: record.cover }] : [] });
+          drawerOpen.value = true;
+        };
+        const openDetail = record => {
+          detailRecord.value = { ...record };
+          drawerMode.value = 'detail';
+          Object.assign(formState, { ...record, uploadFiles: record.cover ? [{ uid: String(record.id), name: record.title + '.png', status: 'done', url: record.cover }] : [] });
+          drawerOpen.value = true;
+        };
+        const saveForm = () => {
+          if (!formState.title.trim()) {
+            showMessage('warning', '请输入标题');
+            return;
+          }
+          if (drawerMode.value === 'edit') {
+            rows.value = rows.value.map(row => row.id === formState.id ? { ...row, ...formState } : row);
+          } else {
+            rows.value.unshift({ ...formState, id: Date.now(), createdAt: dayjs().format('YYYY-MM-DD HH:mm'), audit: '待审核' });
+          }
+          drawerOpen.value = false;
+          showMessage('success', '保存成功，列表已刷新');
+        };
+        const auditRow = record => {
+          record.audit = '已发布';
+          record.status = true;
+          showMessage('success', '审核通过');
+        };
+        const toggleStatus = (record, value) => {
+          record.status = value;
+          record.audit = value ? '已发布' : '已下架';
+          showMessage('success', value ? '已启用' : '已停用');
+        };
+        const useExampleCover = () => {
+          formState.cover = formState.cover === demoImages[0] ? demoImages[1] : demoImages[0];
+          formState.uploadFiles = formState.cover ? [{ uid: 'example', name: '示例封面.png', status: 'done', url: formState.cover }] : [];
+          showMessage('success', '封面图已更新');
+        };
+        const beforeCoverUpload = file => {
+          if (!file.type || !file.type.startsWith('image/')) {
+            showMessage('warning', '请选择图片文件');
+            return false;
+          }
+          const reader = new FileReader();
+          reader.onload = event => {
+            const dataUrl = event.target.result;
+            formState.cover = dataUrl;
+            formState.uploadFiles = [{ uid: file.uid || String(Date.now()), name: file.name, status: 'done', url: dataUrl }];
+            showMessage('success', '图片已选择');
+          };
+          reader.readAsDataURL(file);
+          return false;
+        };
+        const removeCover = () => {
+          formState.cover = '';
+          formState.uploadFiles = [];
+          showMessage('success', '封面图已移除');
+          return true;
+        };
+        const previewCover = file => {
+          previewImage.value = file.url || formState.cover;
+          previewTitle.value = file.name || '图片预览';
+          previewOpen.value = true;
+        };
+        const previewCurrentCover = () => {
+          if (!formState.cover) {
+            showMessage('warning', '暂无图片可预览');
+            return;
+          }
+          previewImage.value = formState.cover;
+          previewTitle.value = formState.title || '图片预览';
+          previewOpen.value = true;
+        };
+        const saveImport = () => {
+          importOpen.value = false;
+          showMessage('success', '导入完成，列表已刷新');
+        };
+        const saveMenu = () => {
+          menuDrawerOpen.value = false;
+          showMessage('success', '菜单已保存');
+        };
+        const setResource = name => {
+          activeResource.value = name;
+          showMessage('success', '已选择' + name);
+        };
+        const changePage = page => {
+          pagination.current = page.current;
+          pagination.pageSize = page.pageSize;
+        };
+        const topAction = text => showMessage('success', text + '已完成');
+        const confirmAction = text => {
+          antd.Modal.confirm({
+            title: '操作确认',
+            content: '确定执行“' + text + '”吗？',
+            okText: '确定',
+            cancelText: '取消',
+            onOk: () => showMessage('success', text + '已完成')
+          });
+        };
+
+        return {
+          prototypeMeta,
+          collapsed, currentPage, activeTab, selectedKeys, openKeys, tableSize, selectedRowKeys,
+          rows, query, advanced, drawerOpen, drawerMode, formState, detailRecord, importOpen,
+          columnOpen, previewOpen, previewImage, previewTitle, menuDrawerOpen, menuForm, activeResource, checkedColumns, pagination,
+          menuItems, columns, componentColumns, componentRows, filteredRows, pageTitle, rowSelection,
+          setPage, onOpenChange, search, reset, refresh, exportData, batchDelete, removeRow,
+          openAdd, openEdit, openDetail, saveForm, auditRow, toggleStatus, useExampleCover,
+          beforeCoverUpload, removeCover, previewCover, previewCurrentCover,
+          saveImport, saveMenu, setResource, changePage, topAction, confirmAction,
+        };
+      },
+      template: `
+        <a-layout class="app-shell">
+          <a-layout-sider class="snowy-sider" :width="232" :collapsed="collapsed" collapsible :trigger="null">
+            <div class="brand">
+              <div class="brand-mark">
+                <img v-if="prototypeMeta.logoImage" :src="prototypeMeta.logoImage" alt="Logo" style="width:100%;height:100%;object-fit:cover;border-radius:8px" />
+                <span v-else>{{ prototypeMeta.logoText }}</span>
+              </div>
+              <span v-show="!collapsed">{{ prototypeMeta.systemName }}</span>
+            </div>
+            <a-menu
+              mode="inline"
+              theme="dark"
+              :items="menuItems"
+              :selected-keys="selectedKeys"
+              :open-keys="openKeys"
+              @click="setPage"
+              @openChange="onOpenChange"
+            />
+          </a-layout-sider>
+          <a-layout>
+            <header class="snowy-header">
+              <div class="header-left">
+                <span class="icon-action" title="折叠菜单" @click="collapsed = !collapsed">
+                  <span class="mini-icon">{{ collapsed ? '☰' : '≡' }}</span>
+                </span>
+                <a-breadcrumb>
+                  <a-breadcrumb-item>首页</a-breadcrumb-item>
+                  <a-breadcrumb-item>业务运营</a-breadcrumb-item>
+                  <a-breadcrumb-item>{{ pageTitle }}</a-breadcrumb-item>
+                </a-breadcrumb>
+              </div>
+              <div class="header-right">
+                <span class="icon-action" title="刷新" @click="topAction('刷新')"><span class="mini-icon">↻</span></span>
+                <span class="icon-action" title="全屏" @click="topAction('全屏')"><span class="mini-icon">⛶</span></span>
+                <span class="icon-action" title="通知" @click="topAction('通知')"><span class="mini-icon">●</span></span>
+                <a-avatar style="background:#1677ff">管</a-avatar>
+                <span>管理员</span>
+              </div>
+            </header>
+            <div class="tabs-row">
+              <a-tag color="blue">首页</a-tag>
+              <a-tag color="processing">{{ activeTab }}</a-tag>
+            </div>
+            <a-layout-content class="content">
+              <section v-if="currentPage === 'banner'">
+                <div class="query-card">
+                  <h1 class="page-title">{{ pageTitle }}</h1>
+                  <a-form layout="vertical">
+                    <a-row :gutter="12">
+                      <a-col :xs="24" :md="6">
+                        <a-form-item label="标题">
+                          <a-input v-model:value="query.keyword" placeholder="请输入标题关键词" allow-clear @pressEnter="search" />
+                        </a-form-item>
+                      </a-col>
+                      <a-col :xs="24" :md="6">
+                        <a-form-item label="栏目">
+                          <a-select v-model:value="query.category" placeholder="全部栏目" allow-clear>
+                            <a-select-option value="首页 Banner">首页 Banner</a-select-option>
+                            <a-select-option value="通知公告">通知公告</a-select-option>
+                            <a-select-option value="专业介绍">专业介绍</a-select-option>
+                            <a-select-option value="招生服务">招生服务</a-select-option>
+                          </a-select>
+                        </a-form-item>
+                      </a-col>
+                      <a-col :xs="24" :md="6">
+                        <a-form-item label="状态">
+                          <a-select v-model:value="query.status" placeholder="全部状态" allow-clear>
+                            <a-select-option :value="true">启用</a-select-option>
+                            <a-select-option :value="false">停用</a-select-option>
+                          </a-select>
+                        </a-form-item>
+                      </a-col>
+                      <a-col :xs="24" :md="6">
+                        <a-form-item label="创建时间">
+                          <a-range-picker v-model:value="query.dateRange" style="width:100%" />
+                        </a-form-item>
+                      </a-col>
+                      <a-col v-if="advanced" :xs="24" :md="6">
+                        <a-form-item label="发布位置">
+                          <a-select placeholder="全部位置" allow-clear>
+                            <a-select-option value="后台首页">后台首页</a-select-option>
+                            <a-select-option value="学校专区">学校专区</a-select-option>
+                          </a-select>
+                        </a-form-item>
+                      </a-col>
+                    </a-row>
+                    <a-space>
+                      <a-button type="primary" @click="search"><span class="mini-icon">⌕</span>查询</a-button>
+                      <a-button @click="reset">重置</a-button>
+                      <a-button type="link" @click="advanced = !advanced">{{ advanced ? '收起' : '展开' }}</a-button>
+                    </a-space>
+                  </a-form>
+                </div>
+                <div class="table-card">
+                  <div class="toolbar">
+                    <div class="toolbar-left">
+                      <a-button type="primary" @click="openAdd"><span class="mini-icon">＋</span>新增内容</a-button>
+                      <a-button danger @click="batchDelete"><span class="mini-icon">×</span>批量删除</a-button>
+                      <a-button @click="importOpen = true"><span class="mini-icon">⇧</span>导入</a-button>
+                      <a-button @click="exportData"><span class="mini-icon">⇩</span>导出</a-button>
+                    </div>
+                    <div class="toolbar-right">
+                      <a-tooltip title="刷新"><a-button shape="circle" @click="refresh"><span class="mini-icon">↻</span></a-button></a-tooltip>
+                      <a-tooltip title="表格密度"><a-button shape="circle" @click="tableSize = tableSize === 'middle' ? 'small' : 'middle'"><span class="mini-icon">↕</span></a-button></a-tooltip>
+                      <a-tooltip title="列设置"><a-button shape="circle" @click="columnOpen = true"><span class="mini-icon">☷</span></a-button></a-tooltip>
+                    </div>
+                  </div>
+                  <a-table
+                    row-key="id"
+                    :columns="columns"
+                    :data-source="filteredRows"
+                    :row-selection="rowSelection"
+                    :size="tableSize"
+                    :pagination="{ current: pagination.current, pageSize: pagination.pageSize, total: filteredRows.length, showSizeChanger: true, showTotal: total => '共 ' + total + ' 条' }"
+                    :scroll="{ x: 980 }"
+                    @change="changePage"
+                  >
+                    <template #bodyCell="{ column, record }">
+                      <template v-if="column.key === 'cover'">
+                        <img v-if="record.cover" class="cover" :src="record.cover" alt="封面图" />
+                        <div v-else class="cover-empty">无图</div>
+                      </template>
+                      <template v-else-if="column.key === 'position'">
+                        <a-tag :color="record.position === '后台首页' ? 'green' : 'blue'">{{ record.position }}</a-tag>
+                      </template>
+                      <template v-else-if="column.key === 'audit'">
+                        <a-tag :color="record.audit === '待审核' ? 'orange' : record.audit === '已发布' ? 'success' : 'default'">{{ record.audit }}</a-tag>
+                      </template>
+                      <template v-else-if="column.key === 'status'">
+                        <a-switch :checked="record.status" @change="value => toggleStatus(record, value)" />
+                      </template>
+                      <template v-else-if="column.key === 'action'">
+                        <a-space>
+                          <a @click="openDetail(record)">详情</a>
+                          <a @click="openEdit(record)">编辑</a>
+                          <a v-if="record.audit === '待审核'" @click="auditRow(record)">审核</a>
+                          <a-typography-link type="danger" @click="removeRow(record)">删除</a-typography-link>
+                        </a-space>
+                      </template>
+                    </template>
+                  </a-table>
+                </div>
+              </section>
+
+              <section v-else-if="currentPage === 'menuResource'" class="tree-layout">
+                <div class="tree-card">
+                  <a-space style="margin-bottom:12px">
+                    <a-button type="primary" size="small" @click="menuDrawerOpen = true"><span class="mini-icon">＋</span>新增</a-button>
+                    <a-button size="small" @click="refresh"><span class="mini-icon">↻</span>刷新</a-button>
+                  </a-space>
+                  <div class="resource-node" :class="{active: activeResource === '内容管理'}" @click="setResource('内容管理')">内容管理 <span>3</span></div>
+                  <div class="resource-node" :class="{active: activeResource === '首页 Banner'}" @click="setResource('首页 Banner')">　首页 Banner <span>6</span></div>
+                  <div class="resource-node" :class="{active: activeResource === '通知公告'}" @click="setResource('通知公告')">　通知公告 <span>4</span></div>
+                  <div class="resource-node" :class="{active: activeResource === '师生管理'}" @click="setResource('师生管理')">师生管理 <span>9</span></div>
+                </div>
+                <div class="table-card">
+                  <h1 class="page-title">菜单资源</h1>
+                  <a-descriptions bordered size="small" :column="2">
+                    <a-descriptions-item label="当前菜单">{{ activeResource }}</a-descriptions-item>
+                    <a-descriptions-item label="可见角色">管理员、运营人员</a-descriptions-item>
+                    <a-descriptions-item label="路由地址">/content/banner</a-descriptions-item>
+                    <a-descriptions-item label="操作范围">查询、新增、编辑、删除、导入、导出</a-descriptions-item>
+                  </a-descriptions>
+                  <a-divider />
+                  <a-space>
+                    <a-button type="primary" @click="menuDrawerOpen = true">编辑菜单</a-button>
+                    <a-button @click="topAction('授权')">角色授权</a-button>
+                    <a-button danger @click="removeRow({ id: -1, title: activeResource })">删除菜单</a-button>
+                  </a-space>
+                </div>
+              </section>
+              <section v-else>
+                <div class="preset-grid">
+                  <div class="preset-card">
+                    <h3>上传组件</h3>
+                    <div class="preset-row">
+                      <img v-if="formState.cover" class="upload-preview" :src="formState.cover" alt="上传预览" />
+                      <div v-else class="cover-empty" style="width:102px;height:102px">无图</div>
+                      <a-upload :show-upload-list="false" :before-upload="beforeCoverUpload" accept="image/*">
+                        <a-button size="small">选择图片</a-button>
+                      </a-upload>
+                      <a-button size="small" @click="previewCurrentCover">预览</a-button>
+                      <a-button size="small" @click="removeCover">移除</a-button>
+                    </div>
+                  </div>
+                  <div class="preset-card">
+                    <h3>状态与标签</h3>
+                    <div class="preset-row">
+                      <a-tag color="success">启用</a-tag>
+                      <a-tag color="orange">待审核</a-tag>
+                      <a-tag color="default">已停用</a-tag>
+                      <a-badge status="processing" text="运行中" />
+                    </div>
+                  </div>
+                  <div class="preset-card">
+                    <h3>用户与进度</h3>
+                    <div class="preset-row">
+                      <a-avatar :src="componentRows[0].avatar">管</a-avatar>
+                      <span>系统管理员</span>
+                      <a-progress :percent="92" size="small" style="width:120px" />
+                    </div>
+                  </div>
+                  <div class="preset-card">
+                    <h3>树形选择</h3>
+                    <a-tree-select style="width:100%" value="首页 Banner" :tree-data="[{ title: '内容管理', value: '内容管理', children: [{ title: '首页 Banner', value: '首页 Banner' }, { title: '通知公告', value: '通知公告' }] }]" />
+                  </div>
+                  <div class="preset-card">
+                    <h3>确认操作</h3>
+                    <a-space>
+                      <a-button danger @click="confirmAction('删除数据')">删除</a-button>
+                      <a-button @click="confirmAction('重置密码')">重置密码</a-button>
+                    </a-space>
+                  </div>
+                  <div class="preset-card">
+                    <h3>文件类型</h3>
+                    <div class="preset-row">
+                      <span class="file-thumb pdf">PDF</span>
+                      <span class="file-thumb xls">XLS</span>
+                      <span class="file-thumb doc">DOC</span>
+                      <a-button size="small" @click="topAction('文件预览')">预览</a-button>
+                    </div>
+                  </div>
+                </div>
+                <div class="table-card">
+                  <div class="toolbar">
+                    <div class="toolbar-left">
+                      <a-button type="primary" @click="topAction('新增用户')"><span class="mini-icon">＋</span>新增用户</a-button>
+                      <a-button @click="topAction('导入用户')"><span class="mini-icon">⇧</span>导入</a-button>
+                      <a-button @click="topAction('导出用户')"><span class="mini-icon">⇩</span>导出</a-button>
+                    </div>
+                    <div class="toolbar-right">
+                      <a-tooltip title="刷新"><a-button shape="circle" @click="refresh"><span class="mini-icon">↻</span></a-button></a-tooltip>
+                    </div>
+                  </div>
+                  <a-table
+                    row-key="id"
+                    :columns="componentColumns"
+                    :data-source="componentRows"
+                    :pagination="false"
+                    :scroll="{ x: 1500 }"
+                    bordered
+                  >
+                    <template #bodyCell="{ column, record }">
+                      <template v-if="column.key === 'avatar'">
+                        <a-avatar v-if="record.avatar" :src="record.avatar" />
+                        <a-avatar v-else>{{ record.name.slice(0, 1) }}</a-avatar>
+                      </template>
+                      <template v-else-if="column.key === 'gender'">
+                        <a-tag :color="record.gender === '男' ? 'blue' : 'magenta'">{{ record.gender }}</a-tag>
+                      </template>
+                      <template v-else-if="column.key === 'role'">
+                        <a-tag color="processing">{{ record.role }}</a-tag>
+                      </template>
+                      <template v-else-if="column.key === 'status'">
+                        <a-switch :checked="record.status" @change="value => { record.status = value; topAction(value ? '启用用户' : '停用用户') }" />
+                      </template>
+                      <template v-else-if="column.key === 'progress'">
+                        <a-progress :percent="record.progress" size="small" />
+                      </template>
+                      <template v-else-if="column.key === 'fileName'">
+                        <a-space>
+                          <span :class="'file-thumb ' + record.fileType">{{ record.fileType.toUpperCase() }}</span>
+                          <span>
+                            <a-tooltip :title="record.fileName"><span class="text-ellipsis">{{ record.fileName }}</span></a-tooltip>
+                            <div class="muted">{{ record.size }} · {{ record.engine }}</div>
+                          </span>
+                        </a-space>
+                      </template>
+                      <template v-else-if="column.key === 'remark'">
+                        <a-tooltip :title="record.remark"><span class="text-ellipsis">{{ record.remark }}</span></a-tooltip>
+                      </template>
+                      <template v-else-if="column.key === 'action'">
+                        <a-space>
+                          <a @click="topAction('查看详情')">详情</a>
+                          <a @click="topAction('编辑资料')">编辑</a>
+                          <a-dropdown>
+                            <a @click.prevent>更多</a>
+                            <template #overlay>
+                              <a-menu>
+                                <a-menu-item @click="confirmAction('重置密码')">重置密码</a-menu-item>
+                                <a-menu-item @click="topAction('角色授权')">角色授权</a-menu-item>
+                                <a-menu-item @click="topAction('导出信息')">导出信息</a-menu-item>
+                              </a-menu>
+                            </template>
+                          </a-dropdown>
+                        </a-space>
+                      </template>
+                    </template>
+                  </a-table>
+                </div>
+              </section>
+            </a-layout-content>
+          </a-layout>
+
+          <a-drawer :title="drawerMode === 'detail' ? '内容详情' : drawerMode === 'edit' ? '编辑内容' : '新增内容'" width="560" v-model:open="drawerOpen">
+            <a-form layout="vertical">
+              <a-form-item label="标题" required>
+                <a-input v-model:value="formState.title" :disabled="drawerMode === 'detail'" placeholder="请输入标题" />
+              </a-form-item>
+              <a-row :gutter="12">
+                <a-col :span="12">
+                  <a-form-item label="栏目">
+                    <a-select v-model:value="formState.category" :disabled="drawerMode === 'detail'">
+                      <a-select-option value="首页 Banner">首页 Banner</a-select-option>
+                      <a-select-option value="通知公告">通知公告</a-select-option>
+                      <a-select-option value="专业介绍">专业介绍</a-select-option>
+                      <a-select-option value="招生服务">招生服务</a-select-option>
+                    </a-select>
+                  </a-form-item>
+                </a-col>
+                <a-col :span="12">
+                  <a-form-item label="发布位置">
+                    <a-select v-model:value="formState.position" :disabled="drawerMode === 'detail'">
+                      <a-select-option value="后台首页">后台首页</a-select-option>
+                      <a-select-option value="学校专区">学校专区</a-select-option>
+                    </a-select>
+                  </a-form-item>
+                </a-col>
+              </a-row>
+              <a-row :gutter="12">
+                <a-col :span="12"><a-form-item label="排序"><a-input-number v-model:value="formState.sort" :disabled="drawerMode === 'detail'" style="width:100%" /></a-form-item></a-col>
+                <a-col :span="12"><a-form-item label="状态"><a-switch v-model:checked="formState.status" :disabled="drawerMode === 'detail'" /></a-form-item></a-col>
+              </a-row>
+              <a-form-item label="封面图">
+                <a-upload
+                  list-type="picture-card"
+                  :file-list="formState.uploadFiles"
+                  :before-upload="beforeCoverUpload"
+                  @preview="previewCover"
+                  @remove="removeCover"
+                  accept="image/*"
+                  :disabled="drawerMode === 'detail'"
+                >
+                  <div v-if="drawerMode !== 'detail' && formState.uploadFiles.length < 1">
+                    <div style="font-size:20px">＋</div>
+                    <div>选择图片</div>
+                  </div>
+                </a-upload>
+              </a-form-item>
+              <a-form-item label="内容摘要">
+                <a-textarea v-model:value="formState.summary" :disabled="drawerMode === 'detail'" :rows="4" placeholder="请输入内容摘要" />
+              </a-form-item>
+            </a-form>
+            <template #footer>
+              <a-space>
+                <a-button @click="drawerOpen = false">取消</a-button>
+                <a-button v-if="drawerMode !== 'detail'" type="primary" @click="saveForm">保存</a-button>
+              </a-space>
+            </template>
+          </a-drawer>
+
+          <a-drawer title="菜单表单" width="520" v-model:open="menuDrawerOpen">
+            <a-form layout="vertical">
+              <a-form-item label="上级菜单"><a-select v-model:value="menuForm.parent"><a-select-option value="内容管理">内容管理</a-select-option><a-select-option value="系统能力">系统能力</a-select-option></a-select></a-form-item>
+              <a-form-item label="显示名称"><a-input v-model:value="menuForm.name" /></a-form-item>
+              <a-form-item label="路由地址"><a-input v-model:value="menuForm.path" /></a-form-item>
+              <a-form-item label="权限名称"><a-input v-model:value="menuForm.permissionName" /></a-form-item>
+              <a-form-item label="是否可见"><a-switch v-model:checked="menuForm.visible" /></a-form-item>
+              <a-form-item label="排序"><a-input-number v-model:value="menuForm.sort" style="width:100%" /></a-form-item>
+            </a-form>
+            <template #footer>
+              <a-space><a-button @click="menuDrawerOpen = false">取消</a-button><a-button type="primary" @click="saveMenu">保存</a-button></a-space>
+            </template>
+          </a-drawer>
+
+          <a-modal title="导入数据" v-model:open="importOpen" ok-text="开始导入" cancel-text="取消" @ok="saveImport">
+            <a-alert type="info" show-icon message="请选择 Excel 文件，导入后展示成功和失败明细。" style="margin-bottom:12px" />
+            <a-upload-dragger :before-upload="() => false" accept=".xlsx,.xls">
+              <p class="ant-upload-drag-icon"><span class="mini-icon" style="font-size:28px">⇧</span></p>
+              <p class="ant-upload-text">点击或拖拽文件到此区域</p>
+            </a-upload-dragger>
+          </a-modal>
+
+          <a-modal title="列设置" v-model:open="columnOpen" ok-text="确定" cancel-text="取消" @ok="columnOpen = false">
+            <a-checkbox-group v-model:value="checkedColumns" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">
+              <a-checkbox value="title">标题</a-checkbox>
+              <a-checkbox value="cover">封面图</a-checkbox>
+              <a-checkbox value="category">栏目</a-checkbox>
+              <a-checkbox value="position">发布位置</a-checkbox>
+              <a-checkbox value="sort">排序</a-checkbox>
+              <a-checkbox value="audit">发布状态</a-checkbox>
+              <a-checkbox value="status">状态</a-checkbox>
+              <a-checkbox value="createdAt">创建时间</a-checkbox>
+              <a-checkbox value="action">操作</a-checkbox>
+            </a-checkbox-group>
+          </a-modal>
+          <a-modal :title="previewTitle" v-model:open="previewOpen" :footer="null">
+            <img v-if="previewImage" :src="previewImage" style="width:100%;border-radius:4px" alt="图片预览" />
+          </a-modal>
+        </a-layout>
+      `
+    });
+
+    app.use(antd);
+    app.mount('#app');
+  </script>
+</body>
+</html>
