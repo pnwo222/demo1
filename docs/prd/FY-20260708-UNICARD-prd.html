@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FY-20260708-UNICARD-prd - 需求可视化</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --text: #1f2937;
+      --muted: #667085;
+      --line: #d9e2ef;
+      --brand: #1769e0;
+      --brand-soft: #e8f1ff;
+      --risk: #a15c00;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Microsoft YaHei", "Noto Sans SC", Arial, sans-serif; color: var(--text); background: var(--bg); }
+    .shell { display: grid; grid-template-columns: 280px minmax(0, 1fr); min-height: 100vh; }
+    aside { position: sticky; top: 0; height: 100vh; overflow: auto; padding: 24px 18px; background: #0f172a; color: #e5edf9; }
+    aside h1 { margin: 0 0 18px; font-size: 18px; line-height: 1.35; }
+    aside a { display: block; color: #c8d6ee; text-decoration: none; border-radius: 6px; padding: 7px 8px; line-height: 1.35; }
+    aside a:hover { background: rgba(255,255,255,.09); color: #fff; }
+    .toc-level-1 { font-weight: 700; margin-top: 6px; }
+    .toc-level-2 { padding-left: 16px; }
+    .toc-level-3, .toc-level-4, .toc-level-5, .toc-level-6 { padding-left: 30px; font-size: 13px; color: #9fb0cc; }
+    main { padding: 30px; }
+    .hero { background: linear-gradient(135deg, #ffffff, #eef5ff); border: 1px solid var(--line); border-radius: 8px; padding: 24px; margin-bottom: 18px; }
+    .hero h2 { margin: 0 0 8px; font-size: 24px; }
+    .hero p { margin: 0; color: var(--muted); }
+    .content { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 28px; }
+    h1, h2, h3 { scroll-margin-top: 24px; }
+    h1 { font-size: 28px; border-bottom: 1px solid var(--line); padding-bottom: 12px; }
+    h2 { margin-top: 34px; font-size: 22px; color: #123c7c; }
+    h3 { margin-top: 24px; font-size: 18px; }
+    h4, h5, h6 { margin-top: 20px; }
+    p, li { line-height: 1.75; }
+    p { margin: 10px 0; }
+    ul { margin: 8px 0 16px 20px; padding: 0; }
+    code { background: #eef2f7; border-radius: 4px; padding: 2px 5px; }
+    pre { overflow: auto; background: #0b1220; color: #dbeafe; border-radius: 8px; padding: 14px; }
+    .table-wrap { overflow: auto; margin: 14px 0 22px; border: 1px solid var(--line); border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; min-width: 720px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
+    th { background: var(--brand-soft); color: #0f3f85; font-weight: 700; }
+    tr:last-child td { border-bottom: 0; }
+    @media (max-width: 900px) {
+      .shell { grid-template-columns: 1fr; }
+      aside { position: relative; height: auto; }
+      main { padding: 16px; }
+      .content { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside>
+      <h1>FY-20260708-UNICARD-prd</h1>
+      <a class="toc-level-2" href="#section-1-文档信息">文档信息</a>
+<a class="toc-level-2" href="#section-2-背景与目标">背景与目标</a>
+<a class="toc-level-2" href="#section-3-用户角色">用户角色</a>
+<a class="toc-level-2" href="#section-4-功能范围">功能范围</a>
+<a class="toc-level-3" href="#section-5-h5-app-学校专区">H5/APP 学校专区</a>
+<a class="toc-level-3" href="#section-6-学校端后管">学校端后管</a>
+<a class="toc-level-3" href="#section-7-管理端后管">管理端后管</a>
+<a class="toc-level-3" href="#section-8-接口与数据对接">接口与数据对接</a>
+<a class="toc-level-3" href="#section-9-pam-人员设备管理">PAM 人员设备管理</a>
+<a class="toc-level-2" href="#section-10-核心流程">核心流程</a>
+<a class="toc-level-3" href="#section-11-内容发布流程">内容发布流程</a>
+<a class="toc-level-3" href="#section-12-人员同步和身份核验流程">人员同步和身份核验流程</a>
+<a class="toc-level-3" href="#section-13-交易接收流程">交易接收流程</a>
+<a class="toc-level-3" href="#section-14-设备远程配置流程">设备远程配置流程</a>
+<a class="toc-level-2" href="#section-15-状态与业务规则">状态与业务规则</a>
+<a class="toc-level-2" href="#section-16-非功能需求">非功能需求</a>
+<a class="toc-level-2" href="#section-17-后管框架参考清单">后管框架参考清单</a>
+<a class="toc-level-2" href="#section-18-原型需求覆盖矩阵">原型需求覆盖矩阵</a>
+<a class="toc-level-2" href="#section-19-验收标准">验收标准</a>
+<a class="toc-level-2" href="#section-20-待确认问题">待确认问题</a>
+    </aside>
+    <main>
+      <section class="hero">
+        <h2>需求可视化页面</h2>
+        <p>来源 Markdown：docs\prd\FY-20260708-UNICARD-prd.md。请以 Markdown 为主源，本页面用于开发快速查看和评审。</p>
+      </section>
+      <article class="content">
+        <p>﻿# 纺院高校一卡通专区 PRD</p>
+<h2 id="section-1-文档信息">文档信息</h2>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>项</th>
+<th>内容</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>需求ID</td>
+<td>FY-20260708-UNICARD</td>
+</tr>
+<tr>
+<td>来源需求</td>
+<td><code>docs/requirements/纺院需求.md</code>、<code>docs/tenders/fyy-extract.txt</code>、<code>D:/www/www/chg/纺院/纺院标书技术部分.docx</code></td>
+</tr>
+<tr>
+<td>框架来源</td>
+<td><code>project/docs/README.md</code>、<code>project/docs/framework-overview.md</code>、<code>project/docs/development-guidelines.md</code>、<code>project/docs/patterns/*.md</code></td>
+</tr>
+<tr>
+<td>后管原型工作流</td>
+<td><code>.codex/workflows/admin-prototype-design-workflow.md</code></td>
+</tr>
+<tr>
+<td>后管原型模板</td>
+<td><code>docs/design/prototype-demo-framework/index.html</code></td>
+</tr>
+<tr>
+<td>开发模式</td>
+<td>高风险严格模式</td>
+</tr>
+<tr>
+<td>输出语言</td>
+<td>简体中文</td>
+</tr>
+</tbody></table></div>
+<h2 id="section-2-背景与目标">背景与目标</h2>
+<p>纺院高校一卡通专区以社保卡、社保码、校园卡、掌静脉、人脸等身份载体为基础，建设 APP 学校专区、学校端后管、管理端后管、校园类接口和 PAM 人员设备管理能力。目标是实现校园身份认证、内容发布、师生信息同步、通行/消费/借阅记录查询、设备状态监控、外部接口对接和审计追踪。</p>
+<h2 id="section-3-用户角色">用户角色</h2>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>角色</th>
+<th>使用范围</th>
+<th>权限重点</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>师生</td>
+<td>H5/APP 学校专区</td>
+<td>查看校园内容、访客记录、消费记录、图书借阅、门禁记录、校园码</td>
+</tr>
+<tr>
+<td>访客</td>
+<td>H5/APP 访客预约</td>
+<td>提交预约、查看预约审核状态</td>
+</tr>
+<tr>
+<td>学校管理员</td>
+<td>学校端后管</td>
+<td>师生管理、记录查询、用户查看、学校数据看板</td>
+</tr>
+<tr>
+<td>内容运营</td>
+<td>学校端内容管理</td>
+<td>banner、公告、文章、活动、应用上线、首页模块</td>
+</tr>
+<tr>
+<td>平台管理员</td>
+<td>管理端后管</td>
+<td>学校、部门、用户、角色、权限、菜单、模块、一卡通对接</td>
+</tr>
+<tr>
+<td>运维人员</td>
+<td>设备和接口监控</td>
+<td>设备状态、远程配置、外部调用日志、失败重试</td>
+</tr>
+<tr>
+<td>审计人员</td>
+<td>日志与记录</td>
+<td>访问日志、操作日志、外部调用日志、敏感记录查询审计</td>
+</tr>
+<tr>
+<td>财务/结算人员</td>
+<td>消费记录</td>
+<td>消费查询、导出审批、流水核查</td>
+</tr>
+</tbody></table></div>
+<h2 id="section-4-功能范围">功能范围</h2>
+<h3 id="section-5-h5-app-学校专区">H5/APP 学校专区</h3>
+<ul>
+<li>首页：banner、校园资讯、通知公告、特色应用入口。</li>
+<li>学校信息：学校简介、专业介绍、校园地图、招生咨询。</li>
+<li>通知资讯：公告列表/详情、资讯列表/详情、资讯推荐到首页 banner。</li>
+<li>访客预约：姓名、身份证号、手机号、访问时间、通行方式、车牌、拜访人、缘由、备注、审核状态。</li>
+<li>校园启航：新生账号激活、社保卡办理预约、招生录取数据比对。</li>
+<li>图书借阅：新书推荐、图书检索、借阅排行。</li>
+<li>我的：个人资料、访客预约记录、消费记录、图书借阅记录、门禁记录、校园卡账本、社保卡信息、校园码。</li>
+<li>一卡通 APP 对接：服务消息、我的卡包。</li>
+</ul>
+<h3 id="section-6-学校端后管">学校端后管</h3>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>菜单层级</th>
+<th>菜单名称</th>
+<th>路由路径</th>
+<th>权限标识</th>
+<th>入口位置</th>
+<th>可见角色</th>
+<th>页面形式</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>一级</td>
+<td>高校一卡通（学校端）</td>
+<td><code>/biz/fyy-school</code></td>
+<td><code>fyySchool</code></td>
+<td>业务管理</td>
+<td>学校管理员、运营人员</td>
+<td>菜单组</td>
+</tr>
+<tr>
+<td>二级</td>
+<td>业务首页</td>
+<td><code>/biz/fyy-school/dashboard</code></td>
+<td><code>fyySchoolDashboard</code></td>
+<td>学校端</td>
+<td>学校管理员、运营人员</td>
+<td>统计看板</td>
+</tr>
+<tr>
+<td>三级</td>
+<td>学生管理</td>
+<td><code>/biz/fyy-school/student</code></td>
+<td><code>fyyStudent</code></td>
+<td>师生管理</td>
+<td>学校管理员</td>
+<td>只读列表+筛选+同步状态</td>
+</tr>
+<tr>
+<td>三级</td>
+<td>教职工管理</td>
+<td><code>/biz/fyy-school/staff</code></td>
+<td><code>fyyStaff</code></td>
+<td>师生管理</td>
+<td>学校管理员</td>
+<td>只读列表+筛选+同步状态</td>
+</tr>
+<tr>
+<td>三级</td>
+<td>历史学生管理</td>
+<td><code>/biz/fyy-school/history-student</code></td>
+<td><code>fyyHistoryStudent</code></td>
+<td>师生管理</td>
+<td>学校管理员</td>
+<td>只读列表</td>
+</tr>
+<tr>
+<td>三级</td>
+<td>首页 banner 管理</td>
+<td><code>/biz/fyy-school/banner</code></td>
+<td><code>fyyBanner</code></td>
+<td>内容管理</td>
+<td>内容运营</td>
+<td>CRUD+图片上传+展示期+审核</td>
+</tr>
+<tr>
+<td>三级</td>
+<td>应用上线管理</td>
+<td><code>/biz/fyy-school/app</code></td>
+<td><code>fyyApp</code></td>
+<td>内容管理</td>
+<td>内容运营</td>
+<td>CRUD+状态</td>
+</tr>
+<tr>
+<td>三级</td>
+<td>首页模块管理</td>
+<td><code>/biz/fyy-school/home-module</code></td>
+<td><code>fyyHomeModule</code></td>
+<td>内容管理</td>
+<td>内容运营</td>
+<td>CRUD+模板选择</td>
+</tr>
+<tr>
+<td>三级</td>
+<td>公告管理</td>
+<td><code>/biz/fyy-school/notice</code></td>
+<td><code>fyyNotice</code></td>
+<td>内容管理</td>
+<td>内容运营</td>
+<td>CRUD+审核</td>
+</tr>
+<tr>
+<td>三级</td>
+<td>文章管理</td>
+<td><code>/biz/fyy-school/article</code></td>
+<td><code>fyyArticle</code></td>
+<td>内容管理</td>
+<td>内容运营</td>
+<td>CRUD+审核+推荐</td>
+</tr>
+<tr>
+<td>三级</td>
+<td>活动管理</td>
+<td><code>/biz/fyy-school/activity</code></td>
+<td><code>fyyActivity</code></td>
+<td>内容管理</td>
+<td>内容运营</td>
+<td>CRUD+可见范围</td>
+</tr>
+<tr>
+<td>二级</td>
+<td>社保卡申领记录</td>
+<td><code>/biz/fyy-school/social-card-apply</code></td>
+<td><code>fyySocialCardApply</code></td>
+<td>学校端</td>
+<td>学校管理员</td>
+<td>查询+导出审批</td>
+</tr>
+<tr>
+<td>二级</td>
+<td>设备状态监控</td>
+<td><code>/biz/fyy-school/device-monitor</code></td>
+<td><code>fyyDeviceMonitor</code></td>
+<td>学校端</td>
+<td>运维人员</td>
+<td>监控列表+告警</td>
+</tr>
+<tr>
+<td>三级</td>
+<td>访客记录管理</td>
+<td><code>/biz/fyy-school/visitor-record</code></td>
+<td><code>fyyVisitorRecord</code></td>
+<td>信息查询</td>
+<td>学校管理员</td>
+<td>查询+导出</td>
+</tr>
+<tr>
+<td>三级</td>
+<td>通行记录管理</td>
+<td><code>/biz/fyy-school/access-record</code></td>
+<td><code>fyyAccessRecord</code></td>
+<td>信息查询</td>
+<td>审计人员</td>
+<td>查询+详情</td>
+</tr>
+<tr>
+<td>三级</td>
+<td>消费记录管理</td>
+<td><code>/biz/fyy-school/consume-record</code></td>
+<td><code>fyyConsumeRecord</code></td>
+<td>信息查询</td>
+<td>财务/审计</td>
+<td>查询+导出审批</td>
+</tr>
+<tr>
+<td>三级</td>
+<td>图书借阅记录管理</td>
+<td><code>/biz/fyy-school/book-record</code></td>
+<td><code>fyyBookRecord</code></td>
+<td>信息查询</td>
+<td>学校管理员</td>
+<td>查询</td>
+</tr>
+<tr>
+<td>二级</td>
+<td>用户管理</td>
+<td><code>/biz/fyy-school/user</code></td>
+<td><code>fyySchoolUser</code></td>
+<td>学校端</td>
+<td>学校管理员</td>
+<td>只读列表</td>
+</tr>
+</tbody></table></div>
+<h3 id="section-7-管理端后管">管理端后管</h3>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>菜单层级</th>
+<th>菜单名称</th>
+<th>路由路径</th>
+<th>权限标识</th>
+<th>入口位置</th>
+<th>可见角色</th>
+<th>页面形式</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>一级</td>
+<td>高校一卡通（管理端）</td>
+<td><code>/biz/fyy-admin</code></td>
+<td><code>fyyAdmin</code></td>
+<td>业务管理</td>
+<td>平台管理员、运营管理员</td>
+<td>菜单组</td>
+</tr>
+<tr>
+<td>二级</td>
+<td>系统首页</td>
+<td><code>/biz/fyy-admin/dashboard</code></td>
+<td><code>fyyAdminDashboard</code></td>
+<td>管理端</td>
+<td>平台管理员</td>
+<td>统计看板</td>
+</tr>
+<tr>
+<td>三级</td>
+<td>学校管理</td>
+<td><code>/biz/fyy-admin/school</code></td>
+<td><code>fyySchoolManage</code></td>
+<td>组织架构</td>
+<td>平台管理员</td>
+<td>树形 CRUD</td>
+</tr>
+<tr>
+<td>三级</td>
+<td>用户管理</td>
+<td><code>/biz/fyy-admin/user</code></td>
+<td><code>fyyAdminUser</code></td>
+<td>组织架构</td>
+<td>平台管理员</td>
+<td>用户列表+授权</td>
+</tr>
+<tr>
+<td>三级</td>
+<td>角色管理</td>
+<td><code>/biz/fyy-admin/role</code></td>
+<td><code>fyyAdminRole</code></td>
+<td>权限管理</td>
+<td>平台管理员</td>
+<td>角色 CRUD+授权</td>
+</tr>
+<tr>
+<td>三级</td>
+<td>模块管理</td>
+<td><code>/biz/fyy-admin/module</code></td>
+<td><code>fyyAdminModule</code></td>
+<td>权限管理</td>
+<td>平台管理员</td>
+<td>模块 CRUD</td>
+</tr>
+<tr>
+<td>三级</td>
+<td>菜单管理</td>
+<td><code>/biz/fyy-admin/menu</code></td>
+<td><code>fyyAdminMenu</code></td>
+<td>权限管理</td>
+<td>平台管理员</td>
+<td>菜单树 CRUD</td>
+</tr>
+<tr>
+<td>三级</td>
+<td>访问日志</td>
+<td><code>/biz/fyy-admin/access-log</code></td>
+<td><code>fyyAccessLog</code></td>
+<td>日志管理</td>
+<td>审计人员</td>
+<td>日志查询</td>
+</tr>
+<tr>
+<td>三级</td>
+<td>操作日志</td>
+<td><code>/biz/fyy-admin/operation-log</code></td>
+<td><code>fyyOperationLog</code></td>
+<td>日志管理</td>
+<td>审计人员</td>
+<td>日志查询</td>
+</tr>
+<tr>
+<td>三级</td>
+<td>外部调用日志</td>
+<td><code>/biz/fyy-admin/external-log</code></td>
+<td><code>fyyExternalLog</code></td>
+<td>日志管理</td>
+<td>运维/审计</td>
+<td>接口日志查询</td>
+</tr>
+<tr>
+<td>二级</td>
+<td>一卡通后管对接</td>
+<td><code>/biz/fyy-admin/nb-card-sync</code></td>
+<td><code>fyyNbCardSync</code></td>
+<td>管理端</td>
+<td>平台管理员、运维</td>
+<td>对接监控+重试</td>
+</tr>
+</tbody></table></div>
+<h3 id="section-8-接口与数据对接">接口与数据对接</h3>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>编号</th>
+<th>名称</th>
+<th>核心规则</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>API-001</td>
+<td>学院数据初始化接口</td>
+<td>支持全量初始化，必须幂等</td>
+</tr>
+<tr>
+<td>API-002</td>
+<td>人员信息管理接口</td>
+<td>管理学生、教职工基础信息，敏感字段脱敏</td>
+</tr>
+<tr>
+<td>API-003</td>
+<td>人员关键信息核验接口</td>
+<td>核验身份、持卡、金融账户，记录失败原因</td>
+</tr>
+<tr>
+<td>API-004</td>
+<td>人员信息同步接口</td>
+<td>支持重复项检测、异常拦截、差异处理</td>
+</tr>
+<tr>
+<td>API-005</td>
+<td>电子社保码认证接口</td>
+<td>必须有鉴权、审计和异常处理</td>
+</tr>
+<tr>
+<td>API-006</td>
+<td>实体社保卡认证接口</td>
+<td>必须明确设备协议和卡数据读取边界</td>
+</tr>
+<tr>
+<td>API-007</td>
+<td>移动支付交易信息推送接口</td>
+<td>流水号幂等、金额精确、签名验签</td>
+</tr>
+<tr>
+<td>API-008</td>
+<td>实体社保卡交易信息接收接口</td>
+<td>防重复流水，记录校验失败</td>
+</tr>
+</tbody></table></div>
+<h3 id="section-9-pam-人员设备管理">PAM 人员设备管理</h3>
+<ul>
+<li>组织架构管理、人员管理、掌静脉生物信息录入。</li>
+<li>掌静脉识别算法特征库，容量 5 万。</li>
+<li>设备分组、人员分组、授权管理。</li>
+<li>用户通行实时同步，通行记录导出，用户信息导入导出。</li>
+<li>设备在线/离线、异常检测、远程配置、远程信息查询。</li>
+<li>用户操作日志、设备通信日志。</li>
+<li>授权子账户和多级分级权限。</li>
+</ul>
+<h2 id="section-10-核心流程">核心流程</h2>
+<h3 id="section-11-内容发布流程">内容发布流程</h3>
+<ul>
+<li>内容运营创建 banner、应用、模块、公告、文章或活动。</li>
+<li>系统校验标题、图片、展示期、可见身份、跳转链接和排序。</li>
+<li>需要审核的内容进入待审核。</li>
+<li>审核通过后按展示期、展示状态和可见身份在 H5/APP 展示。</li>
+<li>内容过期、停用或被驳回时不展示。</li>
+</ul>
+<h3 id="section-12-人员同步和身份核验流程">人员同步和身份核验流程</h3>
+<ul>
+<li>学校数据中台推送或接口拉取学生、教职工、历史学生数据。</li>
+<li>系统做格式校验、身份标识去重、异常数据拦截。</li>
+<li>对接持卡、绑卡、金融账户激活和社保码/卡认证结果。</li>
+<li>后管展示注册、绑卡、省内持卡、卡规范、金融账户激活状态。</li>
+<li>H5 侧按登录态展示个人资料和记录。</li>
+</ul>
+<h3 id="section-13-交易接收流程">交易接收流程</h3>
+<ul>
+<li>接收移动支付或实体社保卡交易。</li>
+<li>验签、校验金额、校验流水号唯一性。</li>
+<li>重复流水标记为重复处理，不重复入账。</li>
+<li>失败记录进入外部调用日志和待处理队列。</li>
+</ul>
+<h3 id="section-14-设备远程配置流程">设备远程配置流程</h3>
+<ul>
+<li>运维选择设备和配置项。</li>
+<li>系统提示影响范围并要求审批确认。</li>
+<li>通过后下发配置并保留配置快照。</li>
+<li>下发失败可重试，必要时按快照回滚。</li>
+</ul>
+<h2 id="section-15-状态与业务规则">状态与业务规则</h2>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>对象</th>
+<th>状态</th>
+<th>规则</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>内容</td>
+<td>草稿、待审核、已发布、已驳回、已下线、已过期</td>
+<td>待审核和驳回内容不展示；超过结束时间自动过期</td>
+</tr>
+<tr>
+<td>应用</td>
+<td>可用、停用、展示、隐藏</td>
+<td>停用或隐藏时 H5 不展示</td>
+</tr>
+<tr>
+<td>预约</td>
+<td>待审核、已通过、未通过、已取消、已过期</td>
+<td>仅已通过可用于入校</td>
+</tr>
+<tr>
+<td>人员持卡</td>
+<td>未注册、已注册、未绑卡、已绑卡、省内持卡、金融账户未激活、金融账户已激活</td>
+<td>状态来自外部同步或核验</td>
+</tr>
+<tr>
+<td>设备</td>
+<td>在线、离线、故障、告警、维护中</td>
+<td>离线和告警需突出展示</td>
+</tr>
+<tr>
+<td>交易</td>
+<td>已接收、校验失败、重复流水、已入账、待处理</td>
+<td>流水号必须唯一幂等</td>
+</tr>
+<tr>
+<td>远程配置</td>
+<td>待审批、已通过、已下发、失败、已回滚</td>
+<td>高风险操作必须审计</td>
+</tr>
+</tbody></table></div>
+<h2 id="section-16-非功能需求">非功能需求</h2>
+<ul>
+<li>权限：菜单、按钮、API 权限必须一致；高风险导出和远程配置使用最小权限。</li>
+<li>安全：身份证号、手机号、社保卡号、支付流水、掌静脉特征、门禁记录脱敏展示。</li>
+<li>审计：导出、远程配置、权限变更、人员同步、交易接收必须记录操作日志。</li>
+<li>性能：大表列表分页查询；人员、通行、消费、日志需要索引和归档策略。</li>
+<li>可用性：外部接口失败要可重试、可定位、可人工处理。</li>
+<li>兼容：后管复用 Snowy 管理端；H5 框架待确认。</li>
+</ul>
+<h2 id="section-17-后管框架参考清单">后管框架参考清单</h2>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>功能/页面</th>
+<th>参考框架文件</th>
+<th>复用布局</th>
+<th>CRUD 形式</th>
+<th>权限/状态模式</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>内容管理</td>
+<td><code>project/snowy-admin-web/src/views/biz/notice/index.vue</code>、<code>project/snowy-admin-web/src/views/dev/slideshow/index.vue</code></td>
+<td>查询区、工具栏、表格、抽屉、图片上传</td>
+<td>标准 CRUD、审核流程</td>
+<td>按钮权限、状态标签、启停开关</td>
+</tr>
+<tr>
+<td>师生/用户</td>
+<td><code>project/snowy-admin-web/src/views/sys/user/index.vue</code>、<code>project/snowy-admin-web/src/views/biz/user/index.vue</code></td>
+<td>左树+表格、导入导出、授权</td>
+<td>只读查询、用户授权</td>
+<td>状态开关、角色授权、导出校验</td>
+</tr>
+<tr>
+<td>组织/学校</td>
+<td><code>project/snowy-admin-web/src/views/sys/org/index.vue</code></td>
+<td>树形组织、表格、抽屉</td>
+<td>树形 CRUD</td>
+<td>层级、状态、排序</td>
+</tr>
+<tr>
+<td>角色/权限</td>
+<td><code>project/snowy-admin-web/src/views/sys/role/index.vue</code>、<code>project/snowy-admin-web/src/views/sys/resource/menu/index.vue</code></td>
+<td>角色列表、资源树、菜单表格</td>
+<td>授权分配、菜单 CRUD</td>
+<td>权限范围、按钮资源</td>
+</tr>
+<tr>
+<td>日志/接口</td>
+<td><code>project/snowy-admin-web/src/views/dev/log/vislog/index.vue</code>、<code>project/snowy-admin-web/src/views/dev/log/oplog/index.vue</code></td>
+<td>查询表单、日志表格、详情抽屉</td>
+<td>只读查询</td>
+<td>成功/失败状态、详情追踪</td>
+</tr>
+</tbody></table></div>
+<h2 id="section-18-原型需求覆盖矩阵">原型需求覆盖矩阵</h2>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>需求编号</th>
+<th>功能点</th>
+<th>页面/弹窗/抽屉</th>
+<th>字段</th>
+<th>操作</th>
+<th>状态/异常</th>
+<th>权限</th>
+<th>覆盖状态</th>
+<th>说明</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>H5-001~008</td>
+<td>H5 学校专区</td>
+<td>H5 原型首页/服务/资讯/我的</td>
+<td>首页、资讯、访客、启航、图书、记录</td>
+<td>页面切换、提交、查看详情</td>
+<td>空态、接口失败、敏感提示</td>
+<td>师生/访客</td>
+<td>已覆盖</td>
+<td>单独 H5 文件</td>
+</tr>
+<tr>
+<td>ADM-S-001</td>
+<td>业务首页</td>
+<td>后管业务首页</td>
+<td>用户数、认证数、绑卡率、告警</td>
+<td>查询、导出</td>
+<td>空态、异常</td>
+<td>学校管理员</td>
+<td>已覆盖</td>
+<td>看板页</td>
+</tr>
+<tr>
+<td>ADM-S-002</td>
+<td>师生管理</td>
+<td>学生/教职工/历史学生页面</td>
+<td>姓名、身份证、手机号、学院、状态</td>
+<td>查询、详情、导出</td>
+<td>同步失败、脱敏</td>
+<td>学校管理员</td>
+<td>已覆盖</td>
+<td>三个独立菜单</td>
+</tr>
+<tr>
+<td>ADM-S-003</td>
+<td>内容管理</td>
+<td>banner、应用、模块、公告、文章、活动页面</td>
+<td>标题、图片、时间、审核、可见身份</td>
+<td>新增、编辑、删除、审核、启停</td>
+<td>校验、过期、驳回</td>
+<td>内容运营</td>
+<td>已覆盖</td>
+<td>六个内容页</td>
+</tr>
+<tr>
+<td>ADM-S-004</td>
+<td>社保卡申领记录</td>
+<td>申领记录页</td>
+<td>证件、手机号、职业、状态、申领时间</td>
+<td>查询、详情、导出审批</td>
+<td>无数据、脱敏</td>
+<td>学校管理员</td>
+<td>已覆盖</td>
+<td>只读查询</td>
+</tr>
+<tr>
+<td>ADM-S-005</td>
+<td>设备状态监控</td>
+<td>设备监控页</td>
+<td>设备、位置、在线、告警、心跳</td>
+<td>查询、刷新、导出</td>
+<td>离线、告警</td>
+<td>运维人员</td>
+<td>已覆盖</td>
+<td>监控页</td>
+</tr>
+<tr>
+<td>ADM-S-006</td>
+<td>信息查询</td>
+<td>访客/通行/消费/借阅记录页</td>
+<td>记录字段、状态、时间</td>
+<td>查询、详情、导出审批</td>
+<td>敏感脱敏、失败</td>
+<td>审计/财务</td>
+<td>已覆盖</td>
+<td>四类记录页</td>
+</tr>
+<tr>
+<td>ADM-A-001~005</td>
+<td>管理端</td>
+<td>管理端菜单</td>
+<td>学校、用户、角色、模块、菜单、日志、对接</td>
+<td>维护、授权、重试</td>
+<td>失败、异常</td>
+<td>平台管理员</td>
+<td>已覆盖</td>
+<td>管理端全菜单</td>
+</tr>
+<tr>
+<td>PAM-001~008</td>
+<td>PAM</td>
+<td>PAM 人员设备管理菜单</td>
+<td>人员、设备、授权、通行、配置、日志</td>
+<td>采集、授权、同步、审批、回滚</td>
+<td>离线、失败</td>
+<td>运维/管理员</td>
+<td>已覆盖</td>
+<td>高风险提示</td>
+</tr>
+</tbody></table></div>
+<h2 id="section-19-验收标准">验收标准</h2>
+<ul>
+<li>PRD Markdown 和 HTML 可打开，且包含需求来源、框架来源、菜单设计、状态规则、风险和覆盖矩阵。</li>
+<li>后管原型从 <code>docs/design/prototype-demo-framework/index.html</code> 复制改造，保留 Snowy 后管关键结构。</li>
+<li>后管原型包含学校端、管理端、PAM 的完整菜单树和页面切换。</li>
+<li>后管原型覆盖查询、重置、展开、增删改查、审核、导入、导出、授权、远程配置、分页、状态切换、上传预览、空态、异常态、权限态。</li>
+<li>H5 原型独立输出，标记 <code>H5 框架待补充</code>，覆盖移动端主路径。</li>
+<li>敏感信息、身份认证、交易记录、掌静脉、远程配置和导出均有风险记录。</li>
+</ul>
+<h2 id="section-20-待确认问题">待确认问题</h2>
+<ul>
+<li><code>project/h5/</code> 是否作为 H5 工程。</li>
+<li>本期是否全量开发标书范围，还是先拆 MVP。</li>
+<li>宁波一卡通 APP、访客预约、图书馆、校园数据中台、人社局、支付交易接口的协议、鉴权、字段和联调环境。</li>
+<li>掌静脉特征是否由本系统存储，以及加密、删除、留存和合规要求。</li>
+<li>导出审批、脱敏策略和日志留存周期。</li>
+</ul>
+      </article>
+    </main>
+  </div>
+</body>
+</html>

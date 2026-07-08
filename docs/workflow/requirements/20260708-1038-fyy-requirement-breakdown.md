@@ -33,7 +33,7 @@
 | 需求和框架装载 | 已完成 | `docs/requirements/纺院需求.md`、`docs/tenders/纺院标书技术部分.extract.txt`、`docs/tenders/assets/纺院标书技术部分/` | 标书解析、框架缓存读取 | 2026-07-08 10:38 +08:00 |
 | 开发模式决策 | 已完成 | 高风险严格模式 | 用户选择 1 | 2026-07-08 10:40 +08:00 |
 | PRD/原型决策 | 已完成 | 生成 PRD 和低保真原型 | 用户选择 1 | 2026-07-08 10:43 +08:00 |
-| Product 产物 | 已完成（按新版工作流返工） | `docs/prd/20260708-fyy-prd.html`、`docs/design/20260708-fyy-admin-low-fidelity.html`、`docs/design/20260708-fyy-h5-low-fidelity.html` | Product Agent；用户要求重新走 PRD 流程 | 2026-07-08 11:38 +08:00 |
+| Product 产物 | 已完成（按新版工作流重生成） | `docs/prd/FY-20260708-UNICARD-prd.md`、`docs/prd/FY-20260708-UNICARD-prd.html`、`docs/design/FY-20260708-UNICARD-admin-low-fidelity.html`、`docs/design/FY-20260708-UNICARD-h5-low-fidelity.html` | Product Agent；用户要求按更新后的工作流重新生成 PRD 和低保真原型；后管原型基于 Demo 模板 | 2026-07-08 16:35 +08:00 |
 | UI/Figma 决策 | 需确认 | - | 待用户选择 | - |
 | Design 产物 | 未开始 | - | - | - |
 | 最小需求说明 | 已完成 | `docs/requirements/纺院需求.md` | 标书需求拆解 | 2026-07-08 10:38 +08:00 |
@@ -65,7 +65,18 @@
 推荐选项: 生成 UI/Figma
 其他选项: 跳过 UI，复用 Snowy 现有 UI；返回补充 PRD/原型；自定义
 自定义输入: 支持
-记录时间: 2026-07-08 11:38 +08:00
+记录时间: 2026-07-08 16:35 +08:00
+```
+
+```text
+阶段: Product 产物重生成
+状态: 已完成
+来源: 用户要求“工作流已更新，请重新 生成 PRD 和低保真原型”；AGENTS.md；.codex/workflows/admin-prototype-design-workflow.md；docs/design/prototype-demo-framework/index.html；docs/requirements/纺院需求.md；project/docs/**；project/docs/patterns/**
+产物: docs/prd/FY-20260708-UNICARD-prd.md; docs/prd/FY-20260708-UNICARD-prd.html; docs/design/FY-20260708-UNICARD-admin-low-fidelity.html; docs/design/FY-20260708-UNICARD-h5-low-fidelity.html
+覆盖: PRD 保留需求来源、范围、角色、学校端后管菜单、管理端后管菜单、接口建设、PAM、H5、状态规则、验收标准和风险；后管原型从 Demo 模板复制生成，保留 Snowy Admin Shell、框架参考清单、菜单映射、CRUD 形式选择、覆盖矩阵；H5 原型独立成文件并标记 H5 框架待补充
+验证: 四个产物存在；后管原型包含 prototypeMeta、Vue + Ant Design Vue CDN、.snowy-sider、.snowy-header、.tabs-row、query-card、toolbar、a-table、a-drawer、a-modal、a-upload、原型需求覆盖矩阵、框架参考清单；未检出 s-table、xn-*、hasPerm、mock、toolConfig 等面向开发的可见术语；`data-source` 仅为 Ant Design Vue 表格绑定属性
+下一步: UI/Figma 决策
+时间: 2026-07-08 16:35 +08:00
 ```
 
 ## 框架缓存记录
