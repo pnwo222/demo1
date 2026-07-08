@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>纺院后管低保真原型</title>
+  <style>
+    *{box-sizing:border-box} body{margin:0;font-family:"Microsoft YaHei",Arial,sans-serif;color:#1f2937;background:#eef1f5;font-size:14px}
+    .app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}.side{background:#142333;color:#dbe7ef;padding:16px 0}.brand{font-size:18px;font-weight:700;padding:0 20px 16px}.menu button{display:block;width:100%;border:0;background:transparent;color:#dbe7ef;text-align:left;padding:10px 20px;cursor:pointer}.menu button.active{background:#1f7a8c;color:#fff}.menu .group{padding:14px 20px 6px;color:#8fb3c2;font-size:12px}
+    .top{height:56px;background:#fff;border-bottom:1px solid #d8dee9;display:flex;align-items:center;justify-content:space-between;padding:0 20px}.content{padding:18px}.tabs{display:flex;gap:8px;margin-bottom:14px}.tab{background:#fff;border:1px solid #d8dee9;border-radius:6px;padding:7px 12px}.panel{background:#fff;border:1px solid #d8dee9;border-radius:8px;padding:16px;margin-bottom:14px}.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.field{height:34px;border:1px solid #cfd7e3;border-radius:6px;padding:0 10px;background:#fff;min-width:150px}.btn{height:34px;border:1px solid #1f7a8c;background:#1f7a8c;color:#fff;border-radius:6px;padding:0 12px;cursor:pointer}.btn.secondary{background:#fff;color:#1f7a8c}.btn.danger{border-color:#d1495b;background:#d1495b}.btn[disabled]{background:#e5e7eb;border-color:#d1d5db;color:#7b8493;cursor:not-allowed}
+    .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.stat{background:#fff;border:1px solid #d8dee9;border-radius:8px;padding:14px}.num{font-size:24px;font-weight:700;color:#1f7a8c}.table{width:100%;border-collapse:collapse;background:#fff}.table th,.table td{border-bottom:1px solid #e5e9f0;padding:10px;text-align:left;white-space:nowrap}.table th{background:#f7f9fc}.tag{display:inline-block;border-radius:999px;padding:2px 8px;background:#e7f4f0;color:#16845b;font-size:12px}.tag.warn{background:#fff3e2;color:#b7791f}.tag.bad{background:#ffe8ec;color:#d1495b}.drawer{position:fixed;right:-460px;top:0;width:440px;height:100vh;background:#fff;box-shadow:-8px 0 22px rgba(15,23,42,.18);transition:.2s;padding:18px;z-index:10}.drawer.open{right:0}.mask{display:none;position:fixed;inset:0;background:rgba(15,23,42,.28);z-index:9}.mask.open{display:block}.form-row{margin:12px 0}.form-row label{display:block;color:#667085;margin-bottom:5px}.form-row input,.form-row select,.form-row textarea{width:100%;border:1px solid #cfd7e3;border-radius:6px;padding:8px}.alert{border:1px solid #f0d08a;background:#fff8e8;color:#875600;border-radius:8px;padding:10px;margin-top:12px}.hidden{display:none}
+    @media(max-width:900px){.app{grid-template-columns:1fr}.side{display:none}.stats{grid-template-columns:1fr 1fr}.drawer{width:92vw}.table-wrap{overflow:auto}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">Snowy 后管</div>
+    <div class="menu">
+      <div class="group">未来校园</div>
+      <button class="active" data-page="dashboard">高校首页</button>
+      <button data-page="student">师生管理 / 学生管理</button>
+      <button data-page="banner">内容管理 / 首页 banner</button>
+      <button data-page="records">信息查询 / 消费记录</button>
+      <button data-page="device">设备状态监控</button>
+      <div class="group">未来校园管理</div>
+      <button data-page="platform">系统首页</button>
+      <button data-page="permission">权限管理</button>
+      <button data-page="logs">日志管理</button>
+    </div>
+  </aside>
+  <main>
+    <div class="top"><b id="title">高校首页</b><span>学校管理员 · 宁波纺院</span></div>
+    <div class="content">
+      <div class="tabs"><div class="tab">未来校园</div><div class="tab" id="tabName">高校首页</div></div>
+
+      <section id="dashboard" class="page">
+        <div class="stats"><div class="stat"><span>专区用户</span><div class="num">18,620</div></div><div class="stat"><span>社保绑卡率</span><div class="num">76%</div></div><div class="stat"><span>今日通行</span><div class="num">9,842</div></div><div class="stat"><span>异常设备</span><div class="num">3</div></div></div>
+        <div class="panel toolbar"><input class="field" value="2026-07-01 ~ 2026-07-08"><button class="btn">查询</button><button class="btn secondary">导出报表</button></div>
+        <div class="panel"><b>高风险提示</b><div class="alert">统计口径、导出权限、学校数据隔离需要在技术方案中确认。</div></div>
+      </section>
+
+      <section id="student" class="page hidden">
+        <div class="panel toolbar"><input class="field" placeholder="姓名"><input class="field" placeholder="身份证号"><select class="field"><option>专区注册状态</option></select><button class="btn">查询</button><button class="btn secondary">重置</button><button class="btn secondary">导出</button></div>
+        <div class="panel table-wrap"><table class="table"><tr><th>姓名</th><th>手机号</th><th>学院</th><th>专业</th><th>学号</th><th>注册</th><th>绑卡</th><th>金融账户</th></tr><tr><td>张同学</td><td>138****2031</td><td>信息学院</td><td>软件技术</td><td>20260001</td><td><span class="tag">已注册</span></td><td><span class="tag">已绑卡</span></td><td><span class="tag warn">未激活</span></td></tr><tr><td>李同学</td><td>136****1109</td><td>纺织学院</td><td>服装设计</td><td>20260002</td><td><span class="tag warn">未注册</span></td><td><span class="tag bad">未绑卡</span></td><td><span class="tag bad">未知</span></td></tr></table></div>
+      </section>
+
+      <section id="banner" class="page hidden">
+        <div class="panel toolbar"><input class="field" placeholder="图片标题"><select class="field"><option>是否跳转</option></select><input class="field" placeholder="展示日期"><button class="btn">查询</button><button class="btn secondary">重置</button><button class="btn" onclick="openDrawer()">新增</button><button class="btn danger">批量删除</button></div>
+        <div class="panel table-wrap"><table class="table"><tr><th>图片标题</th><th>图片</th><th>是否跳转</th><th>展示开始</th><th>展示结束</th><th>展示状态</th><th>优先级</th><th>操作</th></tr><tr><td>新生校园启航</td><td>1000x394</td><td>是</td><td>2026-08-01</td><td>2026-09-30</td><td><span class="tag">展示中</span></td><td>1</td><td><button class="btn secondary" onclick="openDrawer()">编辑</button> <button class="btn danger">删除</button></td></tr><tr><td>图书借阅服务</td><td>1000x394</td><td>否</td><td>2026-06-01</td><td>2026-06-30</td><td><span class="tag warn">已过期</span></td><td>5</td><td><button class="btn secondary" onclick="openDrawer()">编辑</button> <button class="btn danger">删除</button></td></tr></table></div>
+      </section>
+
+      <section id="records" class="page hidden"><div class="panel toolbar"><input class="field" placeholder="姓名"><input class="field" placeholder="支付流水号"><input class="field" placeholder="支付时间"><button class="btn">查询</button><button class="btn secondary">受控导出</button></div><div class="panel table-wrap"><table class="table"><tr><th>姓名</th><th>商家</th><th>交易金额</th><th>流水号</th><th>付款方式</th><th>时间</th></tr><tr><td>张同学</td><td>一食堂</td><td>12.50</td><td>PAY202607080001</td><td>社保码</td><td>2026-07-08 12:12</td></tr></table><div class="alert">金额、流水、导出属于高风险项，后续必须设计幂等、对账、脱敏和审计。</div></div></section>
+      <section id="device" class="page hidden"><div class="panel table-wrap"><table class="table"><tr><th>设备</th><th>位置</th><th>在线</th><th>告警</th><th>操作</th></tr><tr><td>南门闸机01</td><td>南门</td><td><span class="tag">在线</span></td><td>无</td><td><button class="btn secondary">查看</button> <button class="btn secondary">远程配置</button></td></tr><tr><td>图书馆读头03</td><td>图书馆</td><td><span class="tag bad">离线</span></td><td>通信中断</td><td><button class="btn secondary">查看日志</button></td></tr></table></div></section>
+      <section id="platform" class="page hidden"><div class="stats"><div class="stat"><span>接入高校</span><div class="num">12</div></div><div class="stat"><span>总用户</span><div class="num">186k</div></div><div class="stat"><span>活跃排行</span><div class="num">纺院</div></div><div class="stat"><span>接口异常</span><div class="num">7</div></div></div></section>
+      <section id="permission" class="page hidden"><div class="panel"><b>权限管理复用 Snowy sys/resource</b><div class="alert">角色、模块、菜单、按钮、API 权限应统一维护到 SYS_RESOURCE/SYS_RELATION，不重复造权限底座。</div><button class="btn secondary">角色授权</button> <button class="btn secondary">菜单配置</button></div></section>
+      <section id="logs" class="page hidden"><div class="panel toolbar"><select class="field"><option>外部调用日志</option><option>访问日志</option><option>操作日志</option></select><input class="field" placeholder="日志名称"><button class="btn">查询</button></div><div class="panel table-wrap"><table class="table"><tr><th>日志分类</th><th>名称</th><th>状态</th><th>请求方式</th><th>耗时</th><th>时间</th></tr><tr><td>接口</td><td>人员信息同步</td><td><span class="tag bad">失败</span></td><td>POST</td><td>3000ms</td><td>2026-07-08</td></tr></table></div></section>
+    </div>
+  </main>
+</div>
+<div class="mask" id="mask" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer"><h3>首页 banner 表单</h3><div class="form-row"><label>图片标题</label><input value="新生校园启航"></div><div class="form-row"><label>上传图片</label><input value="建议 1000x394"></div><div class="form-row"><label>是否跳转</label><select><option>是</option><option>否</option></select></div><div class="form-row"><label>展示日期</label><input value="2026-08-01 ~ 2026-09-30"></div><div class="form-row"><label>优先级</label><input value="1"></div><div class="form-row"><label>备注</label><textarea>APP 首页展示</textarea></div><button class="btn" onclick="closeDrawer()">提交</button> <button class="btn secondary" onclick="closeDrawer()">取消</button></aside>
+<script>
+const pages=document.querySelectorAll('.page'), title=document.getElementById('title'), tab=document.getElementById('tabName');
+document.querySelectorAll('.menu button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.menu button').forEach(x=>x.classList.remove('active'));b.classList.add('active');pages.forEach(p=>p.classList.add('hidden'));document.getElementById(b.dataset.page).classList.remove('hidden');title.textContent=b.textContent;tab.textContent=b.textContent;});
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('mask').classList.add('open')}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('mask').classList.remove('open')}
+</script>
+</body>
+</html>
