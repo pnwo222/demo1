@@ -189,6 +189,8 @@ Do not update cache docs when:
 
 When updating cache docs, use UTF-8 and prefer `apply_patch`. Keep docs concise, Chinese by default, and include source file paths.
 
+When changing project workflow rules, also check whether root workflow artifacts must be updated: `PROJECT_WORKFLOW.md` and `PROJECT_WORKFLOW.png`. This applies to changes in `AGENTS.md`, `.codex/workflows/**`, `.codex/agents/**`, `.codex/skills/**`, workflow diagrams, stage gates, branch/worktree rules, environment gates, PRD/UI/design rules, review gates, status files, or Definition of Done. If the change affects the public project workflow description or diagram, update the Markdown and PNG in the same change; if not, record that no update was needed.
+
 ## Integration With Workflow State
 
 For each requirement status file, record:

@@ -176,6 +176,7 @@ project/docs/patterns/**
 - 开发环境检测默认用列表输出，不使用长段落；每项用 `✅`、`⚠️`、`❌` 标明结果。必检项包括 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务。检测结果必须在 `检测：` 后逐项换行，每项独占一行，禁止用 `；`、`,` 或空格把多个检测项串在同一行。检测结果写入 `docs/workflow/local-environment-status.md`，该文件不得提交到 Git。
 - 全局环境自检已为 `developer_confirmed_ready` 时，后续需求不重复要求自检；只有框架依赖、JDK/Maven、数据库/Redis 配置、`mysql` 指令状态变化，或开发者报告环境失效时，才重置全局环境状态并重新提示。
 - 未确认是否需要 PRD/原型，不进入 Product 阶段或跳过记录。
+- 需求涉及后管、后台、管理端或运营端且未跳过原型时，未套用 `.codex/workflows/admin-prototype-design-workflow.md`，不进入 UI 设计、技术设计或开发。
 - 未确认是否需要 UI/Figma，不进入 Design 阶段或跳过记录。
 - 跳过 PRD 时，必须保留最小需求说明、范围、验收标准和风险记录。
 - 跳过 UI 时，必须记录使用 Snowy 现有 UI 模式、组件和交互约束。
@@ -341,6 +342,8 @@ IDEA 打开 project/
 
 Product Agent 还必须输出可打开、可点击交互的低保真 HTML 原型。低保真原型必须参考当前框架的信息架构和交互模式，不得做成过度简陋的纯线框；后管原型和 H5/移动端原型必须拆成不同 HTML 文件。原型必须严格覆盖需求集合中的全部功能点，不允许只做代表性页面或最小演示。
 
+如需求涉及后管、后台、管理端或运营端，Product Agent 必须先套用 `.codex/workflows/admin-prototype-design-workflow.md`，基于真实 Snowy 框架布局和 CRUD 模式生成后管拟真原型。
+
 PRD 必须包含：
 
 - 背景与目标。
@@ -371,6 +374,7 @@ HTML PRD 要求：
 - 不依赖构建工具、后端接口或登录态。
 - 能点击演示主路径页面切换、关键按钮和核心状态变化。
 - 必须参考现有框架：后管参考 Snowy 管理端菜单、标签页、查询表单、表格、分页、工具栏、弹窗/抽屉、权限按钮和状态反馈；H5/移动端参考项目中已有或后续补充的 H5 框架。
+- 后管原型必须执行 `.codex/workflows/admin-prototype-design-workflow.md`，并输出框架参考清单、菜单映射、CRUD 形式选择和原型需求覆盖矩阵。
 - 如同时涉及后管和 H5/移动端，必须分别保存为后管原型和 H5/移动端原型，例如 `docs/design/<需求ID>-admin-low-fidelity.html` 与 `docs/design/<需求ID>-h5-low-fidelity.html`。
 - 如果 H5 框架尚未补充，H5/移动端原型必须单独保留移动端信息结构和交互草案，并标记 `H5 框架待补充`。
 - 如涉及后管、后台、管理端或运营端，必须体现菜单入口、所在层级和页面切换关系。

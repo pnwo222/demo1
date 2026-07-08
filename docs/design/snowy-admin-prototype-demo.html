@@ -1,0 +1,785 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Snowy 后管拟真原型 Demo</title>
+  <style>
+    :root {
+      --primary: #1677ff;
+      --primary-hover: #4096ff;
+      --success: #52c41a;
+      --warning: #faad14;
+      --danger: #ff4d4f;
+      --text: #1f2937;
+      --muted: #667085;
+      --line: #e5e7eb;
+      --bg: #f3f5f8;
+      --panel: #fff;
+      --side: #001529;
+      --side-active: #1677ff;
+      --tag-blue: #e6f4ff;
+      --tag-green: #f6ffed;
+      --tag-orange: #fff7e6;
+      --shadow: 0 8px 28px rgba(15, 23, 42, .12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Microsoft YaHei", "Noto Sans SC", Arial, sans-serif;
+      font-size: 14px;
+    }
+    button, input, select, textarea { font: inherit; }
+    .app { display: grid; grid-template-columns: 232px minmax(0, 1fr); min-height: 100vh; }
+    .side {
+      background: var(--side);
+      color: rgba(255, 255, 255, .82);
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    .brand {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 18px;
+      color: #fff;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+    }
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      background: var(--primary);
+      font-size: 13px;
+    }
+    .module-label {
+      margin: 12px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      border: 1px solid rgba(255, 255, 255, .16);
+      border-radius: 4px;
+      color: #fff;
+      background: rgba(22, 119, 255, .18);
+      border-color: rgba(22, 119, 255, .65);
+      font-size: 13px;
+    }
+    .menu { padding: 8px 0 20px; }
+    .menu-group { margin: 8px 0; }
+    .menu-title {
+      padding: 8px 18px;
+      color: rgba(255, 255, 255, .45);
+      font-size: 12px;
+    }
+    .menu-item {
+      height: 40px;
+      padding: 0 18px 0 28px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      border-right: 3px solid transparent;
+    }
+    .menu-item:hover { background: rgba(255, 255, 255, .06); }
+    .menu-item.active { background: rgba(22, 119, 255, .18); color: #fff; border-right-color: var(--side-active); }
+    .menu-item.level-2 { padding-left: 44px; height: 38px; }
+    .menu-item.level-3 { padding-left: 62px; height: 36px; font-size: 13px; color: rgba(255,255,255,.68); }
+    .menu-item.level-3.active { color: #fff; }
+    .menu-caret { margin-left: auto; opacity: .55; font-size: 12px; }
+    .menu-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: .85;
+    }
+    .main { min-width: 0; }
+    .topbar {
+      height: 56px;
+      background: var(--panel);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      border-bottom: 1px solid var(--line);
+    }
+    .top-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+    .collapse-btn {
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .breadcrumb { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .top-actions { display: flex; align-items: center; gap: 12px; color: var(--muted); }
+    .avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #e6f4ff;
+      color: var(--primary);
+      font-weight: 700;
+    }
+    .tags {
+      height: 40px;
+      background: var(--panel);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--line);
+      overflow-x: auto;
+    }
+    .tag-tab {
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: #fff;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .tag-tab.active { color: var(--primary); border-color: #91caff; background: #e6f4ff; }
+    .content { padding: 14px; }
+    .page { display: none; }
+    .page.active { display: block; }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      margin: 0 0 12px;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(170px, 1fr));
+      gap: 10px;
+      align-items: end;
+    }
+    .field label { display: block; color: #344054; margin-bottom: 6px; }
+    input, select, textarea {
+      width: 100%;
+      height: 32px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      padding: 0 9px;
+      background: #fff;
+    }
+    textarea { height: 74px; padding-top: 7px; resize: vertical; }
+    .actions, .toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .btn {
+      height: 32px;
+      border: 1px solid #d9d9d9;
+      background: #fff;
+      color: var(--text);
+      border-radius: 4px;
+      padding: 0 12px;
+      cursor: pointer;
+    }
+    .btn:hover { border-color: var(--primary-hover); color: var(--primary); }
+    .btn.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .btn.primary:hover { background: var(--primary-hover); color: #fff; }
+    .btn.danger { color: var(--danger); border-color: #ffccc7; }
+    .btn.link { border: 0; background: transparent; color: var(--primary); padding: 0 3px; }
+    .btn.link-danger { border: 0; background: transparent; color: var(--danger); padding: 0 3px; }
+    .table-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 12px;
+    }
+    .tool-icons { margin-left: auto; display: flex; gap: 6px; color: var(--muted); }
+    .icon-btn {
+      width: 30px;
+      height: 30px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: #fff;
+      display: grid;
+      place-items: center;
+    }
+    .table-wrap { overflow: auto; border: 1px solid var(--line); border-radius: 4px; }
+    table { border-collapse: collapse; width: 100%; min-width: 980px; background: #fff; }
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+    th { background: #fafafa; color: #475467; font-weight: 600; }
+    tr:last-child td { border-bottom: 0; }
+    tr.selected { background: #f0f7ff; }
+    .ellipsis { max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
+    .pagination {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      color: var(--muted);
+    }
+    .page-no {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: #fff;
+    }
+    .page-no.active { border-color: var(--primary); color: var(--primary); }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      height: 22px;
+      padding: 0 7px;
+      border-radius: 4px;
+      font-size: 12px;
+      border: 1px solid transparent;
+    }
+    .badge.blue { background: var(--tag-blue); border-color: #91caff; color: #0958d9; }
+    .badge.green { background: var(--tag-green); border-color: #b7eb8f; color: #237804; }
+    .badge.orange { background: var(--tag-orange); border-color: #ffd591; color: #ad4e00; }
+    .badge.red { background: #fff1f0; border-color: #ffa39e; color: #a8071a; }
+    .cover-thumb {
+      width: 52px;
+      height: 32px;
+      border-radius: 4px;
+      object-fit: cover;
+      display: block;
+      border: 1px solid #d9d9d9;
+      background: #f5f5f5;
+    }
+    .cover-empty {
+      width: 52px;
+      height: 32px;
+      border-radius: 4px;
+      display: grid;
+      place-items: center;
+      border: 1px dashed #d9d9d9;
+      color: #98a2b3;
+      background: #fafafa;
+      font-size: 12px;
+    }
+    .switch {
+      width: 36px;
+      height: 20px;
+      border-radius: 20px;
+      background: var(--success);
+      display: inline-flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 2px;
+      vertical-align: middle;
+    }
+    .switch.off { background: #bfbfbf; justify-content: flex-start; }
+    .switch::after {
+      content: "";
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(0,0,0,.2);
+    }
+    .split {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 12px;
+    }
+    .tree-search { margin-bottom: 10px; }
+    .tree {
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 8px;
+      min-height: 360px;
+      background: #fff;
+    }
+    .tree-node {
+      height: 32px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 8px;
+      border-radius: 4px;
+      color: #344054;
+    }
+    .tree-node.child { padding-left: 28px; }
+    .tree-node.active { background: #e6f4ff; color: var(--primary); }
+    .tree-line { width: 12px; height: 1px; background: #d0d5dd; }
+    .state-grid { display: grid; grid-template-columns: repeat(4, minmax(160px, 1fr)); gap: 12px; }
+    .state-box {
+      min-height: 120px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 4px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--muted);
+      background: #fff;
+      padding: 14px;
+    }
+    .drawer, .modal-mask { display: none; }
+    .drawer.open {
+      display: block;
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 520px;
+      background: #fff;
+      box-shadow: var(--shadow);
+      z-index: 20;
+      border-left: 1px solid var(--line);
+    }
+    .drawer-head, .drawer-foot {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      border-bottom: 1px solid var(--line);
+    }
+    .drawer-foot {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 0;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    .drawer-body { padding: 18px; height: calc(100% - 112px); overflow: auto; }
+    .modal-mask.open {
+      display: grid;
+      place-items: center;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, .38);
+      z-index: 30;
+    }
+    .modal {
+      width: 460px;
+      background: #fff;
+      border-radius: 6px;
+      box-shadow: var(--shadow);
+    }
+    .modal-head, .modal-foot { padding: 14px 18px; border-bottom: 1px solid var(--line); }
+    .modal-body { padding: 18px; color: var(--muted); line-height: 1.7; }
+    .modal-foot { border-top: 1px solid var(--line); border-bottom: 0; display: flex; justify-content: flex-end; gap: 8px; }
+    .toast {
+      position: fixed;
+      top: 72px;
+      right: 22px;
+      min-width: 220px;
+      max-width: 360px;
+      padding: 10px 12px;
+      border-radius: 4px;
+      background: #fff;
+      border: 1px solid #b7eb8f;
+      box-shadow: var(--shadow);
+      color: #237804;
+      display: none;
+      z-index: 40;
+    }
+    .toast.show { display: block; }
+    .coverage table { min-width: 1160px; }
+    .reference-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(220px, 1fr));
+      gap: 10px;
+    }
+    .reference-item {
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 10px;
+      background: #fff;
+      line-height: 1.7;
+    }
+    @media (max-width: 1100px) {
+      .app { grid-template-columns: 64px minmax(0, 1fr); }
+      .brand span, .module-label, .menu-title, .menu-item span, .menu-caret { display: none; }
+      .menu-item { justify-content: center; padding: 0; }
+      .form-grid, .state-grid, .split, .reference-list { grid-template-columns: 1fr; }
+      .drawer.open { width: min(100vw, 520px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="side">
+      <div class="brand"><div class="brand-mark">SN</div><span>Snowy Admin</span></div>
+      <div class="module-label">后台管理模块</div>
+      <nav class="menu">
+        <div class="menu-group">
+          <div class="menu-title">业务运营</div>
+          <div class="menu-item"><i class="menu-dot"></i><span>内容管理</span><b class="menu-caret">▾</b></div>
+          <div class="menu-item level-2 active" data-page="notice"><i class="menu-dot"></i><span>首页 Banner</span></div>
+          <div class="menu-item level-2"><i class="menu-dot"></i><span>通知公告</span><b class="menu-caret">▾</b></div>
+          <div class="menu-item level-3"><i class="menu-dot"></i><span>公告列表</span></div>
+          <div class="menu-item level-3"><i class="menu-dot"></i><span>发布审核</span></div>
+          <div class="menu-item"><i class="menu-dot"></i><span>师生管理</span><b class="menu-caret">▾</b></div>
+          <div class="menu-item level-2" data-page="student"><i class="menu-dot"></i><span>学生管理</span></div>
+          <div class="menu-item level-2"><i class="menu-dot"></i><span>教职工管理</span></div>
+          <div class="menu-item level-2"><i class="menu-dot"></i><span>历史学生管理</span></div>
+        </div>
+        <div class="menu-group">
+          <div class="menu-title">系统能力</div>
+          <div class="menu-item"><i class="menu-dot"></i><span>资源权限</span><b class="menu-caret">▾</b></div>
+          <div class="menu-item level-2" data-page="menu"><i class="menu-dot"></i><span>菜单资源</span></div>
+          <div class="menu-item level-2"><i class="menu-dot"></i><span>操作权限</span></div>
+          <div class="menu-item level-2"><i class="menu-dot"></i><span>角色授权</span></div>
+        </div>
+      </nav>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div class="top-left">
+          <button class="collapse-btn">≡</button>
+          <div class="breadcrumb">首页 / 业务运营 / 内容管理 / <span id="crumb">首页 Banner</span></div>
+        </div>
+        <div class="top-actions">
+          <span title="刷新">↻</span>
+          <span title="全屏">⛶</span>
+          <span title="消息">●</span>
+          <div class="avatar">管</div>
+          <span>管理员</span>
+        </div>
+      </header>
+      <div class="tags">
+        <div class="tag-tab">首页</div>
+        <div class="tag-tab active" id="activeTag">首页 Banner</div>
+        <div class="tag-tab">系统用户</div>
+      </div>
+      <section class="content">
+        <section class="page active" id="page-notice" data-title="首页 Banner">
+          <div class="panel">
+            <h2 class="section-title">首页 Banner</h2>
+            <div class="form-grid">
+              <div class="field"><label>标题</label><input placeholder="请输入标题关键词" /></div>
+              <div class="field"><label>栏目</label><select><option>全部栏目</option><option>首页 Banner</option><option>通知公告</option></select></div>
+              <div class="field"><label>状态</label><select><option>全部状态</option><option>启用</option><option>停用</option><option>待审核</option></select></div>
+              <div class="field"><label>创建时间</label><input value="2026-07-01 ~ 2026-07-08" /></div>
+              <div class="actions">
+                <button class="btn primary">查询</button>
+                <button class="btn">重置</button>
+                <button class="btn link">展开</button>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="table-head">
+              <div class="toolbar">
+                <button class="btn primary" data-open-drawer="content">新增内容</button>
+                <button class="btn danger" data-open-modal="delete">批量删除</button>
+                <button class="btn" data-open-modal="import">导入</button>
+                <button class="btn" data-action="export">导出</button>
+              </div>
+              <div class="tool-icons">
+                <span class="icon-btn" title="刷新">↻</span>
+                <span class="icon-btn" title="密度">☷</span>
+                <span class="icon-btn" title="列设置">☰</span>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th><input type="checkbox" /></th><th>标题</th><th>封面图</th><th>栏目</th><th>发布位置</th><th>排序</th><th>状态</th><th>创建时间</th><th>操作</th></tr></thead>
+                <tbody>
+                  <tr class="selected"><td><input type="checkbox" checked /></td><td class="ellipsis">校园资讯首页 Banner</td><td><img class="cover-thumb" alt="校园资讯首页 Banner 封面图" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='104' height='64'%3E%3Crect width='104' height='64' fill='%231677ff'/%3E%3Ccircle cx='25' cy='24' r='10' fill='%23fff' opacity='.85'/%3E%3Cpath d='M0 54 L30 32 L52 47 L74 24 L104 50 L104 64 L0 64Z' fill='%23d6e4ff'/%3E%3C/svg%3E" /></td><td>首页 Banner</td><td><span class="badge green">后台首页</span></td><td>10</td><td><span class="switch"></span></td><td>2026-07-08 09:30</td><td><button class="btn link" data-open-drawer="detail">详情</button><button class="btn link" data-open-drawer="content">编辑</button><button class="btn link-danger" data-open-modal="delete">删除</button></td></tr>
+                  <tr><td><input type="checkbox" /></td><td class="ellipsis">暑期校园开放通知</td><td><span class="cover-empty">无图</span></td><td>通知公告</td><td><span class="badge blue">学校专区</span></td><td>20</td><td><span class="switch off"></span></td><td>2026-07-07 16:12</td><td><button class="btn link" data-open-drawer="detail">详情</button><button class="btn link" data-open-drawer="content">编辑</button><button class="btn link-danger" data-open-modal="delete">删除</button></td></tr>
+                  <tr><td><input type="checkbox" /></td><td class="ellipsis">专业介绍更新</td><td><img class="cover-thumb" alt="专业介绍更新封面图" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='104' height='64'%3E%3Crect width='104' height='64' fill='%2352c41a'/%3E%3Cpath d='M8 48 L30 26 L46 38 L68 18 L96 48Z' fill='%23f6ffed'/%3E%3Crect x='10' y='10' width='36' height='8' rx='2' fill='%23fff' opacity='.85'/%3E%3C/svg%3E" /></td><td>专业介绍</td><td><span class="badge green">后台首页</span></td><td>30</td><td><span class="badge orange">待审核</span></td><td>2026-07-06 11:05</td><td><button class="btn link" data-open-modal="audit">审核</button><button class="btn link" data-open-drawer="content">编辑</button><button class="btn link-danger" data-open-modal="delete">删除</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="pagination"><span>共 126 条</span><span class="page-no active">1</span><span class="page-no">2</span><span class="page-no">3</span><select style="width: 94px"><option>10 条/页</option></select></div>
+          </div>
+        </section>
+
+        <section class="page" id="page-student" data-title="师生管理">
+          <div class="split">
+            <div class="panel">
+              <h2 class="section-title">组织树</h2>
+              <input class="tree-search" placeholder="搜索组织" />
+              <div class="tree">
+                <div class="tree-node active">学院总部</div>
+                <div class="tree-node child"><span class="tree-line"></span>信息工程学院</div>
+                <div class="tree-node child"><span class="tree-line"></span>艺术设计学院</div>
+                <div class="tree-node child"><span class="tree-line"></span>继续教育学院</div>
+              </div>
+            </div>
+            <div>
+              <div class="panel">
+                <h2 class="section-title">学生管理</h2>
+                <div class="form-grid">
+                  <div class="field"><label>姓名/学号</label><input placeholder="请输入姓名或学号" /></div>
+                  <div class="field"><label>状态</label><select><option>全部</option><option>在读</option><option>休学</option><option>毕业</option></select></div>
+                  <div class="field"><label>年级</label><select><option>全部年级</option><option>2026</option><option>2025</option></select></div>
+                  <div class="actions"><button class="btn primary">查询</button><button class="btn">重置</button></div>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="table-head"><div class="toolbar"><button class="btn primary" data-open-drawer="student">新增学生</button><button class="btn" data-open-modal="import">导入</button><button class="btn" data-action="export">导出</button><button class="btn danger" data-open-modal="delete">批量删除</button></div></div>
+                <div class="table-wrap">
+                  <table>
+                    <thead><tr><th><input type="checkbox" /></th><th>学号</th><th>姓名</th><th>学院</th><th>专业</th><th>手机号</th><th>状态</th><th>更新时间</th><th>操作</th></tr></thead>
+                    <tbody>
+                      <tr><td><input type="checkbox" /></td><td>20260018</td><td>陈同学</td><td>信息工程学院</td><td>软件技术</td><td>138****6818</td><td><span class="badge green">在读</span></td><td>2026-07-08</td><td><button class="btn link" data-open-drawer="student">编辑</button><button class="btn link" data-open-modal="grant">授权</button><button class="btn link-danger" data-open-modal="delete">删除</button></td></tr>
+                      <tr><td><input type="checkbox" /></td><td>20250231</td><td>林同学</td><td>艺术设计学院</td><td>视觉传达</td><td>139****2231</td><td><span class="badge orange">休学</span></td><td>2026-07-05</td><td><button class="btn link" data-open-drawer="student">编辑</button><button class="btn link" data-open-modal="grant">授权</button><button class="btn link-danger" data-open-modal="delete">删除</button></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="pagination"><span>共 5320 条</span><span class="page-no active">1</span><span class="page-no">2</span><span class="page-no">3</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" id="page-menu" data-title="菜单资源">
+          <div class="panel">
+            <h2 class="section-title">菜单资源</h2>
+            <div class="form-grid">
+              <div class="field"><label>模块</label><select><option>后台管理</option><option>系统管理</option></select></div>
+              <div class="field"><label>菜单名称</label><input placeholder="请输入菜单名称关键词" /></div>
+              <div class="actions"><button class="btn primary">查询</button><button class="btn">重置</button></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="table-head"><div class="toolbar"><button class="btn primary" data-open-drawer="menu">新增菜单</button><button class="btn danger" data-open-modal="delete">批量删除</button><button class="btn" title="刷新菜单">↻</button></div></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th><input type="checkbox" /></th><th>显示名称</th><th>类型</th><th>访问路径</th><th>所属页面</th><th>是否可见</th><th>排序</th><th>操作</th></tr></thead>
+                <tbody>
+                  <tr><td><input type="checkbox" /></td><td>内容管理</td><td><span class="badge blue">目录</span></td><td>-</td><td>-</td><td><span class="badge green">是</span></td><td>10</td><td><button class="btn link" data-open-drawer="menu">编辑</button><button class="btn link" data-open-modal="module">更改归属</button><button class="btn link-danger" data-open-modal="delete">删除</button></td></tr>
+                  <tr><td><input type="checkbox" /></td><td>　首页 Banner</td><td><span class="badge green">菜单</span></td><td>/content/banner</td><td>首页 Banner</td><td><span class="badge green">是</span></td><td>20</td><td><button class="btn link" data-open-drawer="menu">编辑</button><button class="btn link" data-open-modal="buttonPerm">操作权限</button><button class="btn link-danger" data-open-modal="delete">删除</button></td></tr>
+                  <tr><td><input type="checkbox" /></td><td>　通知公告</td><td><span class="badge green">菜单</span></td><td>/content/notice</td><td>通知公告</td><td><span class="badge orange">否</span></td><td>30</td><td><button class="btn link" data-open-drawer="menu">编辑</button><button class="btn link" data-open-modal="buttonPerm">操作权限</button><button class="btn link-danger" data-open-modal="delete">删除</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </section>
+    </main>
+  </div>
+
+  <aside class="drawer" id="drawer">
+    <div class="drawer-head"><strong id="drawerTitle">新增内容</strong><button class="btn" data-close>关闭</button></div>
+    <div class="drawer-body" id="drawerBody"></div>
+    <div class="drawer-foot"><button class="btn" data-close>取消</button><button class="btn primary">保存</button></div>
+  </aside>
+
+  <div class="modal-mask" id="modal">
+    <div class="modal">
+      <div class="modal-head"><strong id="modalTitle">确认操作</strong></div>
+      <div class="modal-body" id="modalBody">确认继续当前操作吗？</div>
+      <div class="modal-foot"><button class="btn" data-close>取消</button><button class="btn primary" data-close>确定</button></div>
+    </div>
+  </div>
+  <div class="toast" id="toast">操作成功</div>
+
+  <script>
+    const drawerTemplates = {
+      content: {
+        title: '内容表单抽屉',
+        body: `
+          <div class="form-grid" style="grid-template-columns: 1fr 1fr">
+            <div class="field"><label>标题</label><input value="校园资讯首页 Banner" /></div>
+            <div class="field"><label>栏目</label><select><option>首页 Banner</option><option>通知公告</option></select></div>
+            <div class="field"><label>发布位置</label><select><option>后台首页</option><option>学校专区</option></select></div>
+            <div class="field"><label>排序</label><input value="10" /></div>
+            <div class="field"><label>封面图</label><img class="cover-thumb" alt="当前封面图" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='104' height='64'%3E%3Crect width='104' height='64' fill='%231677ff'/%3E%3Ccircle cx='25' cy='24' r='10' fill='%23fff' opacity='.85'/%3E%3Cpath d='M0 54 L30 32 L52 47 L74 24 L104 50 L104 64 L0 64Z' fill='%23d6e4ff'/%3E%3C/svg%3E" /></div>
+            <div class="field"><label>状态</label><select><option>启用</option><option>停用</option><option>待审核</option></select></div>
+          </div>
+          <div class="field" style="margin-top:12px"><label>内容摘要</label><textarea>展示在后台首页的内容摘要，保存后刷新列表。</textarea></div>`
+      },
+      detail: {
+        title: '内容详情抽屉',
+        body: `
+          <p><strong>标题：</strong>校园资讯首页 Banner</p>
+          <p><strong>栏目：</strong>首页 Banner</p>
+          <p><strong>发布位置：</strong>后台首页</p>
+          <p><strong>状态：</strong><span class="badge green">启用</span></p>
+          <p><strong>更新时间：</strong>2026-07-08 09:30</p>
+          <div class="state-box">这里放置图片预览、富文本摘要或附件列表</div>`
+      },
+      student: {
+        title: '学生表单抽屉',
+        body: `
+          <div class="form-grid" style="grid-template-columns: 1fr 1fr">
+            <div class="field"><label>学号</label><input value="20260018" /></div>
+            <div class="field"><label>姓名</label><input value="陈同学" /></div>
+            <div class="field"><label>学院</label><select><option>信息工程学院</option><option>艺术设计学院</option></select></div>
+            <div class="field"><label>专业</label><select><option>软件技术</option><option>视觉传达</option></select></div>
+            <div class="field"><label>手机号</label><input value="13800006818" /></div>
+            <div class="field"><label>状态</label><select><option>在读</option><option>休学</option><option>毕业</option></select></div>
+          </div>
+          <div class="field" style="margin-top:12px"><label>备注</label><textarea>学生基础信息变更后同步更新相关业务记录。</textarea></div>`
+      },
+      menu: {
+        title: '菜单表单抽屉',
+        body: `
+          <div class="form-grid" style="grid-template-columns: 1fr 1fr">
+            <div class="field"><label>上级菜单</label><select><option>内容管理</option><option>根目录</option></select></div>
+            <div class="field"><label>菜单类型</label><select><option>菜单</option><option>目录</option><option>按钮</option></select></div>
+            <div class="field"><label>显示名称</label><input value="首页 Banner" /></div>
+            <div class="field"><label>路由地址</label><input value="/content/banner" /></div>
+            <div class="field"><label>所属页面</label><input value="首页 Banner" /></div>
+            <div class="field"><label>权限名称</label><input value="首页 Banner 管理" /></div>
+            <div class="field"><label>是否可见</label><select><option>是</option><option>否</option></select></div>
+            <div class="field"><label>排序</label><input value="20" /></div>
+          </div>
+          <div class="field" style="margin-top:12px"><label>说明</label><textarea>菜单保存后刷新菜单列表。</textarea></div>`
+      }
+    };
+    const modalTemplates = {
+      delete: { title: '删除确认', body: '确定要删除选中的数据吗？删除后列表将自动刷新。' },
+      import: { title: '导入数据', body: '选择 Excel 文件后上传，展示导入成功、失败明细和可下载错误报告。' },
+      audit: { title: '发布审核', body: '审核通过后状态变为启用；驳回时需要填写驳回原因。' },
+      grant: { title: '授权配置', body: '按角色或资源树配置当前对象权限，保存后刷新当前列表。' },
+      module: { title: '更改归属', body: '选择新的归属后，当前菜单会移动到对应菜单分组下。' },
+      buttonPerm: { title: '操作权限', body: '维护新增、编辑、删除、导入、导出等操作权限。' }
+    };
+    const toast = (text) => {
+      const el = document.getElementById('toast');
+      el.textContent = text;
+      el.classList.add('show');
+      window.clearTimeout(window.__toastTimer);
+      window.__toastTimer = window.setTimeout(() => el.classList.remove('show'), 1600);
+    };
+    document.querySelectorAll('.menu-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const page = item.dataset.page;
+        if (!page) {
+          toast('已展开菜单层级');
+          return;
+        }
+        document.querySelectorAll('.menu-item').forEach(x => x.classList.remove('active'));
+        item.classList.add('active');
+        document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+        const target = document.getElementById('page-' + page);
+        target.classList.add('active');
+        document.getElementById('crumb').textContent = target.dataset.title;
+        document.getElementById('activeTag').textContent = target.dataset.title;
+      });
+    });
+    document.querySelectorAll('[data-open-drawer]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tpl = drawerTemplates[btn.dataset.openDrawer];
+        document.getElementById('drawerTitle').textContent = tpl.title;
+        document.getElementById('drawerBody').innerHTML = tpl.body;
+        document.getElementById('drawer').classList.add('open');
+      });
+    });
+    document.querySelectorAll('[data-open-modal]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tpl = modalTemplates[btn.dataset.openModal];
+        document.getElementById('modalTitle').textContent = tpl.title;
+        document.getElementById('modalBody').textContent = tpl.body;
+        document.getElementById('modal').classList.add('open');
+      });
+    });
+    document.querySelectorAll('[data-close]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById('drawer').classList.remove('open');
+        document.getElementById('modal').classList.remove('open');
+      });
+    });
+    document.querySelectorAll('[data-action="export"]').forEach(btn => {
+      btn.addEventListener('click', () => toast('已生成导出任务'));
+    });
+    document.querySelectorAll('.btn.primary').forEach(btn => {
+      if (!btn.dataset.openDrawer && !btn.dataset.close) {
+        btn.addEventListener('click', () => {
+          if (btn.textContent.trim() === '保存') {
+            document.getElementById('drawer').classList.remove('open');
+            toast('保存成功，列表已刷新');
+            return;
+          }
+          toast('查询完成');
+        });
+      }
+    });
+    document.querySelectorAll('.btn').forEach(btn => {
+      const text = btn.textContent.trim();
+      if (text === '重置') btn.addEventListener('click', () => toast('查询条件已重置'));
+      if (text === '展开') btn.addEventListener('click', () => {
+        btn.textContent = btn.textContent.trim() === '展开' ? '收起' : '展开';
+        toast('高级查询条件已切换');
+      });
+      if (btn.title === '刷新菜单') btn.addEventListener('click', () => toast('菜单列表已刷新'));
+    });
+    document.querySelectorAll('.icon-btn').forEach(btn => {
+      btn.addEventListener('click', () => toast(`${btn.title}已应用`));
+    });
+    document.querySelectorAll('.top-actions span[title]').forEach(btn => {
+      btn.addEventListener('click', () => toast(`${btn.title}已完成`));
+    });
+    document.querySelector('.collapse-btn').addEventListener('click', () => toast('侧边栏收起/展开'));
+    document.querySelectorAll('.tag-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tag-tab').forEach(x => x.classList.remove('active'));
+        tab.classList.add('active');
+        toast(`已切换页签：${tab.textContent.trim()}`);
+      });
+    });
+    document.querySelectorAll('.page-no').forEach(page => {
+      page.addEventListener('click', () => {
+        page.parentElement.querySelectorAll('.page-no').forEach(x => x.classList.remove('active'));
+        page.classList.add('active');
+        toast(`已切换到第 ${page.textContent.trim()} 页`);
+      });
+    });
+    document.querySelectorAll('.switch').forEach(sw => {
+      sw.addEventListener('click', () => {
+        sw.classList.toggle('off');
+        toast(sw.classList.contains('off') ? '状态已停用' : '状态已启用');
+      });
+    });
+    document.querySelectorAll('tbody input[type="checkbox"]').forEach(box => {
+      box.addEventListener('change', () => {
+        const row = box.closest('tr');
+        if (row) row.classList.toggle('selected', box.checked);
+        toast(box.checked ? '已选中当前行' : '已取消选中当前行');
+      });
+    });
+    document.querySelectorAll('thead input[type="checkbox"]').forEach(box => {
+      box.addEventListener('change', () => {
+        const table = box.closest('table');
+        table.querySelectorAll('tbody input[type="checkbox"]').forEach(child => {
+          child.checked = box.checked;
+          const row = child.closest('tr');
+          if (row) row.classList.toggle('selected', box.checked);
+        });
+        toast(box.checked ? '已全选当前页' : '已取消全选');
+      });
+    });
+    document.querySelectorAll('.tree-node').forEach(node => {
+      node.addEventListener('click', () => {
+        document.querySelectorAll('.tree-node').forEach(x => x.classList.remove('active'));
+        node.classList.add('active');
+        toast(`已筛选组织：${node.textContent.trim()}`);
+      });
+    });
+  </script>
+</body>
+</html>
+
