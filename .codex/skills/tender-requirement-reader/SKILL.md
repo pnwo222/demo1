@@ -19,6 +19,15 @@ The default output directory is:
 docs/requirements/
 ```
 
+Each parsed tender requirement must produce both:
+
+```text
+docs/requirements/<需求名称>.md
+docs/requirements/<需求名称>.html
+```
+
+The HTML page is a developer-facing visual requirement viewer, not a replacement for the Markdown source.
+
 Extracted reference assets should be stored under:
 
 ```text
@@ -58,6 +67,12 @@ python .codex/skills/tender-requirement-reader/scripts/extract_docx_text.py <inp
 Use the bundled workspace Python when available. The script writes UTF-8 text, includes paragraph/table markers, and exports `word/media/*` plus `word/embeddings/*`.
 For numbered headings such as `1.3.2.2.师生管理`, the script emits `[SECTION][level=...][number=...][parent=...] ...`; use these markers first when building feature trees and menu candidates.
 
+After writing the requirement Markdown, render the paired HTML viewer:
+
+```bash
+python .codex/skills/tender-requirement-reader/scripts/render_requirement_html.py docs/requirements/<需求名称>.md --out docs/requirements/<需求名称>.html
+```
+
 ### Parsing Word `.bin` Embedded Objects
 
 Word stores editable embedded objects under `word/embeddings/*.bin`. These are often OLE compound files, not normal images.
@@ -95,6 +110,23 @@ For the current sample tender, `oleObject1.bin` is a Microsoft Visio OLE object.
    - `参考素材`: diagrams, screenshots, page mockups, flowcharts, embedded files, appendix files.
    - `风险/待确认`: vague wording, missing APIs, missing data fields, unclear owners, missing H5 framework.
 5. Write or update a requirement Markdown file in `docs/requirements/`.
+6. Render a matching HTML visual requirement page next to the Markdown file.
+
+## Requirement HTML Viewer
+
+The HTML viewer must help developers scan and verify requirements quickly. It must be generated whenever a tender is split into a requirement Markdown file.
+
+The HTML viewer must include:
+
+- Source document and parsing scope.
+- Section/feature navigation.
+- Requirement group cards for H5/mobile, backend admin, management admin, interfaces, data, permissions, risks, and reference assets when present.
+- Menu/function hierarchy, including inferred parent/child menu candidates.
+- Feature detail sections preserving source markers, roles, fields, interface notes, acceptance criteria, framework placement, and risks.
+- Reference asset links for extracted screenshots, diagrams, `.bin`, `.vsdx`, images, or attachments.
+- A coverage/checklist area that makes missing descriptions, unclear menus, missing H5 framework, and pending confirmations easy to see.
+
+If the Markdown changes, regenerate the HTML in the same task. Do not leave stale HTML next to updated Markdown.
 
 ## Section Hierarchy and Menu Inference
 
@@ -186,5 +218,6 @@ Before finishing:
 - Confirm source document names are listed.
 - Confirm extracted diagrams, screenshots, and attachments are listed as reference assets.
 - Confirm requirement output is UTF-8 Chinese.
+- Confirm the paired HTML visual requirement page exists, opens as a standalone file, and reflects the latest Markdown.
 - Confirm existing requirement files were not overwritten unless explicitly requested.
 - If new reusable tender parsing rules emerge, update this skill.
