@@ -342,7 +342,7 @@ IDEA 打开 project/
 
 Product Agent 还必须输出可打开、可点击交互的低保真 HTML 原型。低保真原型必须参考当前框架的信息架构和交互模式，不得做成过度简陋的纯线框；后管原型和 H5/移动端原型必须拆成不同 HTML 文件。原型必须严格覆盖需求集合中的全部功能点，不允许只做代表性页面或最小演示。
 
-如需求涉及后管、后台、管理端或运营端，Product Agent 必须先套用 `.codex/workflows/admin-prototype-design-workflow.md`，并复制 `docs/design/prototype-demo-framework/index.html` 作为后管原型模板，再按需求替换系统标题、Logo、菜单、字段、数据和流程。不得从空白 HTML、通用后台模板或纯静态页面重新绘制后管原型。
+如需求涉及后管、后台、管理端或运营端，Product Agent 必须先套用 `.codex/workflows/admin-prototype-design-workflow.md`，并使用 `.codex/skills/snowy-admin-prototype-designer`。生成 HTML 前必须输出“需求到原型页面蓝图”。蓝图必须逐个独立页面列出需求编号、菜单路径、路由路径、权限标识、页面类型、参考 Snowy 页面、查询字段、表格字段、详情字段、新增字段、编辑字段、操作按钮、状态/异常、权限差异、字段展示形态和点击交互。蓝图通过后，再复制 skill 内置的 `assets/prototype-demo-framework/index.html` 作为后管原型模板，按需求替换系统标题、Logo、菜单、字段、数据和流程。不得从空白 HTML、通用后台模板或纯静态页面重新绘制后管原型。
 
 PRD 必须包含：
 
@@ -374,13 +374,15 @@ HTML PRD 要求：
 - 不依赖构建工具、后端接口或登录态。
 - 能点击演示主路径页面切换、关键按钮和核心状态变化。
 - 必须参考现有框架：后管参考 Snowy 管理端菜单、标签页、查询表单、表格、分页、工具栏、弹窗/抽屉、权限按钮和状态反馈；H5/移动端参考项目中已有或后续补充的 H5 框架。
-- 后管原型必须执行 `.codex/workflows/admin-prototype-design-workflow.md`，从 `docs/design/prototype-demo-framework/index.html` 复制模板生成，并输出框架参考清单、菜单映射、CRUD 形式选择和原型需求覆盖矩阵。
+- 后管原型必须执行 `.codex/workflows/admin-prototype-design-workflow.md`，从 `.codex/skills/snowy-admin-prototype-designer/assets/prototype-demo-framework/index.html` 复制模板生成，并输出框架参考清单、菜单映射、CRUD 形式选择和原型需求覆盖矩阵。
+- 后管原型 HTML 生成前必须先输出需求到原型页面蓝图。没有蓝图、蓝图缺少逐页查询/表格/详情/新增/编辑/操作/状态/权限/字段展示形态，或蓝图字段不能追溯到需求时，不得生成 HTML。
 - 后管原型 HTML 必须保留 Demo 框架关键结构：`prototypeMeta`、Vue + Ant Design Vue CDN、`.snowy-sider`、`.snowy-header`、`.tabs-row`、查询卡片、工具栏、`a-table`、`a-drawer`、`a-modal`、图片上传预设和组件预设页面；缺少时不得进入 UI 设计、技术设计或开发。
 - 如同时涉及后管和 H5/移动端，必须分别保存为后管原型和 H5/移动端原型，例如 `docs/design/<需求ID>-admin-low-fidelity.html` 与 `docs/design/<需求ID>-h5-low-fidelity.html`。
 - 如果 H5 框架尚未补充，H5/移动端原型必须单独保留移动端信息结构和交互草案，并标记 `H5 框架待补充`。
 - 如涉及后管、后台、管理端或运营端，必须体现菜单入口、所在层级和页面切换关系。
 - 必须覆盖需求文档中的全部功能点、页面、菜单、字段、操作、状态、异常和权限场景；如果功能点很多，应拆分为多个页面、模块、Tab、流程或多个 HTML 文件。
-- 必须输出“原型需求覆盖矩阵”：需求编号/功能点、对应页面或弹窗、关键字段、关键操作、状态/异常、权限、是否已覆盖。未覆盖项必须写明原因和待确认问题。
+- 必须输出“原型需求覆盖矩阵”：需求编号/功能点、对应页面或弹窗、蓝图条目、关键字段、关键操作、状态/异常、权限、是否已覆盖。未覆盖项必须写明原因和待确认问题。每个 `已覆盖` 项必须能追溯到页面蓝图和 HTML 中的对应菜单、字段、操作或交互。
+- 禁止万能 CRUD：不得让多个业务页面共用同一套通用查询字段、通用表格列、通用新增/编辑/详情抽屉或通用操作流程。可复用组件结构，但每个页面必须有来自需求的专属字段和交互配置。
 - 必须使用标书/需求中的示意图、截图、附件或抽取素材作为信息结构参考。
 - 表达产品流程、信息结构和业务规则，不做高保真视觉。
 - 不连接 Figma。
