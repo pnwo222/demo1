@@ -13,10 +13,26 @@ from docx import Document
 
 OLE_HEADER = bytes.fromhex("d0cf11e0a1b11ae1")
 USEFUL_ASCII_TERMS = {"APP", "WEB", "H5", "API", "SQL", "HTTP", "HTTPS", "JSON", "XML"}
+SECTION_HEADING_RE = re.compile(r"^(\d+(?:\.\d+)+)\s*[\.\uff0e、]?\s*(.+)$")
 
 
 def clean(text: str) -> str:
     return " ".join((text or "").split())
+
+
+def parse_section_heading(text: str) -> tuple[str, int, str, str] | None:
+    match = SECTION_HEADING_RE.match(text)
+    if not match:
+        return None
+
+    number = match.group(1)
+    title = match.group(2).strip()
+    if not title:
+        return None
+
+    parts = number.split(".")
+    parent = ".".join(parts[:-1]) if len(parts) > 1 else ""
+    return number, len(parts), parent, title
 
 
 def is_useful_term(term: str) -> bool:
@@ -144,6 +160,10 @@ def extract_docx(input_path: Path, asset_dir: Path | None = None, analyze_embedd
         if not text:
             continue
         style = paragraph.style.name if paragraph.style else ""
+        section = parse_section_heading(text)
+        if section is not None:
+            number, level, parent, title = section
+            lines.append(f"[SECTION][level={level}][number={number}][parent={parent}] {title}")
         lines.append(f"[P{index:04d}][{style}] {text}")
 
     for table_index, table in enumerate(doc.tables):

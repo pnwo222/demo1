@@ -56,6 +56,7 @@ python .codex/skills/tender-requirement-reader/scripts/extract_docx_text.py <inp
 ```
 
 Use the bundled workspace Python when available. The script writes UTF-8 text, includes paragraph/table markers, and exports `word/media/*` plus `word/embeddings/*`.
+For numbered headings such as `1.3.2.2.师生管理`, the script emits `[SECTION][level=...][number=...][parent=...] ...`; use these markers first when building feature trees and menu candidates.
 
 ### Parsing Word `.bin` Embedded Objects
 
@@ -83,6 +84,9 @@ For the current sample tender, `oleObject1.bin` is a Microsoft Visio OLE object.
 2. Extract each Word/PDF into UTF-8 text and export reference assets.
    - For Word `.bin` embedded objects, extract and analyze the OLE package when possible.
 3. Build a section map from headings, numbered paragraphs, and tables.
+   - Preserve heading numbers such as `1.3.2.2` and child headings such as `1.3.2.2.1`.
+   - Build a parent-child tree before classifying requirements.
+   - Treat heading hierarchy as a strong signal for menu/function hierarchy, but confirm with the actual content description rather than assuming every heading is a menu.
 4. Classify content:
    - `软件范围`: H5/mobile, backend admin, management admin, interfaces, data, workflow, permissions, reports, logs, integrations.
    - `硬件排除`: device purchase, physical specs, quantities, installation material.
@@ -91,6 +95,34 @@ For the current sample tender, `oleObject1.bin` is a Microsoft Visio OLE object.
    - `参考素材`: diagrams, screenshots, page mockups, flowcharts, embedded files, appendix files.
    - `风险/待确认`: vague wording, missing APIs, missing data fields, unclear owners, missing H5 framework.
 5. Write or update a requirement Markdown file in `docs/requirements/`.
+
+## Section Hierarchy and Menu Inference
+
+Tender Word documents often express product structure through numbered sections. The parser must understand hierarchy before splitting features.
+
+Rules:
+
+- A parent heading with several software child headings is a candidate menu group or first-level menu.
+- Child headings with independent descriptions, fields, pages, operations, or acceptance criteria are candidate second-level menus or standalone feature modules.
+- Example pattern: `1.3.2.2 师生管理` with children `1.3.2.2.1 学生管理`, `1.3.2.2.2 教职工管理`, `1.3.2.2.3 历史学生管理` usually means `师生管理` is a parent menu/group, and the three children are independent menu pages or feature modules.
+- Do not blindly convert every section into a menu. If the child section only describes a tab, field group, report area, operation step, or shared rule, record it as page structure or function detail under the parent instead.
+- If a parent heading has no independent page content but only groups child functions, mark it as `菜单分组` or `一级菜单候选`.
+- If a child heading has independent CRUD/search/detail/import/export/audit/status rules, mark it as `二级菜单候选` and an independent feature.
+- If the hierarchy is ambiguous, keep the relationship and add `待确认: 是否作为菜单`.
+
+For each backend/admin feature inferred from headings, record:
+
+```text
+章节层级:
+父级章节:
+子级章节:
+菜单推断:
+菜单层级:
+菜单名称:
+是否独立功能:
+推断依据:
+待确认:
+```
 
 ## Output Structure
 
@@ -123,10 +155,14 @@ For each feature group, include:
 编号:
 名称:
 来源:
+章节层级:
+父级功能/菜单:
+子功能/子菜单:
 用户/角色:
 功能说明:
 主要字段/数据:
 接口/对接:
+菜单推断:
 验收标准:
 风险/待确认:
 当前框架落点:
