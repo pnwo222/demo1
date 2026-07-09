@@ -1,0 +1,392 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>纺院高校一卡通后管低保真原型</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/reset.css" />
+  <style>
+    :root {
+      --sidebar: #001529;
+      --sidebar-soft: #031f3a;
+      --brand: #1677ff;
+      --page: #f5f7fb;
+      --line: #edf0f5;
+      --text-soft: #667085;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--page);
+      color: #1f2937;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+    }
+    #app { min-height: 100vh; }
+    .app-shell { min-height: 100vh; }
+    .brand {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 16px;
+      color: #fff;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      white-space: nowrap;
+    }
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: var(--brand);
+      color: #fff;
+      font-weight: 800;
+    }
+    .snowy-sider {
+      background: var(--sidebar) !important;
+      box-shadow: 2px 0 10px rgba(15, 23, 42, .08);
+    }
+    .snowy-sider .ant-menu {
+      background: var(--sidebar);
+      color: rgba(255,255,255,.76);
+      border-inline-end: 0;
+    }
+    .snowy-sider .ant-menu-submenu-title,
+    .snowy-sider .ant-menu-item { border-radius: 0; margin-inline: 0; width: 100%; }
+    .snowy-sider .ant-menu-item-selected {
+      background: #0b3a72 !important;
+      color: #fff;
+      border-left: 3px solid var(--brand);
+    }
+    .snowy-header {
+      height: 56px;
+      padding: 0 18px;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-left, .header-right { display: flex; align-items: center; gap: 14px; }
+    .icon-action {
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      color: #475467;
+      cursor: pointer;
+    }
+    .icon-action:hover { background: #f2f4f7; color: var(--brand); }
+    .mini-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1em;
+      min-width: 1em;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .tabs-row {
+      height: 44px;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      gap: 8px;
+    }
+    .content {
+      padding: 16px;
+      overflow: auto;
+    }
+    .query-card,
+    .table-card,
+    .tree-card {
+      background: #fff;
+      border: 1px solid #e8edf3;
+      border-radius: 4px;
+    }
+    .query-card { padding: 16px 16px 12px; margin-bottom: 14px; }
+    .table-card { padding: 16px; }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .toolbar-left,
+    .toolbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .cover {
+      width: 92px;
+      height: 46px;
+      border-radius: 4px;
+      object-fit: cover;
+      border: 1px solid #d9e2ef;
+      display: block;
+      background: #f3f4f6;
+    }
+    .cover-empty {
+      width: 92px;
+      height: 46px;
+      border-radius: 4px;
+      border: 1px dashed #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #98a2b3;
+      background: #fafafa;
+      font-size: 12px;
+    }
+    .page-title {
+      margin: 0 0 12px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .muted { color: var(--text-soft); }
+    .tree-layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 14px;
+    }
+    .tree-card { padding: 14px; }
+    .resource-node {
+      padding: 8px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .resource-node:hover,
+    .resource-node.active { background: #eef5ff; color: var(--brand); }
+    .drawer-cover {
+      width: 180px;
+      height: 90px;
+      border-radius: 4px;
+      object-fit: cover;
+      border: 1px solid #e5e7eb;
+      background: #f8fafc;
+    }
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .preset-card {
+      background: #fff;
+      border: 1px solid #e8edf3;
+      border-radius: 4px;
+      padding: 14px;
+    }
+    .preset-card h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+    }
+    .preset-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 32px;
+      flex-wrap: wrap;
+    }
+    .text-ellipsis {
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .file-thumb {
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      background: #667085;
+    }
+    .file-thumb.pdf { background: #ef4444; }
+    .file-thumb.xls { background: #16a34a; }
+    .file-thumb.doc { background: #2563eb; }
+    .upload-preview {
+      width: 102px;
+      height: 102px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+      display: block;
+    }
+    @media (max-width: 960px) {
+      .tree-layout { grid-template-columns: 1fr; }
+      .preset-grid { grid-template-columns: 1fr; }
+      .snowy-sider { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/dayjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/advancedFormat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/customParseFormat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/localeData.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/quarterOfYear.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/weekday.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/weekOfYear.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/weekYear.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/antd.min.js"></script>
+  <script>
+  const { createApp, ref, reactive, computed } = Vue;
+  const prototypeMeta = {
+    systemName: '纺院高校一卡通后管',
+    logoText: '纺',
+    logoImage: ''
+  };
+  const img = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="184" height="92"><defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#1677ff"/><stop offset="1" stop-color="#69b1ff"/></linearGradient></defs><rect width="184" height="92" rx="8" fill="url(#g)"/><rect x="18" y="18" width="82" height="12" rx="6" fill="rgba(255,255,255,.85)"/><rect x="18" y="42" width="130" height="8" rx="4" fill="rgba(255,255,255,.55)"/><rect x="18" y="58" width="100" height="8" rx="4" fill="rgba(255,255,255,.55)"/></svg>');
+  const emptyImg = '';
+  const menuItems = [
+    { key: 'school', label: '高校一卡通（学校端）', children: [
+      { key: 'schoolDashboard', label: '业务首页' },
+      { key: 'person', label: '师生管理', children: [
+        { key: 'student', label: '学生管理' }, { key: 'staff', label: '教职工管理' }, { key: 'historyStudent', label: '历史学生管理' }
+      ]},
+      { key: 'content', label: '内容管理', children: [
+        { key: 'banner', label: '首页 banner 管理' }, { key: 'appOnline', label: '应用上线管理' }, { key: 'homeModule', label: '首页模块管理' }, { key: 'notice', label: '公告管理' }, { key: 'article', label: '文章管理' }, { key: 'activity', label: '活动管理' }
+      ]},
+      { key: 'socialCardApply', label: '社保卡申领记录' }, { key: 'deviceMonitor', label: '设备状态监控' },
+      { key: 'query', label: '信息查询', children: [
+        { key: 'visitorRecord', label: '访客记录管理' }, { key: 'accessRecord', label: '通行记录管理' }, { key: 'consumeRecord', label: '消费记录管理' }, { key: 'bookRecord', label: '图书借阅记录管理' }
+      ]},
+      { key: 'schoolUser', label: '用户管理' }
+    ]},
+    { key: 'admin', label: '高校一卡通（管理端）', children: [
+      { key: 'adminDashboard', label: '系统首页' },
+      { key: 'orgAdmin', label: '组织架构', children: [ { key: 'schoolManage', label: '学校管理' }, { key: 'adminUser', label: '用户管理' } ]},
+      { key: 'permissionAdmin', label: '权限管理', children: [ { key: 'role', label: '角色管理' }, { key: 'module', label: '模块管理' }, { key: 'menuManage', label: '菜单管理' } ]},
+      { key: 'logAdmin', label: '日志管理', children: [ { key: 'visitLog', label: '访问日志' }, { key: 'opLog', label: '操作日志' }, { key: 'externalLog', label: '外部调用日志' } ]},
+      { key: 'nbSync', label: '一卡通后管对接' }
+    ]},
+    { key: 'pam', label: 'PAM 人员设备管理', children: [
+      { key: 'pamPerson', label: '组织人员管理' }, { key: 'deviceGroup', label: '设备分组管理' }, { key: 'personGroup', label: '人员分组授权' }, { key: 'passSync', label: '通行实时同步' }, { key: 'remoteConfig', label: '远程设备配置' }, { key: 'deviceLog', label: '设备通信日志' }
+    ]}
+  ];
+  const pageSpecs = {
+    schoolDashboard: { title:'业务首页', type:'dashboard', filters:['学校','时间范围'], metrics:[['专区用户','128430'],['今日认证','9804'],['绑卡率','82.6%'],['设备告警','7']] },
+    adminDashboard: { title:'系统首页', type:'dashboard', filters:['高校','时间范围'], metrics:[['接入高校','12'],['活跃用户','36912'],['今日同步','4208'],['接口异常','3']] },
+    student: { title:'学生管理', type:'table', fields:['姓名','身份证号','手机号','学院','专业','班级','学号','注册状态','绑卡状态','金融激活'], rows:[['张同学','3302********1234','138****0001','信息学院','软件技术','23软件1','2026001','已注册','已绑卡','已激活'],['李同学','3302********3321','139****0002','机电学院','机电一体化','23机电2','2026002','未注册','未绑卡','未激活']]},
+    staff: { title:'教职工管理', type:'table', fields:['姓名','身份证号','手机号','入职年份','当前状态','部门','工号','注册状态','绑卡状态','金融激活'], rows:[['王老师','3302********2211','137****0011','2020','在职','教务处','T0001','已注册','已绑卡','已激活'],['赵老师','3302********6655','136****0099','2018','在职','信息中心','T0002','已注册','未绑卡','未激活']]},
+    historyStudent: { title:'历史学生管理', type:'table', fields:['姓名','身份证号','手机号','学院','专业','历史类型','离校时间'], rows:[['周同学','3302********7890','135****7788','信息学院','软件技术','毕业','2025-06-30'],['吴同学','3302********8899','135****8899','艺术学院','设计','休学','2026-03-01']]},
+    banner: { title:'首页 banner 管理', type:'content', fields:['图片标题','图片','是否跳转','展示开始','展示结束','展示状态','优先级'], rows:[['迎新服务',img,'是','2026-09-01','2026-09-30','展示中','1'],['校园资讯',emptyImg,'否','2026-07-01','2026-08-01','待审核','2']]},
+    appOnline: { title:'应用上线管理', type:'content', fields:['应用名称','应用图标','应用链接','可见身份','可用状态','展示状态','排序'], rows:[['访客预约',img,'/visitor','访客','启用','展示','10'],['图书借阅',img,'/library','学生','启用','展示','20']]},
+    homeModule: { title:'首页模块管理', type:'content', fields:['模块名称','模板样式','展示图片','跳转链接','展示状态','排序'], rows:[['校园服务','模板一',img,'/service','展示','10'],['校园资讯','模板二',emptyImg,'/news','隐藏','20']]},
+    notice: { title:'公告管理', type:'content', fields:['公告标题','发布人','审核状态','发布时间','展示状态','排序'], rows:[['暑期开放安排','内容运营','已通过','2026-07-08 09:00','展示','1'],['社保卡认证指南','内容运营','待审核','2026-07-08 11:00','隐藏','2']]},
+    article: { title:'文章管理', type:'content', fields:['文章标题','发布人','展示模式','审核状态','推荐状态','发布时间'], rows:[['校园资讯专题','内容运营','图文','已通过','推荐','2026-07-08 10:00'],['新生攻略','内容运营','图文','待审核','普通','2026-07-08 12:00']]},
+    activity: { title:'活动管理', type:'content', fields:['活动名称','可见身份','开始时间','结束时间','审核状态','展示状态'], rows:[['迎新活动','新生','2026-09-01','2026-09-05','已通过','展示'],['图书馆打卡','学生','2026-07-20','2026-08-20','待审核','隐藏']]},
+    socialCardApply: { title:'社保卡申领记录', type:'readonly', fields:['姓名','证件类型','证件号码','手机号','职业','绑卡状态','参保地','申领时间'], rows:[['张同学','身份证','3302********1234','138****0001','学生','已绑卡','宁波','2026-07-08'],['王老师','身份证','3302********2211','137****0011','教职工','未绑卡','宁波','2026-07-07']]},
+    deviceMonitor: { title:'设备状态监控', type:'monitor', fields:['设备编号','设备位置','在线状态','门长开报警','非法时间开门','最后心跳'], rows:[['D-001','图书馆东门','在线','正常','正常','10 秒前'],['D-007','宿舍南门','离线','告警','正常','2 小时前']]},
+    visitorRecord: { title:'访客记录管理', type:'readonly', fields:['来访人','来访单位','手机号','被访人','拜访部门','审核状态','预约渠道'], rows:[['陈访客','合作单位','139****7788','王老师','信息中心','已通过','H5'],['刘访客','家长','138****1122','张同学','学生处','待审核','H5']]},
+    accessRecord: { title:'通行记录管理', type:'readonly', fields:['通行人员','设备位置','验证方式','通行方向','通行时间','结果'], rows:[['张同学','图书馆东门','社保码','进','2026-07-08 08:30','通过'],['王老师','行政楼','掌静脉','出','2026-07-08 09:10','通过']]},
+    consumeRecord: { title:'消费记录管理', type:'sensitive', fields:['姓名','商家名称','交易金额','支付流水号','支付类型','付款方式','支付时间'], rows:[['张同学','一食堂','18.50','PAY********001','消费','社保卡','2026-07-08 12:01'],['李同学','校园超市','9.90','PAY********002','消费','社保码','2026-07-08 12:08']]},
+    bookRecord: { title:'图书借阅记录管理', type:'readonly', fields:['姓名','学号/工号','书籍题名','条码号','借阅日期','应还日期','归还日期'], rows:[['张同学','2026001','计算机网络','B0001','2026-07-01','2026-08-01','-'],['王老师','T0001','教育心理学','B0002','2026-06-20','2026-07-20','2026-07-08']]},
+    schoolUser: { title:'用户管理', type:'readonly', fields:['姓名','手机','用户身份','绑卡状态','省内持卡','首次登录','最近登录'], rows:[['张同学','138****0001','学生','已绑卡','是','2026-07-01','2026-07-08'],['陈访客','139****7788','访客','未绑卡','否','2026-07-08','2026-07-08']]},
+    schoolManage: { title:'学校管理', type:'tree', fields:['名称','编码','上级','状态','排序','创建时间'], rows:[['纺院','SCH-FY','宁波高校','启用','1','2026-07-08'],['信息学院','ORG-INFO','纺院','启用','10','2026-07-08']]},
+    adminUser: { title:'用户管理', type:'auth', fields:['账号','姓名','所属部门','角色','账号状态','创建时间'], rows:[['admin','平台管理员','信息中心','平台管理员','启用','2026-07-08'],['operator','内容运营','宣传部','内容运营','启用','2026-07-08']]},
+    role: { title:'角色管理', type:'auth', fields:['角色名称','分类','状态','权限范围','排序'], rows:[['平台管理员','全局','启用','全部高校','1'],['学校管理员','学校','启用','本校','10']]},
+    module: { title:'模块管理', type:'auth', fields:['模块名称','图标','排序','状态','创建时间'], rows:[['高校一卡通（学校端）','应用','1','启用','2026-07-08'],['高校一卡通（管理端）','平台','2','启用','2026-07-08']]},
+    menuManage: { title:'菜单管理', type:'auth', fields:['显示名称','类型','路由地址','是否可见','排序'], rows:[['学生管理','菜单','/biz/fyy-school/student','是','10'],['消费记录管理','菜单','/biz/fyy-school/consume-record','是','90']]},
+    visitLog: { title:'访问日志', type:'log', fields:['用户','IP 地址','浏览器','设备','行为','时间'], rows:[['admin','127.0.0.1','Chrome','Windows','登录','2026-07-08 09:00'],['operator','127.0.0.1','Chrome','Windows','登出','2026-07-08 10:00']]},
+    opLog: { title:'操作日志', type:'log', fields:['用户','操作内容','IP 地址','执行状态','操作时间'], rows:[['operator','发布公告','127.0.0.1','成功','2026-07-08 09:12'],['admin','导出消费记录','127.0.0.1','成功','2026-07-08 09:30']]},
+    externalLog: { title:'外部调用日志', type:'log', fields:['日志名称','分类','执行状态','请求方式','耗时','操作时间'], rows:[['人员同步','校园数据中台','成功','POST','230ms','2026-07-08 09:01'],['卡包同步','宁波一卡通','失败','POST','3000ms','2026-07-08 09:05']]},
+    nbSync: { title:'一卡通后管对接', type:'sync', fields:['模块','同步方向','最近执行','执行状态','失败数','操作'], rows:[['用户中心','双向','2026-07-08 09:00','成功','0','查看'],['审核中心','推送','2026-07-08 09:10','失败','3','重试']]},
+    pamPerson: { title:'组织人员管理', type:'pam', fields:['姓名','证件号','部门','生物信息','授权状态','更新时间'], rows:[['张同学','3302********1234','信息学院','已采集','已授权','2026-07-08'],['李同学','3302********3321','机电学院','未采集','未授权','2026-07-08']]},
+    deviceGroup: { title:'设备分组管理', type:'pam', fields:['设备组','区域','设备数','在线数','状态','更新时间'], rows:[['图书馆门禁','图书馆','8','7','告警','2026-07-08'],['宿舍门禁','宿舍区','20','20','正常','2026-07-08']]},
+    personGroup: { title:'人员分组授权', type:'pam', fields:['人员组','授权设备组','人员数','同步状态','有效期'], rows:[['新生组','宿舍门禁','3200','已同步','2026-12-31'],['教职工组','全部门禁','820','待同步','长期']]},
+    passSync: { title:'通行实时同步', type:'pam', fields:['人员','设备','验证方式','通行时间','同步状态'], rows:[['张同学','图书馆东门','社保码','2026-07-08 08:30','已同步'],['王老师','行政楼','掌静脉','2026-07-08 09:10','已同步']]},
+    remoteConfig: { title:'远程设备配置', type:'remote', fields:['设备','配置项','当前值','目标值','审批状态','更新时间'], rows:[['D-001','认证模式','社保码+掌静脉','社保码','待审批','2026-07-08'],['D-007','识别阈值','标准','严格','已通过','2026-07-08']]},
+    deviceLog: { title:'设备通信日志', type:'log', fields:['设备','通信类型','执行状态','数据摘要','时间'], rows:[['D-001','心跳','成功','在线','2026-07-08 09:00'],['D-007','配置下发','失败','超时','2026-07-08 09:05']]}
+  };
+  const coverageRows = [
+    ['ADM-S-001','业务首页','指标、时间筛选、导出','查看/导出','空态/异常','学校管理员','已覆盖','看板页'],
+    ['ADM-S-002','师生管理','姓名、身份证、手机号、学院、状态','查询/详情/导出','同步失败','学校管理员','已覆盖','三类人员页'],
+    ['ADM-S-003','内容管理','标题、图片、时间、审核、可见身份','新增/编辑/删除/审核/启停','校验/过期','内容运营','已覆盖','六个内容页'],
+    ['ADM-S-004','社保卡申领记录','证件、手机号、持卡状态','查询/导出','无数据/脱敏','学校管理员','已覆盖','只读查询'],
+    ['ADM-S-005','设备状态监控','设备、位置、告警、心跳','查看/刷新/导出','离线/告警','运维人员','已覆盖','监控页'],
+    ['ADM-S-006','信息查询','访客/通行/消费/借阅字段','查询/详情/导出审批','敏感脱敏','审计/财务','已覆盖','四类记录页'],
+    ['ADM-A-001~005','管理端','学校、用户、权限、日志、对接','维护/授权/重试','失败/异常','平台管理员','已覆盖','管理端菜单'],
+    ['PAM-001~008','PAM','人员、设备、授权、通行、远程配置、日志','采集/授权/同步/审批/回滚','离线/失败','运维/管理员','已覆盖','PAM 菜单'],
+    ['H5 对应内容','移动端展示来源','内容和记录后管配置','发布/同步','待确认','师生/访客','不适用','H5 原型单独输出']
+  ];
+  const app = createApp({
+    setup(){
+      const collapsed=ref(false), currentPage=ref('schoolDashboard'), activeTab=ref('业务首页'), selectedKeys=ref(['schoolDashboard']), openKeys=ref(['school','person','content','query','admin','orgAdmin','permissionAdmin','logAdmin','pam']);
+      const tableSize=ref('middle'), selectedRowKeys=ref([]), query=reactive({ keyword:'', status:undefined, dateRange:[] }), advanced=ref(false), drawerOpen=ref(false), drawerMode=ref('add'), importOpen=ref(false), columnOpen=ref(false), previewOpen=ref(false), previewImage=ref(''), previewTitle=ref('图片预览'), approvalOpen=ref(false), coverageOpen=ref(false), blueprintOpen=ref(false), frameOpen=ref(false);
+      const formState=reactive({ title:'', image:img, status:true, audit:'待审核', sort:10, visibleRole:'全部', uploadFiles:[{uid:'1',name:'封面.png',status:'done',url:img}] });
+      const activePageSpec=computed(()=>pageSpecs[currentPage.value]||pageSpecs.schoolDashboard);
+      const pageTitle=computed(()=>activePageSpec.value.title);
+      const rows=computed(()=>activePageSpec.value.rows.map((r,i)=>({id:i+1, values:r})));
+      const columns=computed(()=>[...activePageSpec.value.fields.slice(0,8).map((f,i)=>({title:f,dataIndex:'c'+i,key:'c'+i,width:i===1?130:120})),{title:'操作',key:'action',fixed:'right',width:210}]);
+      const rowSelection=computed(()=>({selectedRowKeys:selectedRowKeys.value,onChange:k=>selectedRowKeys.value=k}));
+      const setPage=({key})=>{currentPage.value=key; selectedKeys.value=[key]; activeTab.value=(pageSpecs[key]||{}).title||key; antd.message.success('已切换到'+activeTab.value)};
+      const onOpenChange=keys=>openKeys.value=keys;
+      const search=()=>antd.message.success('查询完成'); const reset=()=>{query.keyword='';query.status=undefined;query.dateRange=[];antd.message.success('查询条件已重置')}; const refresh=()=>antd.message.success('列表已刷新');
+      const openAdd=()=>{drawerMode.value='add';drawerOpen.value=true}; const openEdit=()=>{drawerMode.value='edit';drawerOpen.value=true}; const openDetail=()=>{drawerMode.value='detail';drawerOpen.value=true};
+      const saveForm=()=>{drawerOpen.value=false;antd.message.success('保存成功')};
+      const confirmDelete=()=>antd.Modal.confirm({title:'删除确认',content:'确定删除选中数据吗？',okText:'确定',cancelText:'取消',onOk:()=>antd.message.success('删除成功')});
+      const exportData=()=>{approvalOpen.value=true}; const approveExport=()=>{approvalOpen.value=false;antd.message.success('导出审批已提交')};
+      const toggleStatus=(record,value)=>{antd.message.success(value?'已启用':'已停用')};
+      const auditRow=()=>antd.message.success('审核通过'); const retrySync=()=>antd.message.success('重试任务已创建'); const remoteConfirm=()=>antd.Modal.confirm({title:'远程配置确认',content:'此操作会影响门禁设备，请确认已完成审批并保留回滚快照。',okText:'确认下发',cancelText:'取消',onOk:()=>antd.message.success('配置已下发')});
+      const beforeCoverUpload=file=>{const reader=new FileReader();reader.onload=e=>{formState.image=e.target.result;formState.uploadFiles=[{uid:String(Date.now()),name:file.name,status:'done',url:e.target.result}];antd.message.success('图片已选择')};reader.readAsDataURL(file);return false};
+      const removeCover=()=>{formState.image='';formState.uploadFiles=[];antd.message.success('图片已移除');return true};
+      const previewCover=file=>{previewImage.value=file.url||formState.image;previewTitle.value=file.name||'图片预览';previewOpen.value=true};
+      const cell=(record,index)=>record.values[index]||'';
+      const topAction=t=>antd.message.success(t+'完成');
+      return {prototypeMeta,menuItems,collapsed,currentPage,activeTab,selectedKeys,openKeys,tableSize,selectedRowKeys,query,advanced,drawerOpen,drawerMode,importOpen,columnOpen,previewOpen,previewImage,previewTitle,approvalOpen,coverageOpen,blueprintOpen,frameOpen,formState,activePageSpec,pageTitle,rows,columns,rowSelection,coverageRows,setPage,onOpenChange,search,reset,refresh,openAdd,openEdit,openDetail,saveForm,confirmDelete,exportData,approveExport,toggleStatus,auditRow,retrySync,remoteConfirm,beforeCoverUpload,removeCover,previewCover,cell,topAction};
+    },
+    template: `
+      <a-layout class="app-shell">
+        <a-layout-sider class="snowy-sider" :width="248" :collapsed="collapsed" collapsible :trigger="null">
+          <div class="brand"><div class="brand-mark"><span>{{ prototypeMeta.logoText }}</span></div><span v-show="!collapsed">{{ prototypeMeta.systemName }}</span></div>
+          <a-menu mode="inline" theme="dark" :items="menuItems" :selected-keys="selectedKeys" :open-keys="openKeys" @click="setPage" @openChange="onOpenChange" />
+        </a-layout-sider>
+        <a-layout>
+          <header class="snowy-header"><div class="header-left"><span class="icon-action" title="折叠菜单" @click="collapsed=!collapsed"><span class="mini-icon">≡</span></span><a-breadcrumb><a-breadcrumb-item>首页</a-breadcrumb-item><a-breadcrumb-item>高校一卡通</a-breadcrumb-item><a-breadcrumb-item>{{ pageTitle }}</a-breadcrumb-item></a-breadcrumb></div><div class="header-right"><span class="icon-action" title="刷新" @click="refresh"><span class="mini-icon">↻</span></span><span class="icon-action" title="覆盖矩阵" @click="coverageOpen=true"><span class="mini-icon">☷</span></span><span class="icon-action" title="框架参考" @click="frameOpen=true"><span class="mini-icon">ⓘ</span></span><a-avatar style="background:#1677ff">管</a-avatar><span>管理员</span></div></header>
+          <div class="tabs-row"><a-tag color="blue">{{ activeTab }}</a-tag><a-tag v-if="activePageSpec.type==='sensitive'" color="red">敏感数据</a-tag><a-tag v-if="activePageSpec.type==='remote'" color="orange">审批后操作</a-tag></div>
+          <a-layout-content class="content">
+            <section v-if="activePageSpec.type==='dashboard'">
+              <div class="preset-grid"><div class="preset-card" v-for="m in activePageSpec.metrics" :key="m[0]"><h3>{{m[0]}}</h3><div style="font-size:28px;color:#1677ff;font-weight:700">{{m[1]}}</div></div></div>
+              <div class="query-card"><a-form layout="inline"><a-form-item v-for="f in activePageSpec.filters" :key="f" :label="f"><a-input style="width:180px" :placeholder="'请选择'+f" /></a-form-item><a-space><a-button type="primary" @click="search">查询</a-button><a-button @click="reset">重置</a-button><a-button @click="exportData">导出</a-button></a-space></a-form></div>
+            </section>
+            <section v-else>
+              <div class="query-card"><a-form layout="inline"><a-form-item label="关键词"><a-input v-model:value="query.keyword" style="width:180px" placeholder="请输入关键词" /></a-form-item><a-form-item label="状态"><a-select v-model:value="query.status" style="width:150px" allow-clear><a-select-option value="启用">启用</a-select-option><a-select-option value="停用">停用</a-select-option><a-select-option value="待审核">待审核</a-select-option></a-select></a-form-item><a-form-item label="时间"><a-range-picker v-model:value="query.dateRange" /></a-form-item><a-space><a-button type="primary" @click="search">查询</a-button><a-button @click="reset">重置</a-button><a-button type="link" @click="advanced=!advanced">{{advanced?'收起':'展开'}}</a-button></a-space></a-form></div>
+              <div class="table-card"><div class="toolbar"><div class="toolbar-left"><a-button v-if="['content','auth','pam','remote','tree'].includes(activePageSpec.type)" type="primary" @click="openAdd"><span class="mini-icon">＋</span>新增</a-button><a-button v-if="activePageSpec.type==='content'" @click="auditRow">审核</a-button><a-button v-if="activePageSpec.type==='remote'" type="primary" danger @click="remoteConfirm">下发配置</a-button><a-button v-if="!['readonly','sync','log','remote'].includes(activePageSpec.type)" danger @click="confirmDelete">批量删除</a-button><a-button v-if="!['readonly','sync','log'].includes(activePageSpec.type)" @click="importOpen=true">导入</a-button><a-button @click="exportData">导出</a-button><a-button v-if="['sync','log'].includes(activePageSpec.type)" @click="retrySync">重试</a-button></div><div class="toolbar-right"><a-tooltip title="刷新"><a-button shape="circle" @click="refresh"><span class="mini-icon">↻</span></a-button></a-tooltip><a-tooltip title="密度"><a-button shape="circle" @click="tableSize=tableSize==='middle'?'small':'middle'"><span class="mini-icon">↕</span></a-button></a-tooltip><a-tooltip title="列设置"><a-button shape="circle" @click="columnOpen=true"><span class="mini-icon">☷</span></a-button></a-tooltip></div></div>
+              <a-table row-key="id" :columns="columns" :data-source="rows" :row-selection="rowSelection" :size="tableSize" :pagination="{pageSize:8,showSizeChanger:true,showTotal:total=>'共 '+total+' 条'}" :scroll="{x:1100}" bordered><template #bodyCell="{ column, record }"><template v-if="column.key==='c1' && activePageSpec.type==='content'"><img v-if="cell(record,1)" class="cover" :src="cell(record,1)" alt="图片"/><div v-else class="cover-empty">无图</div></template><template v-else-if="String(cell(record, column.key?.replace('c','')||0)).includes('已')||String(cell(record, column.key?.replace('c','')||0)).includes('在线')||String(cell(record, column.key?.replace('c','')||0)).includes('成功')"><a-tag color="success">{{ cell(record, Number(column.key.replace('c',''))) }}</a-tag></template><template v-else-if="String(cell(record, column.key?.replace('c','')||0)).includes('待')||String(cell(record, column.key?.replace('c','')||0)).includes('告警')||String(cell(record, column.key?.replace('c','')||0)).includes('失败')"><a-tag color="orange">{{ cell(record, Number(column.key.replace('c',''))) }}</a-tag></template><template v-else-if="column.key==='action'"><a-space><a @click="openDetail">详情</a><a v-if="!['readonly','sync','log'].includes(activePageSpec.type)" @click="openEdit">编辑</a><a v-if="activePageSpec.type==='content'" @click="auditRow">审核</a><a v-if="activePageSpec.type==='remote'" @click="remoteConfirm">下发</a><a-typography-link v-if="!['readonly','sync','log','remote'].includes(activePageSpec.type)" type="danger" @click="confirmDelete">删除</a-typography-link></a-space></template><template v-else>{{ cell(record, Number(column.key.replace('c',''))) }}</template></template></a-table></div>
+            </section>
+          </a-layout-content>
+        </a-layout>
+        <a-drawer :title="drawerMode==='detail'?'详情':drawerMode==='edit'?'编辑':'新增'" width="620" v-model:open="drawerOpen"><a-form layout="vertical"><a-form-item label="业务主字段" required><a-input v-model:value="formState.title" :disabled="drawerMode==='detail'" placeholder="请输入标题或名称" /></a-form-item><a-row :gutter="12"><a-col :span="12"><a-form-item label="状态"><a-switch v-model:checked="formState.status" :disabled="drawerMode==='detail'" /></a-form-item></a-col><a-col :span="12"><a-form-item label="排序"><a-input-number v-model:value="formState.sort" style="width:100%" :disabled="drawerMode==='detail'" /></a-form-item></a-col></a-row><a-form-item label="可见身份/权限范围"><a-select v-model:value="formState.visibleRole" :disabled="drawerMode==='detail'"><a-select-option value="全部">全部</a-select-option><a-select-option value="学生">学生</a-select-option><a-select-option value="教职工">教职工</a-select-option><a-select-option value="访客">访客</a-select-option></a-select></a-form-item><a-form-item label="图片/图标"><a-upload list-type="picture-card" :file-list="formState.uploadFiles" :before-upload="beforeCoverUpload" @preview="previewCover" @remove="removeCover" accept="image/*" :disabled="drawerMode==='detail'"><div v-if="drawerMode!=='detail' && formState.uploadFiles.length<1"><div style="font-size:20px">＋</div><div>选择图片</div></div></a-upload></a-form-item><a-form-item label="业务说明"><a-textarea rows="4" :disabled="drawerMode==='detail'" placeholder="请输入业务说明" /></a-form-item></a-form><template #footer><a-space><a-button @click="drawerOpen=false">取消</a-button><a-button v-if="drawerMode!=='detail'" type="primary" @click="saveForm">保存</a-button></a-space></template></a-drawer>
+        <a-modal title="导入数据" v-model:open="importOpen" ok-text="开始导入" cancel-text="取消" @ok="topAction('导入')"><a-upload-dragger :before-upload="()=>false" accept=".xlsx,.xls"><p class="ant-upload-drag-icon"><span class="mini-icon" style="font-size:28px">⇧</span></p><p class="ant-upload-text">点击或拖拽文件到此区域</p></a-upload-dragger></a-modal>
+        <a-modal title="导出审批" v-model:open="approvalOpen" ok-text="提交审批" cancel-text="取消" @ok="approveExport"><a-alert type="warning" show-icon message="导出包含敏感信息时需要审批，并记录操作日志。" /></a-modal>
+        <a-modal title="列设置" v-model:open="columnOpen" ok-text="确定" cancel-text="取消"><a-checkbox checked>核心字段</a-checkbox><a-checkbox checked>状态字段</a-checkbox><a-checkbox checked>操作列</a-checkbox></a-modal>
+        <a-modal :title="previewTitle" v-model:open="previewOpen" :footer="null"><img v-if="previewImage" :src="previewImage" style="width:100%;border-radius:4px" alt="图片预览" /></a-modal>
+        <a-drawer title="需求到原型页面蓝图" width="980" v-model:open="blueprintOpen"><a-alert type="info" show-icon message="完整逐页蓝图见 docs/design/FY-20260708-UNICARD-admin-page-blueprint.md；本 HTML 页面按该蓝图提供菜单、字段、操作和状态追溯。" style="margin-bottom:12px"/><a-table :columns="[{title:'需求编号',dataIndex:'id'},{title:'页面名称',dataIndex:'feature'},{title:'页面/抽屉',dataIndex:'page'},{title:'操作',dataIndex:'op'},{title:'状态/异常',dataIndex:'state'},{title:'权限',dataIndex:'perm'},{title:'覆盖状态',dataIndex:'status'},{title:'说明',dataIndex:'note'}]" :data-source="coverageRows.map((r,i)=>({key:i,id:r[0],feature:r[1],page:r[2],op:r[3],state:r[4],perm:r[5],status:r[6],note:r[7]}))" :pagination="false" bordered /></a-drawer><a-drawer title="原型需求覆盖矩阵" width="980" v-model:open="coverageOpen"><a-table :columns="[{title:'需求编号',dataIndex:'id'},{title:'功能点',dataIndex:'feature'},{title:'页面/抽屉',dataIndex:'page'},{title:'操作',dataIndex:'op'},{title:'状态/异常',dataIndex:'state'},{title:'权限',dataIndex:'perm'},{title:'覆盖状态',dataIndex:'status'},{title:'说明',dataIndex:'note'}]" :data-source="coverageRows.map((r,i)=>({key:i,id:r[0],feature:r[1],page:r[2],op:r[3],state:r[4],perm:r[5],status:r[6],note:r[7]}))" :pagination="false" bordered /></a-drawer>
+        <a-drawer title="框架参考清单" width="860" v-model:open="frameOpen"><a-descriptions bordered :column="1" size="small"><a-descriptions-item label="参考框架文件">sys/user、sys/role、sys/resource/menu、sys/org、biz/notice、dev/slideshow</a-descriptions-item><a-descriptions-item label="复用布局">Snowy 左侧菜单、顶部栏、页签、查询卡片、工具栏、表格、分页、抽屉、弹窗</a-descriptions-item><a-descriptions-item label="CRUD 形式">标准 CRUD、树形 CRUD、内容管理、审核流程、只读查询、授权分配、导入导出、监控页</a-descriptions-item><a-descriptions-item label="权限按钮模式">按角色控制新增、编辑、删除、导出、审核、授权、远程配置</a-descriptions-item><a-descriptions-item label="状态展示模式">标签、开关、徽标、告警色、审批弹窗、空图占位、图片预览</a-descriptions-item></a-descriptions></a-drawer>
+      </a-layout>`
+  });
+  app.use(antd);
+  app.mount('#app');
+</script>
+</body>
+</html>
+
+
