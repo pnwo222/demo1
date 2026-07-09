@@ -2,6 +2,11 @@ import re
 import sys
 from pathlib import Path
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
+
 
 REQUIRED_MARKERS = [
     "prototypeMeta",
@@ -39,11 +44,26 @@ GENERIC_FORM_HINTS = [
 
 
 def main() -> int:
-    args = [arg for arg in sys.argv[1:] if arg != "--template"]
-    template_mode = "--template" in sys.argv[1:]
+    raw_args = sys.argv[1:]
+    must_contain = []
+    normalized_args = []
+    i = 0
+    while i < len(raw_args):
+        if raw_args[i] == "--must-contain":
+            if i + 1 >= len(raw_args):
+                print("FAIL --must-contain requires a comma-separated value")
+                return 2
+            must_contain.extend([part.strip() for part in raw_args[i + 1].split(",") if part.strip()])
+            i += 2
+            continue
+        normalized_args.append(raw_args[i])
+        i += 1
+
+    args = [arg for arg in normalized_args if arg != "--template"]
+    template_mode = "--template" in normalized_args
 
     if len(args) != 1:
-        print("Usage: validate_admin_prototype.py [--template] <admin-prototype.html>")
+        print("Usage: validate_admin_prototype.py [--template] [--must-contain 字段1,字段2] <admin-prototype.html>")
         return 2
 
     path = Path(args[0])
@@ -70,12 +90,24 @@ def main() -> int:
         print("FAIL missing coverage matrix")
         failed = True
 
+    for required in must_contain:
+        if required not in text:
+            print(f"FAIL missing required demand field/text: {required}")
+            failed = True
+
     generic_count = sum(1 for hint in GENERIC_FORM_HINTS if hint in text)
     if generic_count >= 3:
         print("WARN generic form hints found; verify pages do not share a universal drawer")
 
     if re.search(r"currentConfig|configs\s*=", text):
         print("WARN generic config pattern found; verify each page has requirement-specific fields")
+
+    if re.search(r"type\s*:\s*['\"]dashboard['\"][\s\S]{0,4000}preset-grid[\s\S]{0,1000}query-card", text) or re.search(r"(currentConfig|activePageSpec)\.type\s*===\s*['\"]dashboard['\"][\s\S]{0,1200}preset-grid[\s\S]{0,1200}query-card", text):
+        print("FAIL dashboard layout places statistics before filters; filters must appear before metric cards")
+        failed = True
+
+    if not template_mode and "关键词" in text and "状态" in text and "时间" in text:
+        print("WARN generic query fields found; verify each page preserves requirement-specific filters")
 
     if "已上传" in text or "未上传" in text:
         print("WARN upload/image field may be represented by text instead of thumbnail")
