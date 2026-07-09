@@ -261,6 +261,8 @@ CRUD 形式:
 - 后管 HTML 原型保留 Demo 的关键结构：`prototypeMeta`、Ant Design Vue CDN、侧栏、顶部栏、页签、查询区、工具栏、表格、分页、抽屉、弹窗、上传预设和组件预设。
 - 后管 HTML 原型符合 Demo 原型设计规则：菜单按需求、字段按语义展示、状态标签和启停开关按 Snowy 习惯拆分、上传可选择并预览/移除、所有可点击元素有交互、无开发提示和无关说明。
 - 后管 HTML 原型逐页实现蓝图，不存在多个业务页面共用同一个万能表单、万能抽屉或万能字段集的情况。
+- 已运行 `.codex/skills/snowy-admin-prototype-designer/scripts/validate_admin_prototype.py`，并按原始需求传入必含字段；无 `FAIL`。
+- 已用 `.codex/skills/snowy-admin-prototype-designer/scripts/runtime_check_admin_prototype.mjs` 或 Codex browser/node_repl 打开 HTML 做运行时校验；无 `pageerror`、console `error`、空白页和核心点击报错。
 - 左侧菜单树和需求菜单一致。
 - 每个独立功能都有页面或弹窗/抽屉。
 - CRUD 形式和 Snowy 框架一致。

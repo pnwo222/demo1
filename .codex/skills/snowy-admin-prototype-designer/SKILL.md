@@ -34,7 +34,11 @@ Generate Snowy-style admin low-fidelity HTML prototypes from requirements. The s
    Use `references/prototype-acceptance-checklist.md`. A row marked `已覆盖` must map to the blueprint and to concrete HTML UI or behavior.
 
 6. Run validation.
-   Run `python scripts/validate_admin_prototype.py <html-file>` and fix any `FAIL`. Treat `WARN` as review items; do not proceed if warnings indicate generic CRUD, missing blueprint, or fake coverage. For the bundled template itself, run `python scripts/validate_admin_prototype.py --template assets/prototype-demo-framework/index.html`.
+   Run static validation and runtime validation before claiming the prototype is usable:
+   - `python scripts/validate_admin_prototype.py <html-file>`
+   - `node scripts/runtime_check_admin_prototype.mjs <html-file>`
+   Add `--must-contain` to static validation for fields extracted from the requirement, for example `--must-contain 姓名,身份证号,手机号,所属学院,专业,班级,学号,专区注册状态,社保绑卡状态,省内持卡状态,卡规范版本,社保卡金融账户激活状态`.
+   Fix any `FAIL`. Treat `WARN` as review items; do not proceed if warnings indicate generic CRUD, missing blueprint, fake coverage, dashboard layout order problems, or runtime browser errors. For the bundled template itself, run `python scripts/validate_admin_prototype.py --template assets/prototype-demo-framework/index.html`.
 
 ## Hard Rules
 
@@ -42,8 +46,32 @@ Generate Snowy-style admin low-fidelity HTML prototypes from requirements. The s
 - Do not use one universal table, universal drawer, universal field array, or universal `currentConfig` to stand in for multiple business pages.
 - Do not let different pages share the same `标题/名称、状态、排序、备注` form unless the requirement explicitly says those are the fields.
 - Do not mark a requirement `已覆盖` unless the HTML contains the page, field, action, state, or interaction named by the blueprint.
+- Do not summarize original requirements into shorter field groups when the requirement enumerates fields. Preserve every named field in the blueprint and prototype unless explicitly marked `不适用` or `待确认`.
 - Do not put developer-facing notes in visible business UI: no `mock`, `s-table`, `xn-*`, `hasPerm`, `toolConfig`, selector names, event names, or workflow explanations.
 - If H5/mobile is involved, output a separate H5 prototype file. This skill only governs the admin prototype.
+
+## Requirement Fidelity
+
+For each requirement paragraph, extract atomic requirements before designing:
+
+- Data fields named by the requirement.
+- Query/filter fields named by the requirement.
+- List/table fields named by the requirement.
+- Detail fields and sensitive display rules.
+- Operations, states, exceptions, and permissions.
+
+The blueprint and HTML must preserve these fields one by one. Example: if the source says "学生姓名、身份证号、手机号、所属学院、专业、班级、学号、专区注册状态、社保绑卡状态、省内持卡状态、卡规范版本、社保卡金融账户激活状态", the query fields and table/detail fields must include all of them where the requirement says they are filterable or visible. Do not replace them with "关键词、状态、时间" or "卡状态".
+
+## Dashboard Layout
+
+Statistics/dashboard pages must follow Snowy admin density and scanning order:
+
+1. Page title and optional breadcrumb/tab.
+2. Query/filter card at the top.
+3. Statistic cards below filters.
+4. Charts, trend tables, exception lists, and operation logs below statistics.
+
+Do not place filters after statistic cards. Do not add unrelated statistic cards; each metric must come from requirements or be marked `待确认`.
 
 ## Field Semantics
 
@@ -78,6 +106,18 @@ Every visible clickable element must do something matching its label:
 - Export opens direct export or approval flow according to data sensitivity.
 - Pagination changes page state.
 - Upload chooses local file/image, previews it, and supports removal.
+
+## Runtime HTML Bug Check
+
+Before reporting an HTML prototype as complete, open it in a real browser and verify:
+
+- The file loads through a `file:///` URL without `pageerror` or console `error`.
+- Ant Design Vue renders visible content; no blank page.
+- Each visible menu item can be clicked without runtime errors.
+- Common buttons (`查询`, `重置`, `新增`, `编辑`, `详情`, `删除`, `导入`, `导出`) open the expected state, modal, drawer, or feedback.
+- Generated screenshots show the expected page, not an error boundary or raw template text.
+
+Use `scripts/runtime_check_admin_prototype.mjs` when Node + Playwright are available. If local Node cannot import Playwright, use Codex browser/node_repl tooling and record that runtime verification was performed manually.
 
 ## Output Summary
 

@@ -109,8 +109,67 @@ For the current sample tender, `oleObject1.bin` is a Microsoft Visio OLE object.
    - `数据`: source systems, entities, fields, import/export, validation.
    - `参考素材`: diagrams, screenshots, page mockups, flowcharts, embedded files, appendix files.
    - `风险/待确认`: vague wording, missing APIs, missing data fields, unclear owners, missing H5 framework.
-5. Write or update a requirement Markdown file in `docs/requirements/`.
-6. Render a matching HTML visual requirement page next to the Markdown file.
+5. For every software feature, create an atomic requirement record before writing summary tables.
+6. Write or update a requirement Markdown file in `docs/requirements/`.
+7. Render a matching HTML visual requirement page next to the Markdown file.
+8. Run the requirement detail validator:
+
+```bash
+python .codex/skills/tender-requirement-reader/scripts/validate_requirement_detail.py docs/requirements/<需求名称>.md
+```
+
+Fix every `FAIL`. Treat `WARN` as a review item and do not use the requirement for PRD/prototype if it hides original fields behind vague summaries.
+
+## Atomic Requirement Extraction
+
+Do not summarize away fields. For each feature section, preserve the original tender language and split it into atomic implementation facts.
+
+Required fields for each software feature:
+
+```text
+原始需求摘录:
+来源位置:
+章节层级:
+菜单/页面候选:
+数据来源:
+同步字段:
+展示字段:
+筛选字段:
+详情字段:
+状态字段:
+敏感字段:
+操作能力:
+接口/对接:
+权限/角色:
+验收要点:
+风险/待确认:
+```
+
+Rules:
+
+- If the source explicitly lists fields after words such as `包括`、`主要包括`、`按照`、`支持按照`、`展示`、`同步`, copy every listed field into the matching atomic list.
+- Do not replace explicit field lists with vague phrases such as `等`、`等状态`、`相关信息`、`多条件筛选`、`列表查看`、`卡状态`、`基础信息`.
+- If a compact summary table is also needed, it must point to the detailed atomic record and may not be the only source used by Product/Design/Development.
+- Preserve original business names. For example, do not shorten `社保卡金融账户激活状态` to `金融账户激活` unless the original wording does so.
+- If a field appears in both display and filter requirements, record it in both `展示字段` and `筛选字段`.
+- If a field is sensitive, record both the original field name and the masking rule or `待确认: 脱敏规则`.
+- If the Word hierarchy says a section is a child feature, keep parent and child numbers; do not merge child fields into a parent summary.
+
+Example for `学生管理`:
+
+```text
+同步字段:
+学生姓名、身份证号、手机号、所属学院、专业、班级、学号
+
+展示字段:
+学生姓名、身份证号、手机号、所属学院、专业、班级、学号、专区注册状态、社保绑卡状态、省内持卡状态、卡规范版本、社保卡金融账户激活状态
+
+筛选字段:
+姓名、身份证、手机号、所属学院、专业、班级、学号、专区注册状态、社保绑卡状态、省内持卡状态、卡规范版本、社保卡金融账户激活状态
+
+敏感字段:
+身份证号、手机号
+```
 
 ## Requirement HTML Viewer
 
@@ -123,6 +182,7 @@ The HTML viewer must include:
 - Requirement group cards for H5/mobile, backend admin, management admin, interfaces, data, permissions, risks, and reference assets when present.
 - Menu/function hierarchy, including inferred parent/child menu candidates.
 - Feature detail sections preserving source markers, roles, fields, interface notes, acceptance criteria, framework placement, and risks.
+- Atomic requirement sections preserving original excerpts, sync/display/filter/detail/status/sensitive fields, operations, interfaces, permissions, and acceptance points.
 - Reference asset links for extracted screenshots, diagrams, `.bin`, `.vsdx`, images, or attachments.
 - A coverage/checklist area that makes missing descriptions, unclear menus, missing H5 framework, and pending confirmations easy to see.
 
@@ -187,12 +247,20 @@ For each feature group, include:
 编号:
 名称:
 来源:
+原始需求摘录:
 章节层级:
 父级功能/菜单:
 子功能/子菜单:
 用户/角色:
 功能说明:
-主要字段/数据:
+数据来源:
+同步字段:
+展示字段:
+筛选字段:
+详情字段:
+状态字段:
+敏感字段:
+操作能力:
 接口/对接:
 菜单推断:
 验收标准:
@@ -216,8 +284,12 @@ Before finishing:
 - Confirm hardware-only content was excluded.
 - Confirm H5/mobile content was not silently dropped.
 - Confirm source document names are listed.
+- Confirm every software feature has an `原始需求摘录`.
+- Confirm explicit fields from `包括`、`主要包括`、`按照`、`支持按照` were preserved as atomic lists.
+- Confirm no feature relies only on vague phrases such as `等`、`多条件筛选`、`相关状态`、`基础信息` without detailed field lists.
 - Confirm extracted diagrams, screenshots, and attachments are listed as reference assets.
 - Confirm requirement output is UTF-8 Chinese.
 - Confirm the paired HTML visual requirement page exists, opens as a standalone file, and reflects the latest Markdown.
+- Confirm `validate_requirement_detail.py` has no `FAIL`.
 - Confirm existing requirement files were not overwritten unless explicitly requested.
 - If new reusable tender parsing rules emerge, update this skill.
