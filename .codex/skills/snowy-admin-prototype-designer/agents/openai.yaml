@@ -1,0 +1,4 @@
+interface:
+  display_name: "Snowy Admin Prototype Designer"
+  short_description: "按需求生成 Snowy 后管拟真原型"
+  default_prompt: "Use $snowy-admin-prototype-designer to create or review a Snowy admin low-fidelity HTML prototype from requirements, with a page blueprint, bundled demo template, and coverage validation."
