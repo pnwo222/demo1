@@ -111,14 +111,15 @@ For the current sample tender, `oleObject1.bin` is a Microsoft Visio OLE object.
    - `风险/待确认`: vague wording, missing APIs, missing data fields, unclear owners, missing H5 framework.
 5. For every software feature, create an atomic requirement record before writing summary tables.
 6. Write or update a requirement Markdown file in `docs/requirements/`.
-7. Render a matching HTML visual requirement page next to the Markdown file.
-8. Run the requirement detail validator:
+7. Run the requirement detail validator before rendering HTML:
 
 ```bash
 python .codex/skills/tender-requirement-reader/scripts/validate_requirement_detail.py docs/requirements/<需求名称>.md
 ```
 
 Fix every `FAIL`. Treat `WARN` as a review item and do not use the requirement for PRD/prototype if it hides original fields behind vague summaries.
+
+8. Render a matching HTML visual requirement page next to the Markdown file, then re-run the validator if Markdown changed.
 
 ## Atomic Requirement Extraction
 
@@ -127,11 +128,16 @@ Do not summarize away fields. For each feature section, preserve the original te
 Required fields for each software feature:
 
 ```text
+编号:
+名称:
 原始需求摘录:
 来源位置:
 章节层级:
+父级功能/菜单:
+子功能/子菜单:
 菜单/页面候选:
 数据来源:
+原子需求清单:
 同步字段:
 展示字段:
 筛选字段:
@@ -148,12 +154,15 @@ Required fields for each software feature:
 Rules:
 
 - If the source explicitly lists fields after words such as `包括`、`主要包括`、`按照`、`支持按照`、`展示`、`同步`, copy every listed field into the matching atomic list.
-- Do not replace explicit field lists with vague phrases such as `等`、`等状态`、`相关信息`、`多条件筛选`、`列表查看`、`卡状态`、`基础信息`.
+- Do not replace explicit field lists with vague phrases such as `等`、`各状态`、`等状态`、`相关信息`、`相关状态`、`多条件筛选`、`列表查看`、`卡状态`、`基础信息`.
 - If a compact summary table is also needed, it must point to the detailed atomic record and may not be the only source used by Product/Design/Development.
+- Summary tables are only navigation. Product, Design, Architect, Data, Frontend, Backend, and QA agents must use the detailed atomic records as the source of truth.
 - Preserve original business names. For example, do not shorten `社保卡金融账户激活状态` to `金融账户激活` unless the original wording does so.
 - If a field appears in both display and filter requirements, record it in both `展示字段` and `筛选字段`.
 - If a field is sensitive, record both the original field name and the masking rule or `待确认: 脱敏规则`.
 - If the Word hierarchy says a section is a child feature, keep parent and child numbers; do not merge child fields into a parent summary.
+- If the tender says a feature is synchronized from another system, default the operation model to read-only/sync display unless the original text explicitly says create, edit, delete, import, export, audit, or authorization.
+- Every operation must have a source tag: `需求明确`, `框架惯例`, `待确认`, or `不适用`.
 
 Example for `学生管理`:
 
@@ -234,6 +243,7 @@ Use this structure unless the user asks otherwise:
 ## 后管（管理端）需求
 ## 接口与数据对接需求
 ## PAM/人员与设备协同管理需求
+## 严格原子需求明细
 ## 数据对象初稿
 ## 权限与角色
 ## 验收标准
@@ -241,7 +251,9 @@ Use this structure unless the user asks otherwise:
 ## 后续落地建议
 ```
 
-For each feature group, include:
+Compact group tables are allowed for scanning, but every software feature must also appear under `## 严格原子需求明细` as an independent detail block. Do not rely on the compact table as the only requirement record.
+
+For each feature under `## 严格原子需求明细`, include:
 
 ```text
 编号:
@@ -254,6 +266,7 @@ For each feature group, include:
 用户/角色:
 功能说明:
 数据来源:
+原子需求清单:
 同步字段:
 展示字段:
 筛选字段:
@@ -267,6 +280,28 @@ For each feature group, include:
 风险/待确认:
 当前框架落点:
 参考素材:
+```
+
+Recommended Markdown shape:
+
+```markdown
+### ADM-S-003 学生管理
+
+| 项 | 内容 |
+| --- | --- |
+| 来源 | P0097-P0102 |
+| 原始需求摘录 | ... |
+| 章节层级 | 1.3.2.2.1 |
+| 父级功能/菜单 | 师生管理 |
+| 菜单推断 | 二级菜单候选；独立查询页面 |
+
+#### 原子需求清单
+
+| 原子类型 | 原子项 | 来源 | 说明 |
+| --- | --- | --- | --- |
+| 同步字段 | 学生姓名 | 需求明确 | 来自校园数据中台 |
+| 展示字段 | 专区注册状态 | 需求明确 | 状态标签 |
+| 筛选字段 | 专区注册状态 | 需求明确 | 下拉筛选 |
 ```
 
 ## Snowy Placement Rules
@@ -285,8 +320,10 @@ Before finishing:
 - Confirm H5/mobile content was not silently dropped.
 - Confirm source document names are listed.
 - Confirm every software feature has an `原始需求摘录`.
+- Confirm every software feature appears in `## 严格原子需求明细`.
 - Confirm explicit fields from `包括`、`主要包括`、`按照`、`支持按照` were preserved as atomic lists.
-- Confirm no feature relies only on vague phrases such as `等`、`多条件筛选`、`相关状态`、`基础信息` without detailed field lists.
+- Confirm no feature relies only on vague phrases such as `等`、`各状态`、`多条件筛选`、`相关状态`、`基础信息` without detailed field lists.
+- Confirm synchronized/read-only features do not invent create/edit/delete/import/export operations without `需求明确` or `待确认`.
 - Confirm extracted diagrams, screenshots, and attachments are listed as reference assets.
 - Confirm requirement output is UTF-8 Chinese.
 - Confirm the paired HTML visual requirement page exists, opens as a standalone file, and reflects the latest Markdown.
