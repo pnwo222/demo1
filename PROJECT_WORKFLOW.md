@@ -40,8 +40,11 @@ flowchart TD
 
     K -- "生成" --> L["Product Agent: PRD、验收标准、HTML PRD、低保真 HTML 原型"]
     L --> L0{"是否涉及后管 / 后台 / 管理端 / 运营端"}
-    L0 -- 是 --> L2["使用 snowy-admin-prototype-designer skill<br/>套用 admin-prototype-design-workflow<br/>先输出需求到原型页面蓝图"]
-    L2 --> L3["复制 skill 内置 Demo 模板<br/>按蓝图生成 Snowy 后管拟真原型<br/>输出框架参考清单、菜单映射、CRUD 形式和覆盖矩阵"]
+    L0 -- 是 --> L2["使用 snowy-admin-prototype-designer skill<br/>套用 admin-prototype-design-workflow<br/>先输出严格需求到原型页面蓝图"]
+    L2 --> L2A["蓝图必须包含原始需求摘录、原子需求清单、字段来源、操作来源和逐项覆盖矩阵<br/>运行 validate_admin_blueprint.py"]
+    L2A --> L2B{"蓝图校验通过"}
+    L2B -- 否 --> L2
+    L2B -- 是 --> L3["复制 skill 内置 Demo 模板<br/>按蓝图生成 Snowy 后管拟真原型<br/>输出框架参考清单、菜单映射、CRUD 形式和覆盖矩阵"]
     L0 -- 否 --> L1{"PRD / 原型确认"}
     L3 --> L1
     K -- "跳过 PRD" --> K1["记录跳过原因和最小需求说明"]
@@ -156,7 +159,7 @@ flowchart TB
 - 开发环境检测必须用列表展示 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务，并用 `✅`、`⚠️`、`❌` 标明结果；`检测：` 后必须换行，每个检测项独占一行。
 - 开发环境检测结果写入 `docs/workflow/local-environment-status.md`，该文件被 `.gitignore` 忽略，不提交到 Git；`docs/workflow/status.md` 保持可提交。
 - PRD 和低保真 HTML 原型未确认，不进入 UI 设计。
-- 涉及后管、后台、管理端或运营端且未跳过原型时，必须使用 `.codex/skills/snowy-admin-prototype-designer` 并套用 `.codex/workflows/admin-prototype-design-workflow.md`，先输出“需求到原型页面蓝图”，逐个独立页面列出查询字段、表格字段、详情字段、新增字段、编辑字段、操作按钮、状态/异常、权限差异、字段展示形态和点击交互；再从 skill 内置 Demo 模板复制生成后管原型，同时符合 Demo 原型设计规则，输出 Snowy 后管拟真原型、框架参考清单、菜单映射、CRUD 形式选择和覆盖矩阵；未按模板生成、未符合设计规则、存在万能 CRUD 或未通过门禁不得进入 UI 设计、技术设计或开发。
+- 涉及后管、后台、管理端或运营端且未跳过原型时，必须使用 `.codex/skills/snowy-admin-prototype-designer` 并套用 `.codex/workflows/admin-prototype-design-workflow.md`，先输出“需求到原型页面蓝图”。蓝图必须逐个独立页面列出原始需求摘录、原子需求清单、同步字段、展示字段、筛选字段、查询字段、表格字段、详情字段、新增字段、编辑字段、状态字段、敏感字段、操作按钮、状态/异常、权限差异、字段展示形态和点击交互；每个字段、按钮、状态和权限必须标记来源：`需求明确`、`框架惯例`、`待确认` 或 `不适用`；蓝图必须通过 `validate_admin_blueprint.py`。禁止用 `等状态`、`多条件筛选`、`同新增` 或 `ADM-S-001~020` 范围行压缩需求。蓝图通过后再从 skill 内置 Demo 模板复制生成后管原型，同时符合 Demo 原型设计规则，输出 Snowy 后管拟真原型、框架参考清单、菜单映射、CRUD 形式选择和覆盖矩阵；未按模板生成、未符合设计规则、存在万能 CRUD 或未通过门禁不得进入 UI 设计、技术设计或开发。
 - Figma UI 未确认，不进入技术设计。
 - 技术设计、数据模型、migration 和回滚策略未确认，不进入开发。
 - 开发环境检测必须检测可用 MySQL CLI；PATH 找不到 `mysql` 时自动搜索常见安装目录中的 `mysql.exe` 并用绝对路径验证。PATH 和搜索都找不到时记录全局状态 `blocked_missing_mysql_cli`，不进入 PRD/UI/技术设计或开发阶段。
