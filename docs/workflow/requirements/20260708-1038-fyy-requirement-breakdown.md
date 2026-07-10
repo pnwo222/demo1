@@ -30,10 +30,10 @@
 | --- | --- | --- | --- | --- |
 | 当前分支确认 | 已完成 | 开发分支 `p5` | 用户选择 1 | 2026-07-08 10:33 +08:00 |
 | 分支创建 | 已完成 | `codex/fyy-requirement-breakdown` | 用户确认后创建 | 2026-07-08 10:35 +08:00 |
-| 需求和框架装载 | 已完成（按新版工作流从 Word 重拆） | `docs/requirements/纺院需求.md`、`docs/requirements/纺院需求.html`、`docs/tenders/纺院标书技术部分.extract.txt`、`docs/tenders/assets/纺院标书技术部分/` | 用户要求删除原需求 MD 并从 Word 重新拆解；标书解析、框架缓存读取 | 2026-07-09 10:23 +08:00 |
+| 需求和框架装载 | 已完成（按更新后工作流从 Word 重拆） | `docs/requirements/纺院需求.md`、`docs/requirements/纺院需求.html`、`docs/tenders/纺院标书技术部分.extract.txt`、`docs/tenders/assets/纺院标书技术部分/` | 用户要求“从word 拆解需求 流程开始，重来”；标书解析、框架缓存读取、严格原子需求校验 | 2026-07-09 16:50 +08:00 |
 | 开发模式决策 | 已完成 | 高风险严格模式 | 用户选择 1 | 2026-07-08 10:40 +08:00 |
-| PRD/原型决策 | 已完成 | 生成 PRD 和低保真原型 | 用户选择 1 | 2026-07-08 10:43 +08:00 |
-| Product 产物 | 已完成（基于新版 Word 需求重生成） | `docs/prd/FY-20260708-UNICARD-prd.md`、`docs/prd/FY-20260708-UNICARD-prd.html`、`docs/design/FY-20260708-UNICARD-admin-page-blueprint.md`、`docs/design/FY-20260708-UNICARD-admin-low-fidelity.html`、`docs/design/FY-20260708-UNICARD-h5-low-fidelity.html` | 用户选择 1；Product Agent；snowy-admin-prototype-designer；后管原型基于 Demo 模板 | 2026-07-09 10:38 +08:00 |
+| PRD/原型决策 | 已完成 | 生成 PRD 和低保真原型 | 用户选择 1 | 2026-07-10 09:00 +08:00 |
+| Product 产物 | 已完成 | `docs/prd/FY-20260708-UNICARD-prd.md`、`docs/prd/FY-20260708-UNICARD-prd.html`、`docs/design/FY-20260708-UNICARD-admin-page-blueprint.md`、`docs/design/FY-20260708-UNICARD-admin-low-fidelity.html`、`docs/design/FY-20260708-UNICARD-h5-low-fidelity.html` | Product Agent；snowy-admin-prototype-designer；后管原型基于 Demo 模板 | 2026-07-10 09:00 +08:00 |
 | UI/Figma 决策 | 需确认 | - | 待用户选择 | - |
 | Design 产物 | 未开始 | - | - | - |
 | 最小需求说明 | 已完成 | `docs/requirements/纺院需求.md` | 标书需求拆解 | 2026-07-08 10:38 +08:00 |
@@ -65,7 +65,31 @@
 推荐选项: 生成 UI/Figma
 其他选项: 跳过 UI，复用 Snowy 现有 UI；返回补充 PRD/原型；自定义
 自定义输入: 支持
-记录时间: 2026-07-09 10:38 +08:00
+记录时间: 2026-07-10 09:00 +08:00
+```
+
+```text
+阶段: Product 产物重生成
+状态: 已完成
+来源: 用户选择 1；新版 docs/requirements/纺院需求.md；.codex/agents/product.md；.codex/workflows/admin-prototype-design-workflow.md；.codex/skills/snowy-admin-prototype-designer；project/docs/patterns/frontend-crud-pattern.md；真实 Snowy 页面 sys/user、sys/role、sys/org、biz/notice
+产物: docs/prd/FY-20260708-UNICARD-prd.md; docs/prd/FY-20260708-UNICARD-prd.html; docs/design/FY-20260708-UNICARD-admin-page-blueprint.md; docs/design/FY-20260708-UNICARD-admin-low-fidelity.html; docs/design/FY-20260708-UNICARD-h5-low-fidelity.html
+覆盖: PRD 覆盖 H5-001~H5-013、ADM-S-001~020、ADM-P-001~013、API-001~008、PAM-001~008；后管蓝图逐页列出菜单、路由、权限、查询字段、表格字段、详情字段、新增/编辑字段、操作、状态、权限和交互；后管和 H5 原型分文件输出
+验证: validate_admin_blueprint.py 返回 PASS；validate_admin_prototype.py 返回 PASS，WARN 为泛化表单提示，已复核原型各页面由需求字段配置驱动；CDP runtime check 返回 PASS，body=1652，after=1711，关键菜单与按钮可点击；H5-001/H5-013 路径已修正为一卡通 APP / 学校专区
+下一步: UI/Figma 决策
+时间: 2026-07-10 09:00 +08:00
+```
+
+```text
+阶段: 需求从 Word 重拆
+状态: 已完成
+来源: 用户要求“从word 拆解需求 流程开始，重来”；D:/www/www/chg/纺院/纺院标书技术部分.docx；tender-requirement-reader；project/docs/patterns/framework-inventory.md；project/docs/patterns/module-map.md；project/docs/patterns/feature-capability-map.md
+处理: 重新抽取 Word 标书文本和素材；重新生成 docs/requirements/纺院需求.md 和 docs/requirements/纺院需求.html；补充严格原子需求明细
+产物: docs/tenders/纺院标书技术部分.extract.txt; docs/tenders/assets/纺院标书技术部分/; docs/requirements/纺院需求.md; docs/requirements/纺院需求.html
+覆盖: H5/移动端 13 项、学校端后管 20 项、管理端后管 13 项、接口 8 项、PAM 8 项，共 62 个原子功能块；硬件纯规格已排除，硬件相关软件集成点已保留
+验证: Word 抽取 354 段、5 张表、55 个素材；validate_requirement_detail.py 返回 PASS；WARN 已复核为社保卡字段命名和同步块操作来源提示，不影响进入 PRD/原型决策；HTML 查看页已重新渲染；关键编号 H5-001/H5-013/ADM-S-001/ADM-S-020/ADM-P-001/ADM-P-013/API-001/API-008/PAM-001/PAM-008 可检索
+影响: 既有 PRD、页面蓝图和低保真原型需基于本轮需求重新生成，当前阶段回退到 PRD/原型决策
+下一步: 确认是否重新生成 PRD 和低保真原型
+时间: 2026-07-09 16:50 +08:00
 ```
 
 ```text
