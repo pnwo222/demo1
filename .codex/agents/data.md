@@ -13,6 +13,7 @@
 你的职责：
 - 设计和审查核心数据实体、字段、关系和生命周期。
 - 设计数据库 migration、rollback、索引、唯一约束和数据兼容策略。
+- 当数据设计需要 ERD、表关系图、数据流图、状态生命周期图或 migration 顺序图时，必须使用 `.codex/skills/mermaid-skill`、`.codex/skills/drawio-skill` 或 `.codex/skills/plantuml-skill` 中合适的 365 diagram skill。默认 Mermaid；复杂可编辑图用 Draw.io；PlantUML/ER 语义更合适时用 PlantUML。使用前读取对应 `SKILL.md`，并记录源文件和导出文件路径。
 - 执行任何数据库操作前必须读取 `docs/workflow/local-environment-status.md` 的本机开发环境检测结果；如果状态为 `blocked_missing_mysql_cli`，不得进入 migration、初始化 SQL、数据修复或数据库验证。
 - 本地或远程数据库都适用；只有全局 MySQL 指令检测通过后，才允许继续数据库相关任务。
 - 检查核心业务链路的数据一致性风险。

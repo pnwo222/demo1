@@ -4,6 +4,8 @@
 
 它不绑定具体业务。业务范围、风险等级和质量门禁必须来自 `docs/requirements/` 下的全部需求文档、PRD 和技术设计；框架结构、技术栈、目录映射和开发规范必须来自 `project/docs/` 下的框架文档和 `project/` 实际代码。
 
+本流程生成任务图、依赖图、DAG、Wave 或其他可视化产物时，必须优先使用 `.codex/skills/mermaid-skill`。需要可编辑 Draw.io、复杂布局、泳道或厂商图标时使用 `.codex/skills/drawio-skill`；需要 PlantUML/UML 语义时使用 `.codex/skills/plantuml-skill`；需要手绘白板风格时使用 `.codex/skills/excalidraw-skill`。使用前读取对应 `SKILL.md`，并按 skill 要求校验后再导出。
+
 ## 适用时机
 
 当以下产物已确认后，进入本流程：
@@ -29,7 +31,7 @@
 - Integration branch 或 PR queue 作为集成入口。
 - CI、Review、QA、Security 作为合并门禁。
 
-## 阶段 0：读取输入
+## 准备：读取输入
 
 Orchestrator 必须先读取并确认：
 
@@ -68,6 +70,8 @@ Worktree 分支/路径：
 ## 阶段 1：生成任务图
 
 Orchestrator 将 feature slice 拆为任务图，不按岗位粗暴拆分，而按“可独立交付、可独立验证、依赖清晰”拆分。
+
+任务图如需落盘为图形文件，默认由 `.codex/skills/mermaid-skill` 生成 `.mmd` 并导出 PNG/SVG；若任务关系复杂到需要泳道、交互式查看或精细布局，则改用 `.codex/skills/drawio-skill`。
 
 任务类型：
 
@@ -119,6 +123,8 @@ tasks:
 ## 阶段 2：依赖分层
 
 Orchestrator 根据任务依赖生成 DAG，并把任务分为 wave。
+
+DAG 和 Wave 图必须使用 365 diagram skills 生成和校验；默认 Mermaid，复杂布局或可编辑交付使用 Draw.io。
 
 常见 wave：
 

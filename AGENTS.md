@@ -34,6 +34,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 - 开发环境自检必须检测开发电脑是否存在可用 MySQL CLI。PowerShell 先执行 `Get-Command mysql`、`where.exe mysql` 和 `mysql --version`；PATH 找不到时，必须在常见安装目录搜索 `mysql.exe`，找到后用绝对路径执行 `mysql.exe --version`。本地或远程数据库都适用；PATH 和搜索都找不到可执行 MySQL CLI 时，全局状态记为 `blocked_missing_mysql_cli`，不得进入后续 PRD/UI/技术设计或开发阶段。
 - 前端开发必须同步维护 mock 数据；当后端接口无法连接、未完成或本地环境不可用时，页面应使用 mock 数据展示主流程和关键状态。
 - 后续新增需求或修改需求的代码后，必须判断是否需要更新 `project/docs/patterns/` 框架模式缓存；如果新增了可复用的后端、前端、权限、SQL、测试或流程模式，必须同步更新对应缓存文档，并在需求状态文件记录“缓存读取/命中/更新”。
+- 本项目已引入 `Agents365-ai/365-skills` 到 `.codex/skills/`。工作流、阶段产物或说明中凡涉及绘制流程图、架构图、模块图、ERD、状态机图、时序图、任务图、DAG、依赖图或其他系统可视化，必须优先使用 `.codex/skills/mermaid-skill`；需要可编辑 Draw.io 文件、复杂样式、泳道、厂商图标或精细布局时使用 `.codex/skills/drawio-skill`；需要 PlantUML/UML 语义时使用 `.codex/skills/plantuml-skill`；需要手绘白板风格时使用 `.codex/skills/excalidraw-skill`。使用前必须读取对应 `SKILL.md`，并按 skill 要求生成、校验和导出图形产物。
 - 开发前必须提供开发模式选择：简单 CRUD 快速模式、标准 SDLC 模式、高风险严格模式、自定义。所有模式都必须使用 `.codex/skills/snowy-framework-reader` 读取 `project/docs/patterns/` 缓存；区别是快速模式以缓存为主路径减少探索，标准模式把缓存作为加速输入并继续完整设计，严格模式在读取缓存后仍做更深审查和验证。
 - 涉及资金、权限、状态机、库存或资源、用户数据、删除和批量操作的改动必须重点审查。
 - 所有功能都必须有验收标准、测试结果和残余风险说明。
@@ -76,28 +77,27 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 
 ## 标准开发流程
 
-0. Orchestrator 先执行开发环境检测，只输出环境清单和环境选择项；状态为 `需确认` 时只能等待开发者选择，不创建分支或状态文件。
-1. 环境检测通过或开发者选择“环境有警告但继续”后，Orchestrator 再执行分支确认，输出当前 Git 分支和工作区状态。
-2. 开发者确认当前分支作为开发分支后，Orchestrator 才能从当前分支创建新的需求集成分支，并记录开发分支和需求集成分支。
-3. Orchestrator 读取 `docs/requirements/` 下的全部需求文档，并读取 `project/docs/` 下的框架文档和 `project/docs/patterns/` 模式缓存。
-4. Orchestrator 使用 `.codex/skills/snowy-framework-bootstrap` 输出或更新框架运行提示和本机环境检测清单；未确认或阻塞则停在本阶段。
-5. Orchestrator 提供开发模式选择：简单 CRUD 快速模式、标准 SDLC 模式、高风险严格模式、自定义。
-6. Orchestrator 询问是否需要 PRD 和 UI 设计；开发者可明确跳过。简单 CRUD 快速模式可默认跳过 PRD/UI，但必须保留最小需求说明、字段、接口、验收标准、风险记录；如涉及后管页面，还必须保留后管菜单设计。
-7. 如未跳过，Product Agent 基于需求和现有框架能力生成 PRD、验收标准、HTML PRD 和可交互低保真 HTML 原型；如涉及后管页面，必须套用 `.codex/workflows/admin-prototype-design-workflow.md`，PRD 和原型必须体现菜单层级、入口、权限、Snowy CRUD 形式和覆盖矩阵；如同时涉及后管和 H5，必须分别生成后管低保真原型和 H5 低保真原型。
-8. 如未跳过 UI，Design Agent 建立设计系统，并连接 Figma 生成可落地设计稿。
-9. Architect Agent 明确模块边界、状态机、API、数据模型、安全模型和可运维性。简单 CRUD 快速模式可用轻量技术方案替代完整架构文档。
-10. Data Agent 细化数据库模型、migration、索引、回滚和数据一致性策略。简单 CRUD 快速模式可合并到轻量技术方案或开发清单。
-11. Orchestrator 按用户价值拆 feature slice；简单 CRUD 快速模式可压缩为“后端+SQL+权限”“前端+mock”“验证+状态”三类任务。
-12. Orchestrator 套用 `.codex/workflows/auto-dispatch-parallel-development.md`，从需求集成分支创建 worktree 开发分支/目录，生成任务图、依赖 DAG、并行 wave、owner 分配和集成策略；简单 CRUD 快速模式只生成轻量执行清单。
-13. Frontend、Backend、Data、QA 等 Agent 在 worktree 开发分支/目录中开发并提交。
-14. worktree 开发完成后，合并回需求集成分支，并在需求集成分支验证。
-15. 需求集成分支确认无误后，Orchestrator 询问开发者是否合并回开发分支。
-16. 本地运行必要检查后提交 PR。
-17. Reviewer、Security、QA Agent 做审查。
-18. CI 运行 lint、typecheck、test、build、安全扫描等项目定义的质量门禁。
-19. 人工负责人审批后合并。
-20. 预发验证、灰度发布、全量发布。
-21. 发布后监控核心指标和用户反馈。
+前置 1. Orchestrator 先执行开发环境检测，只输出环境清单和环境选择项；状态为 `需确认` 时只能等待开发者选择，不创建分支或状态文件。
+前置 2. 环境检测通过或开发者选择“环境有警告但继续”后，Orchestrator 再执行分支确认，输出当前 Git 分支和工作区状态。
+前置 3. 开发者确认当前分支作为开发分支后，Orchestrator 才能从当前分支创建新的需求集成分支，并记录开发分支和需求集成分支。
+1. Orchestrator 读取 `docs/requirements/` 下的全部需求文档，并读取 `project/docs/` 下的框架文档和 `project/docs/patterns/` 模式缓存；使用 `.codex/skills/snowy-framework-bootstrap` 输出或更新框架运行提示和本机环境检测清单；未确认或阻塞则停在本阶段。
+2. Orchestrator 提供开发模式选择：简单 CRUD 快速模式、标准 SDLC 模式、高风险严格模式、自定义。
+3. Orchestrator 询问是否需要 PRD 和 UI 设计；开发者可明确跳过。简单 CRUD 快速模式可默认跳过 PRD/UI，但必须保留最小需求说明、字段、接口、验收标准、风险记录；如涉及后管页面，还必须保留后管菜单设计。
+4. 如未跳过，Product Agent 基于需求和现有框架能力生成 PRD、验收标准、HTML PRD 和可交互低保真 HTML 原型；如涉及后管页面，必须套用 `.codex/workflows/admin-prototype-design-workflow.md`，PRD 和原型必须体现菜单层级、入口、权限、Snowy CRUD 形式和覆盖矩阵；如同时涉及后管和 H5，必须分别生成后管低保真原型和 H5 低保真原型。
+5. 如未跳过 UI，Design Agent 建立设计系统，并连接 Figma 生成可落地设计稿。
+6. Architect Agent 明确模块边界、状态机、API、数据模型、安全模型和可运维性。简单 CRUD 快速模式可用轻量技术方案替代完整架构文档。
+7. Data Agent 细化数据库模型、migration、索引、回滚和数据一致性策略。简单 CRUD 快速模式可合并到轻量技术方案或开发清单。
+8. Orchestrator 按用户价值拆 feature slice；简单 CRUD 快速模式可压缩为“后端+SQL+权限”“前端+mock”“验证+状态”三类任务。
+9. Orchestrator 套用 `.codex/workflows/auto-dispatch-parallel-development.md`，从需求集成分支创建 worktree 开发分支/目录，生成任务图、依赖 DAG、并行 wave、owner 分配和集成策略；简单 CRUD 快速模式只生成轻量执行清单。
+10. Frontend、Backend、Data、QA 等 Agent 在 worktree 开发分支/目录中开发并提交。
+11. worktree 开发完成后，合并回需求集成分支，并在需求集成分支验证。
+12. 需求集成分支确认无误后，Orchestrator 询问开发者是否合并回开发分支。
+13. 本地运行必要检查后提交 PR。
+14. Reviewer、Security、QA Agent 做审查。
+15. CI 运行 lint、typecheck、test、build、安全扫描等项目定义的质量门禁。
+16. 人工负责人审批后合并。
+17. 预发验证、灰度发布、全量发布。
+18. 发布后监控核心指标和用户反馈。
 
 ## 通用 Definition of Done
 
