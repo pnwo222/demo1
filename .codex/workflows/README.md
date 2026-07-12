@@ -25,12 +25,17 @@
 12. 只有用户明确说“跳过工作流”“直接改代码”“无需 PRD/设计/技术方案”时，才允许跳过整个前置工作流。
 13. 工作流只约束阶段、产物、门禁和协作规则。
 14. 业务判断、页面范围、技术栈命令和风险重点来自需求文档、框架文档或项目实际代码。
+15. 工作流中凡需要绘制流程图、架构图、模块图、ERD、状态机图、时序图、任务图、DAG、依赖图或其他系统可视化，必须优先使用本项目 `.codex/skills/` 中来自 `Agents365-ai/365-skills` 的图形 skills：默认使用 `.codex/skills/mermaid-skill`；需要可编辑 Draw.io、复杂样式、泳道、厂商图标或精细布局时使用 `.codex/skills/drawio-skill`；需要 PlantUML/UML 语义时使用 `.codex/skills/plantuml-skill`；需要手绘白板风格时使用 `.codex/skills/excalidraw-skill`。使用前必须读取对应 `SKILL.md`，并按 skill 要求完成校验和导出。
 
 ## 相关文件
 
 - `.codex/agents/*.md`
 - `.codex/checklists/`
 - `.codex/skills/snowy-framework-bootstrap/`
+- `.codex/skills/mermaid-skill/`
+- `.codex/skills/drawio-skill/`
+- `.codex/skills/plantuml-skill/`
+- `.codex/skills/excalidraw-skill/`
 - `docs/requirements/`
 - `docs/workflow/status.md`
 - `docs/workflow/requirements/`

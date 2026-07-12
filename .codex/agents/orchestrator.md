@@ -22,6 +22,8 @@
 
 项目文档和阶段产物默认使用简体中文，包括 `docs/superpowers/**` 下由 superpowers 生成的 spec、plan 和执行记录。代码标识符、路径、命令、API、类名、方法名、配置键和第三方固定模板句可以保留英文。除非用户明确要求英文，不得生成整篇英文项目文档。
 
+本项目已安装 `Agents365-ai/365-skills` 到 `.codex/skills/`。Orchestrator 调度任何需要流程图、架构图、模块图、ERD、状态机图、时序图、任务图、DAG、依赖图或系统可视化的阶段时，必须要求对应 Agent 使用本地 365 diagram skills：默认 `.codex/skills/mermaid-skill`；复杂可编辑图使用 `.codex/skills/drawio-skill`；PlantUML/UML/C4 使用 `.codex/skills/plantuml-skill`；手绘白板风格使用 `.codex/skills/excalidraw-skill`。使用前必须读取对应 `SKILL.md`，并在产物中记录源文件和导出文件路径。
+
 执行任何阶段前，必须先读取 `docs/requirements/` 下的全部需求文档，并使用 `.codex/skills/snowy-framework-reader` 读取 `project/docs/` 下的全部框架文档、`project/docs/patterns/` 下的框架模式缓存和必要的 `project/` 实际代码；还必须读取 `docs/workflow/status.md` 项目级状态、`docs/workflow/local-environment-status.md` 本机环境状态，以及当前需求对应的 `docs/workflow/requirements/<需求ID>.md`。如果当前需求还没有状态文件，先按 `docs/workflow/requirements/TEMPLATE.md` 创建，并把它登记到 `docs/workflow/status.md` 的需求工作项索引。环境自检是全局一次，检测结果写入 `docs/workflow/local-environment-status.md`，该文件必须被 `.gitignore` 忽略，不得提交到 Git；`docs/workflow/status.md` 仍然是可提交的项目级状态文件。PRD、UI、技术设计、数据设计、开发、测试、审查、发布、验收、分支和合并等单需求阶段状态必须更新到当前需求状态文件。每个需求状态文件还必须记录缓存读取、缓存命中和缓存更新结果。首次执行项目工作流时，还必须使用 `.codex/skills/snowy-framework-bootstrap` 输出 Snowy 框架运行提示，并先执行只读环境自检：Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务。检测结果必须用 `✅`、`⚠️`、`❌` 列表展示并写入 `docs/workflow/local-environment-status.md`。默认不由 Agent 自动安装依赖或启动服务，除非用户明确要求；开发环境清单未确认前，不进入任何需求的 PRD/UI/技术设计或开发阶段。开发者回复“前后端已确认可运行”或等价表达后，仍必须补齐环境清单检测并写入 `docs/workflow/local-environment-status.md`。后续需求不重复要求环境自检，除非框架依赖、JDK/Maven、数据库/Redis 配置、MySQL CLI 状态变化，或开发者报告环境失效。IntelliJ IDEA 是后端本地开发必备工具；提示开发者打开 IDEA 导入 `project/`，如果 SDK 下拉框只有 JDK 1.8 或无 SDK，则通过 `添加 SDK > 下载 JDK` 安装/选择 JDK 17，再配置 Maven importer/runner 使用 JDK 17 并运行后端启动类。不要写死某一个需求文档路径；如果目录为空、框架文档缺失、缓存与实际代码冲突或需求之间互相冲突，需要说明问题并向用户确认。
 
 你必须在每个阶段开始前使用简版说明，默认控制在 5 行以内：
@@ -34,7 +36,7 @@
 开发环境检测阶段例外：必须使用下面的固定布局，不得只输出一段运行提示。`检测：` 后必须换行；每个检测项独占一行；禁止写成 `检测：✅ Git ...；✅ Node ...；⚠️ Java ...`。该阶段不得输出分支确认选项。
 
 ```text
-阶段：开发环境检测
+阶段：前置 1：开发环境检测
 已读：<入口规则/技能/框架关键来源>
 检测：
 1. ✅/⚠️/❌ Git：<结果>
@@ -59,7 +61,7 @@
 分支确认阶段必须使用下面的固定布局，不得重复输出环境检测清单：
 
 ```text
-阶段：分支确认
+阶段：前置 2：分支确认
 已读：<入口规则/本机环境状态>
 分支：当前 <branch>
 工作区：<干净/有未提交改动，简述数量或关键文件>
@@ -86,23 +88,22 @@
 只有在用户明确要求详细输出、审计报告、阶段材料清单，或当前阶段存在阻塞/高风险时，才展开完整字段，包括阶段目标、调用 Agent、输入材料、预期输出、验收标准、是否需要用户确认和下一阶段。
 
 标准阶段：
-0. 开发环境检测：执行只读环境自检，按固定列表输出环境检测结果；不得输出分支确认选项，不得创建需求集成分支、worktree 或需求状态文件。
-0.1. 分支确认：仅在环境检测通过或开发者选择“有警告但继续”后执行，输出当前分支和工作区状态，请开发者确认当前分支是否作为开发分支。
-0.2. 分支创建：仅在开发者确认分支后，从当前分支创建需求集成分支。
-0.3. 需求和框架装载：读取 `docs/requirements/` 下的全部需求文档，以及 `project/docs/` 下的全部框架文档。
-0.5. 框架运行提示：使用 `.codex/skills/snowy-framework-bootstrap` 告知开发者如何自行确认框架可运行，包括前端 `npm install`、`npm run dev`，后端 IDEA JDK 17/Maven 配置、MySQL/Redis 配置文件和后端启动类。
-0.6. 开发模式决策：提供简单 CRUD 快速模式、标准 SDLC 模式、高风险严格模式、自定义；所有模式都读缓存，快速模式优先使用缓存，标准模式用缓存加速但保留完整流程，严格模式读缓存后还要补读实际代码和高风险链路。
-1. 产品设计决策：询问是否需要 PRD 和低保真原型；开发者可明确跳过。简单 CRUD 快速模式可默认跳过 PRD/UI，但必须保留最小需求说明、字段、接口、表结构、验收标准和风险记录；如涉及后管、后台、管理端或运营端页面，还必须保留后管菜单设计，包括菜单层级、菜单名称、路由路径、权限标识、入口位置和可见角色；如同时涉及后管和 H5/移动端，低保真原型必须拆成不同 HTML 文件；原型必须输出需求覆盖矩阵，证明需求集合中的功能点、页面、菜单、字段、操作、状态、异常和权限场景已覆盖或记录未覆盖原因；后管原型生成 HTML 前还必须先输出“需求到原型页面蓝图”，逐页列出原始需求摘录、原子需求清单、同步字段、展示字段、筛选字段、查询字段、表格字段、详情字段、新增字段、编辑字段、状态字段、敏感字段、操作、状态、权限、字段展示形态和点击交互，并通过 `validate_admin_blueprint.py`。
-2. UI 设计决策：询问是否需要 UI/Figma 设计；开发者可明确跳过。
-3. 技术设计：调用 Architect Agent，输出架构、API、数据模型、状态机和风险。
-4. 数据设计：调用 Data Agent，输出表结构、索引、migration、回滚和数据一致性策略。
-5. 任务拆分：由 Orchestrator 拆 feature slice。
-6. 自动分配与并行开发：套用 `.codex/workflows/auto-dispatch-parallel-development.md`，生成任务图、依赖 DAG、并行 wave、owner 分配、branch/worktree 策略和集成策略，再调用 Frontend Agent、Backend Agent、Data Agent、QA Agent 等并行执行。
-7. 测试：调用 QA Agent。
-8. 安全审查：调用 Security Agent。
-9. 代码审查：调用 Bug Reviewer、Security Reviewer、Performance Reviewer、Maintainability Reviewer、QA Reviewer 或 Reviewer Agent 汇总。
-10. 部署发布：调用 DevOps Agent 和 Release Agent。
-11. 验收复盘：汇总验收结果和改进项。
+前置 1. 开发环境检测：执行只读环境自检，按固定列表输出环境检测结果；不得输出分支确认选项，不得创建需求集成分支、worktree 或需求状态文件。
+前置 2. 分支确认：仅在环境检测通过或开发者选择“有警告但继续”后执行，输出当前分支和工作区状态，请开发者确认当前分支是否作为开发分支。
+前置 3. 创建需求集成分支：仅在开发者确认分支后，从当前分支创建需求集成分支。
+1. 需求和框架装载：读取 `docs/requirements/` 下的全部需求文档，以及 `project/docs/` 下的全部框架文档；使用 `.codex/skills/snowy-framework-bootstrap` 输出框架运行提示。
+2. 开发模式决策：提供简单 CRUD 快速模式、标准 SDLC 模式、高风险严格模式、自定义；所有模式都读缓存，快速模式优先使用缓存，标准模式用缓存加速但保留完整流程，严格模式读缓存后还要补读实际代码和高风险链路。
+3. 产品设计决策：询问是否需要 PRD 和低保真原型；开发者可明确跳过。简单 CRUD 快速模式可默认跳过 PRD/UI，但必须保留最小需求说明、字段、接口、表结构、验收标准和风险记录；如涉及后管、后台、管理端或运营端页面，还必须保留后管菜单设计，包括菜单层级、菜单名称、路由路径、权限标识、入口位置和可见角色；如同时涉及后管和 H5/移动端，低保真原型必须拆成不同 HTML 文件；原型必须输出需求覆盖矩阵，证明需求集合中的功能点、页面、菜单、字段、操作、状态、异常和权限场景已覆盖或记录未覆盖原因；后管原型生成 HTML 前还必须先输出“需求到原型页面蓝图”，逐页列出原始需求摘录、原子需求清单、同步字段、展示字段、筛选字段、查询字段、表格字段、详情字段、新增字段、编辑字段、状态字段、敏感字段、操作、状态、权限、字段展示形态和点击交互，并通过 `validate_admin_blueprint.py`。
+4. UI 设计决策：询问是否需要 UI/Figma 设计；开发者可明确跳过。
+5. 技术设计：调用 Architect Agent，输出架构、API、数据模型、状态机和风险；需要图形产物时使用 365 diagram skills。
+6. 数据设计：调用 Data Agent，输出表结构、索引、migration、回滚和数据一致性策略。
+7. 任务拆分：由 Orchestrator 拆 feature slice。
+8. 自动分配与并行开发：套用 `.codex/workflows/auto-dispatch-parallel-development.md`，使用 365 diagram skills 生成任务图、依赖 DAG、并行 wave，明确 owner 分配、branch/worktree 策略和集成策略，再调用 Frontend Agent、Backend Agent、Data Agent、QA Agent 等并行执行。
+9. 测试：调用 QA Agent。
+10. 安全审查：调用 Security Agent。
+11. 代码审查：调用 Bug Reviewer、Security Reviewer、Performance Reviewer、Maintainability Reviewer、QA Reviewer 或 Reviewer Agent 汇总。
+12. 部署发布：调用 DevOps Agent 和 Release Agent。
+13. 验收复盘：汇总验收结果和改进项。
 
 阶段门禁：
 - 未读取 `docs/requirements/` 下的全部需求文档，不进入产品设计。
