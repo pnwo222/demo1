@@ -226,6 +226,151 @@
       border: 1px solid #e5e7eb;
       display: block;
     }
+    .annotation-host {
+      position: relative;
+    }
+    .annotation-pin {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      z-index: 5;
+      width: 24px;
+      height: 24px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      background: #faad14;
+      color: #1f2937;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 20px;
+      text-align: center;
+      box-shadow: 0 6px 14px rgba(15, 23, 42, .18);
+      cursor: pointer;
+    }
+    .annotation-pin:hover {
+      background: #ffc53d;
+      transform: translateY(-1px);
+    }
+    .annotation-card {
+      margin-top: 14px;
+      background: #fff;
+      border: 1px solid #ffe58f;
+      border-radius: 4px;
+      padding: 16px;
+    }
+    .annotation-card-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .annotation-card-title h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+    .annotation-list {
+      display: grid;
+      gap: 10px;
+    }
+    .annotation-item {
+      display: grid;
+      grid-template-columns: 32px minmax(0, 1fr);
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid #f5e6ad;
+      border-radius: 4px;
+      background: #fffdf3;
+      cursor: pointer;
+    }
+    .annotation-item:hover {
+      border-color: #faad14;
+      background: #fff7d6;
+    }
+    .annotation-index {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #faad14;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #1f2937;
+      font-weight: 800;
+      font-size: 12px;
+    }
+    .annotation-item h3 {
+      margin: 0 0 4px;
+      font-size: 14px;
+    }
+    .annotation-item p {
+      margin: 0;
+      color: #475467;
+      line-height: 1.7;
+    }
+    .annotation-item-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .annotation-item-head h3 {
+      margin: 0;
+    }
+    .node-comment-selected {
+      outline: 2px solid #1677ff !important;
+      outline-offset: 2px;
+      background: rgba(22, 119, 255, .14) !important;
+    }
+    .node-comment-hover {
+      outline: 2px solid rgba(22, 119, 255, .65) !important;
+      outline-offset: 2px;
+      background: rgba(22, 119, 255, .08) !important;
+      cursor: crosshair;
+    }
+    .node-comment-popover {
+      position: fixed;
+      z-index: 2000;
+      width: 360px;
+      padding: 10px;
+      border: 1px solid #e8edf3;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 12px 34px rgba(15, 23, 42, .18);
+    }
+    .node-comment-input {
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 8px;
+    }
+    .node-comment-handle {
+      color: #667085;
+      text-align: center;
+      font-size: 16px;
+    }
+    .node-comment-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .node-comment-pin {
+      position: fixed;
+      z-index: 2001;
+      width: 22px;
+      height: 22px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      background: #1677ff;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 18px;
+      text-align: center;
+      box-shadow: 0 6px 14px rgba(15, 23, 42, .2);
+      cursor: pointer;
+    }
     @media (max-width: 960px) {
       .tree-layout { grid-template-columns: 1fr; }
       .preset-grid { grid-template-columns: 1fr; }
@@ -261,10 +406,10 @@
     ];
 
     const seedRows = [
-      { id: 1, title: '校园资讯首页 Banner', cover: demoImages[0], category: '首页 Banner', position: '后台首页', sort: 10, status: true, audit: '已发布', createdAt: '2026-07-08 09:30', summary: '展示校园资讯和重点通知。' },
-      { id: 2, title: '暑期校园开放通知', cover: '', category: '通知公告', position: '学校专区', sort: 20, status: false, audit: '已下架', createdAt: '2026-07-07 16:12', summary: '假期开放安排和入校说明。' },
-      { id: 3, title: '专业介绍更新', cover: demoImages[1], category: '专业介绍', position: '后台首页', sort: 30, status: true, audit: '待审核', createdAt: '2026-07-06 11:05', summary: '专业介绍内容更新入口。' },
-      { id: 4, title: '招生咨询入口', cover: demoImages[0], category: '招生服务', position: '学校专区', sort: 40, status: true, audit: '已发布', createdAt: '2026-07-05 14:20', summary: '招生咨询和访客预约入口。' }
+      { id: 1, title: '校园资讯首页 Banner', cover: demoImages[0], category: '首页 Banner', position: '后台首页', sort: 10, status: true, audit: '已发布', createdAt: '2026-07-08 09:30', summary: '展示校园资讯和重点通知。', attachmentType: 'pdf', attachmentName: '首页Banner投放说明.pdf', attachmentSize: '1.2 MB' },
+      { id: 2, title: '暑期校园开放通知', cover: '', category: '通知公告', position: '学校专区', sort: 20, status: false, audit: '已下架', createdAt: '2026-07-07 16:12', summary: '假期开放安排和入校说明。', attachmentType: 'doc', attachmentName: '暑期开放通知正文.docx', attachmentSize: '860 KB' },
+      { id: 3, title: '专业介绍更新', cover: demoImages[1], category: '专业介绍', position: '后台首页', sort: 30, status: true, audit: '待审核', createdAt: '2026-07-06 11:05', summary: '专业介绍内容更新入口。', attachmentType: 'xls', attachmentName: '专业介绍字段清单.xlsx', attachmentSize: '420 KB' },
+      { id: 4, title: '招生咨询入口', cover: demoImages[0], category: '招生服务', position: '学校专区', sort: 40, status: true, audit: '已发布', createdAt: '2026-07-05 14:20', summary: '招生咨询和访客预约入口。', attachmentType: '', attachmentName: '', attachmentSize: '' }
     ];
     const userAvatar = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="80" height="80" rx="40" fill="#1677ff"/><circle cx="40" cy="31" r="14" fill="white" opacity=".9"/><path d="M18 68c4-15 39-15 44 0" fill="white" opacity=".9"/></svg>');
     const componentRows = [
@@ -297,8 +442,38 @@
         const menuDrawerOpen = ref(false);
         const menuForm = reactive({ parent: '内容管理', name: '首页 Banner', path: '/content/banner', permissionName: '首页 Banner 管理', visible: true, sort: 20 });
         const activeResource = ref('首页 Banner');
-        const checkedColumns = ref(['title', 'cover', 'category', 'position', 'sort', 'audit', 'status', 'action']);
+        const checkedColumns = ref(['title', 'cover', 'category', 'position', 'sort', 'audit', 'status', 'attachment', 'action']);
         const pagination = reactive({ current: 1, pageSize: 10 });
+        const annotationEnabled = ref(false);
+        const annotationEditorOpen = ref(false);
+        const annotationEditorMode = ref('add');
+        const annotationForm = reactive({ id: '', index: 1, title: '', summary: '', detail: '' });
+        const nodeCommentOpen = ref(false);
+        const nodeCommentText = ref('');
+        const nodeCommentTarget = ref('');
+        const nodeCommentStyle = reactive({ left: '0px', top: '0px' });
+        let selectedNodeEl = null;
+
+        const annotationGroups = reactive({
+          banner: [
+            { id: 'banner-date-range', index: 1, title: '示例：创建时间范围限制', summary: '示例规则：日期范围最多只能选择 7 天。', detail: '这是 Demo 中用于展示标注形态的示例规则。真实项目必须从当前需求文档或页面蓝图提取日期范围限制；如果需求没有写 7 天，不得沿用本示例。' },
+            { id: 'banner-publish-status', index: 2, title: '示例：发布状态枚举', summary: '示例规则：发布状态包含已发布、待审核、已下架。', detail: '这是 Demo 中用于展示状态枚举标注的示例。真实项目必须以需求文档中的状态为准，例如需求写了注册状态、绑卡状态或审批状态，就应标注那些真实枚举。' },
+            { id: 'banner-enable-status', index: 3, title: '示例：是否显示开关含义', summary: '示例规则：是否显示只控制前台展示，不代表审核是否通过。', detail: '这是 Demo 中用于展示“状态容易混淆”时如何标注。真实项目应根据需求说明区分业务状态、流程状态和显示控制，不能默认套用本示例解释。' },
+            { id: 'banner-cover-image', index: 4, title: '示例：封面图展示规则', summary: '示例规则：封面图展示真实图片缩略图，无图显示占位。', detail: '这是 Demo 中用于展示图片字段标注的示例。真实项目应根据需求中的图片、附件、头像、证件照、图标等字段分别标注展示规则和上传限制。' },
+            { id: 'banner-batch-delete', index: 5, title: '示例：批量删除风险', summary: '示例规则：批量删除必须先选择数据，并二次确认。', detail: '这是 Demo 中用于展示高风险操作标注的示例。真实项目只有在需求包含删除、批量操作、作废、撤销等风险动作时才标注，并按真实业务规则写清影响范围。' },
+            { id: 'banner-drawer-cover', index: 6, title: '示例：表单封面图要求', summary: '示例规则：新增和编辑支持选择、预览、移除；详情只读。', detail: '这是 Demo 中用于展示表单字段标注的示例。真实项目应按需求中的新增、编辑、详情字段逐项标注，尤其是必填、只读、脱敏、校验和权限差异。' }
+          ],
+          menuResource: [
+            { id: 'menu-tree', index: 1, title: '菜单层级必须完整', summary: '内容管理下包含首页 Banner、通知公告等二级/三级菜单。', detail: '需求中出现“模块/菜单/管理”层级时，原型必须落成左侧菜单结构，不能只在页面标题里体现。菜单节点需要能追溯到需求章节和具体页面。' },
+            { id: 'menu-detail', index: 2, title: '路由和权限必须明确', summary: '菜单资源必须展示路由地址、权限名称、可见角色和操作范围。', detail: '每个后管页面都要明确路由路径和权限标识，例如 /content/banner 与首页 Banner 管理权限。没有权限标识的页面不能进入开发。' },
+            { id: 'menu-actions', index: 3, title: '删除菜单属于高风险操作', summary: '删除菜单前必须确认是否影响角色授权和已有按钮权限。', detail: '删除菜单会影响入口可见性、按钮权限和角色授权，应二次确认，并提示可能影响已分配角色。普通内容删除和菜单删除不能使用同一套轻提示。' }
+          ],
+          components: [
+            { id: 'component-upload', index: 1, title: '图片上传校验', summary: '图片上传建议限制 JPG/PNG，单图不超过 2MB。', detail: '图片字段要提供选择、预览、移除能力。上传失败时应保留原图，不应清空表单；重新选择图片后页面内预览必须立即更新。' },
+            { id: 'component-status', index: 2, title: '状态组件选择', summary: '业务状态用标签，是否显示用开关，流程中状态用徽标。', detail: '不同状态含义要用不同组件表达：审核状态用标签，显示控制用开关，异步任务或运行状态用徽标，避免所有状态都画成同一种颜色标签。' },
+            { id: 'component-table', index: 3, title: '表格字段展示形态', summary: '头像、文件、进度、长文本不能都用普通文本展示。', detail: '头像用 Avatar；文件用类型图标、文件名、大小和来源；进度用进度条；长文本默认省略并提供悬浮完整内容；更多操作放入下拉菜单。' }
+          ]
+        });
 
         const menuItems = [
           { key: 'business', label: '业务运营', children: [
@@ -332,7 +507,8 @@
           { title: '发布位置', dataIndex: 'position', key: 'position', width: 110 },
           { title: '排序', dataIndex: 'sort', key: 'sort', width: 70, sorter: (a, b) => a.sort - b.sort },
           { title: '发布状态', dataIndex: 'audit', key: 'audit', width: 100 },
-          { title: '启停', dataIndex: 'status', key: 'status', width: 90 },
+          { title: '是否显示', dataIndex: 'status', key: 'status', width: 96 },
+          { title: '附件', dataIndex: 'attachmentName', key: 'attachment', width: 210 },
           { title: '创建时间', dataIndex: 'createdAt', key: 'createdAt', width: 172 },
           { title: '操作', key: 'action', fixed: 'right', width: 170 }
         ];
@@ -365,6 +541,8 @@
         });
 
         const pageTitle = computed(() => currentPage.value === 'menuResource' ? '菜单资源' : activeTab.value);
+        const currentAnnotationKey = computed(() => currentPage.value === 'menuResource' ? 'menuResource' : currentPage.value === 'components' ? 'components' : 'banner');
+        const currentAnnotations = computed(() => annotationGroups[currentAnnotationKey.value] || annotationGroups.banner);
         const rowSelection = computed(() => ({
           selectedRowKeys: selectedRowKeys.value,
           onChange: keys => selectedRowKeys.value = keys
@@ -391,6 +569,14 @@
         };
         const onOpenChange = keys => openKeys.value = keys;
         const search = () => {
+          if (query.dateRange && query.dateRange.length === 2) {
+            const start = dayjs(query.dateRange[0]).startOf('day');
+            const end = dayjs(query.dateRange[1]).endOf('day');
+            if (end.diff(start, 'day') > 7) {
+              showMessage('warning', '查询时间范围不能超过 7 天');
+              return;
+            }
+          }
           pagination.current = 1;
           showMessage('success', '查询完成');
         };
@@ -530,6 +716,149 @@
           pagination.pageSize = page.pageSize;
         };
         const topAction = text => showMessage('success', text + '已完成');
+        const clearHoverNode = () => {
+          const hover = document.querySelector('.node-comment-hover');
+          if (hover && hover !== selectedNodeEl) hover.classList.remove('node-comment-hover');
+        };
+        const clearNodeSelection = () => {
+          if (selectedNodeEl) selectedNodeEl.classList.remove('node-comment-selected');
+          selectedNodeEl = null;
+          nodeCommentOpen.value = false;
+          nodeCommentText.value = '';
+          nodeCommentTarget.value = '';
+        };
+        const findCommentableNode = event => {
+          const ignore = event.target.closest('.annotation-pin,.annotation-card,.node-comment-pin,.node-comment-popover,.ant-modal,.ant-message,.ant-dropdown,.ant-picker-dropdown');
+          if (ignore) return null;
+          return event.target.closest('label,.ant-form-item-label,.ant-input,.ant-select-selector,.ant-picker,th,td,button,a,.ant-tag,.ant-switch,.cover,.file-thumb,.resource-node,h1,.page-title') || event.target;
+        };
+        const getNodeTitle = node => {
+          const raw = (node.innerText || node.getAttribute('placeholder') || node.getAttribute('title') || node.getAttribute('aria-label') || node.tagName || '').trim();
+          return raw.replace(/\s+/g, ' ').slice(0, 28) || node.tagName.toLowerCase();
+        };
+        const hoverNodeForComment = event => {
+          if (!annotationEnabled.value) return;
+          const target = findCommentableNode(event);
+          const current = document.querySelector('.node-comment-hover');
+          if (current && current !== target) current.classList.remove('node-comment-hover');
+          if (!target || !target.classList || target === selectedNodeEl) return;
+          target.classList.add('node-comment-hover');
+        };
+        const selectNodeForComment = event => {
+          if (!annotationEnabled.value) return;
+          const target = findCommentableNode(event);
+          if (!target || !target.classList) return;
+          event.preventDefault();
+          event.stopPropagation();
+          if (selectedNodeEl) selectedNodeEl.classList.remove('node-comment-selected');
+          clearHoverNode();
+          selectedNodeEl = target;
+          selectedNodeEl.classList.add('node-comment-selected');
+          const rect = selectedNodeEl.getBoundingClientRect();
+          const left = Math.min(rect.right + 12, window.innerWidth - 380);
+          const top = Math.min(rect.top - 6, window.innerHeight - 160);
+          nodeCommentStyle.left = Math.max(12, left) + 'px';
+          nodeCommentStyle.top = Math.max(12, top) + 'px';
+          nodeCommentTarget.value = getNodeTitle(selectedNodeEl);
+          nodeCommentText.value = '';
+          nodeCommentOpen.value = true;
+        };
+        const createNodeCommentPin = (target, index, noteId) => {
+          if (!target) return;
+          const pin = document.createElement('button');
+          pin.type = 'button';
+          pin.className = 'node-comment-pin';
+          pin.textContent = String(index);
+          const rect = target.getBoundingClientRect();
+          const placeLeft = rect.right + 30 > window.innerWidth;
+          pin.style.left = (placeLeft ? Math.max(8, rect.left - 28) : rect.right + 6) + 'px';
+          pin.style.top = Math.max(8, rect.top - 6) + 'px';
+          pin.addEventListener('click', event => {
+            event.stopPropagation();
+            showAnnotation(noteId);
+          });
+          document.body.appendChild(pin);
+        };
+        const saveNodeComment = () => {
+          const text = nodeCommentText.value.trim();
+          if (!text) {
+            showMessage('warning', '请输入注释内容');
+            return;
+          }
+          const key = currentAnnotationKey.value;
+          const group = annotationGroups[key] || annotationGroups.banner;
+          const maxIndex = group.reduce((max, item) => Math.max(max, Number(item.index) || 0), 0);
+          const noteId = key + '-node-comment-' + Date.now();
+          const nextIndex = maxIndex + 1;
+          group.push({
+            id: noteId,
+            index: nextIndex,
+            title: '节点注释：' + nodeCommentTarget.value,
+            summary: text,
+            detail: '用户在页面中选中“' + nodeCommentTarget.value + '”节点后添加的注释。真实项目中应把该注释整理为需求规则、待确认项或验收说明。'
+          });
+          group.sort((a, b) => Number(a.index) - Number(b.index));
+          createNodeCommentPin(selectedNodeEl, nextIndex, noteId);
+          clearNodeSelection();
+          showMessage('success', '注释已添加');
+        };
+        const openAnnotationAdd = () => {
+          const maxIndex = currentAnnotations.value.reduce((max, item) => Math.max(max, Number(item.index) || 0), 0);
+          Object.assign(annotationForm, { id: '', index: maxIndex + 1, title: '', summary: '', detail: '' });
+          annotationEditorMode.value = 'add';
+          annotationEditorOpen.value = true;
+        };
+        const openAnnotationEdit = note => {
+          Object.assign(annotationForm, {
+            id: note.id,
+            index: note.index,
+            title: note.title,
+            summary: note.summary,
+            detail: note.detail
+          });
+          annotationEditorMode.value = 'edit';
+          annotationEditorOpen.value = true;
+        };
+        const saveAnnotation = () => {
+          if (!String(annotationForm.title).trim()) {
+            showMessage('warning', '请输入标注标题');
+            return;
+          }
+          if (!String(annotationForm.summary).trim()) {
+            showMessage('warning', '请输入标注摘要');
+            return;
+          }
+          const key = currentAnnotationKey.value;
+          const group = annotationGroups[key] || annotationGroups.banner;
+          const payload = {
+            id: annotationForm.id || key + '-custom-' + Date.now(),
+            index: Number(annotationForm.index) || group.length + 1,
+            title: annotationForm.title.trim(),
+            summary: annotationForm.summary.trim(),
+            detail: String(annotationForm.detail || '').trim()
+          };
+          if (annotationEditorMode.value === 'edit') {
+            const target = group.find(item => item.id === annotationForm.id);
+            if (target) Object.assign(target, payload);
+          } else {
+            group.push(payload);
+          }
+          group.sort((a, b) => Number(a.index) - Number(b.index));
+          annotationEditorOpen.value = false;
+          showMessage('success', annotationEditorMode.value === 'edit' ? '标注已更新' : '标注已新增');
+        };
+        const showAnnotation = id => {
+          const note = currentAnnotations.value.find(item => item.id === id);
+          if (!note) return;
+          antd.Modal.info({
+            title: note.index + '. ' + note.title,
+            content: h('div', [
+              h('p', { style: 'margin:0 0 8px;color:#475467;line-height:1.7' }, note.summary),
+              h('p', { style: 'margin:0;color:#1f2937;line-height:1.8' }, note.detail)
+            ]),
+            okText: '知道了'
+          });
+        };
         const confirmAction = text => {
           antd.Modal.confirm({
             title: '操作确认',
@@ -545,11 +874,14 @@
           collapsed, currentPage, activeTab, selectedKeys, openKeys, tableSize, selectedRowKeys,
           rows, query, advanced, drawerOpen, drawerMode, formState, detailRecord, importOpen,
           columnOpen, previewOpen, previewImage, previewTitle, menuDrawerOpen, menuForm, activeResource, checkedColumns, pagination,
+          annotationEnabled, annotationEditorOpen, annotationEditorMode, annotationForm, currentAnnotations,
+          nodeCommentOpen, nodeCommentText, nodeCommentTarget, nodeCommentStyle,
           menuItems, columns, componentColumns, componentRows, filteredRows, pageTitle, rowSelection,
           setPage, onOpenChange, search, reset, refresh, exportData, batchDelete, removeRow,
           openAdd, openEdit, openDetail, saveForm, auditRow, toggleStatus, useExampleCover,
           beforeCoverUpload, removeCover, previewCover, previewCurrentCover,
-          saveImport, saveMenu, setResource, changePage, topAction, confirmAction,
+          saveImport, saveMenu, setResource, changePage, topAction, hoverNodeForComment, clearHoverNode, selectNodeForComment, clearNodeSelection, saveNodeComment,
+          openAnnotationAdd, openAnnotationEdit, saveAnnotation, showAnnotation, confirmAction,
         };
       },
       template: `
@@ -585,6 +917,9 @@
                 </a-breadcrumb>
               </div>
               <div class="header-right">
+                <a-button size="small" :type="annotationEnabled ? 'primary' : 'default'" @click="annotationEnabled = !annotationEnabled">
+                  <span class="mini-icon">#</span>{{ annotationEnabled ? '关闭标注' : '标注' }}
+                </a-button>
                 <span class="icon-action" title="刷新" @click="topAction('刷新')"><span class="mini-icon">↻</span></span>
                 <span class="icon-action" title="全屏" @click="topAction('全屏')"><span class="mini-icon">⛶</span></span>
                 <span class="icon-action" title="通知" @click="topAction('通知')"><span class="mini-icon">●</span></span>
@@ -596,7 +931,7 @@
               <a-tag color="blue">首页</a-tag>
               <a-tag color="processing">{{ activeTab }}</a-tag>
             </div>
-            <a-layout-content class="content">
+            <a-layout-content class="content" @mousemove.capture="hoverNodeForComment" @mouseleave="clearHoverNode" @click.capture="selectNodeForComment">
               <section v-if="currentPage === 'banner'">
                 <div class="query-card">
                   <h1 class="page-title">{{ pageTitle }}</h1>
@@ -618,14 +953,15 @@
                         </a-form-item>
                       </a-col>
                       <a-col :xs="24" :md="6">
-                        <a-form-item label="状态">
-                          <a-select v-model:value="query.status" placeholder="全部状态" allow-clear>
-                            <a-select-option :value="true">启用</a-select-option>
-                            <a-select-option :value="false">停用</a-select-option>
+                        <a-form-item label="是否显示">
+                          <a-select v-model:value="query.status" placeholder="全部" allow-clear>
+                            <a-select-option :value="true">显示</a-select-option>
+                            <a-select-option :value="false">隐藏</a-select-option>
                           </a-select>
                         </a-form-item>
                       </a-col>
-                      <a-col :xs="24" :md="6">
+                      <a-col :xs="24" :md="6" class="annotation-host">
+                        <button v-if="annotationEnabled" class="annotation-pin" type="button" @click.stop="showAnnotation('banner-date-range')">1</button>
                         <a-form-item label="创建时间">
                           <a-range-picker v-model:value="query.dateRange" style="width:100%" />
                         </a-form-item>
@@ -650,7 +986,10 @@
                   <div class="toolbar">
                     <div class="toolbar-left">
                       <a-button type="primary" @click="openAdd"><span class="mini-icon">＋</span>新增内容</a-button>
-                      <a-button danger @click="batchDelete"><span class="mini-icon">×</span>批量删除</a-button>
+                      <span class="annotation-host">
+                        <button v-if="annotationEnabled" class="annotation-pin" type="button" @click.stop="showAnnotation('banner-batch-delete')">5</button>
+                        <a-button danger @click="batchDelete"><span class="mini-icon">×</span>批量删除</a-button>
+                      </span>
                       <a-button @click="importOpen = true"><span class="mini-icon">⇧</span>导入</a-button>
                       <a-button @click="exportData"><span class="mini-icon">⇩</span>导出</a-button>
                     </div>
@@ -667,22 +1006,41 @@
                     :row-selection="rowSelection"
                     :size="tableSize"
                     :pagination="{ current: pagination.current, pageSize: pagination.pageSize, total: filteredRows.length, showSizeChanger: true, showTotal: total => '共 ' + total + ' 条' }"
-                    :scroll="{ x: 980 }"
+                    :scroll="{ x: 1200 }"
                     @change="changePage"
                   >
                     <template #bodyCell="{ column, record }">
                       <template v-if="column.key === 'cover'">
-                        <img v-if="record.cover" class="cover" :src="record.cover" alt="封面图" />
-                        <div v-else class="cover-empty">无图</div>
+                        <span class="annotation-host" style="display:inline-block">
+                          <button v-if="annotationEnabled && rows.length && record.id === rows[0].id" class="annotation-pin" type="button" @click.stop="showAnnotation('banner-cover-image')">4</button>
+                          <img v-if="record.cover" class="cover" :src="record.cover" alt="封面图" />
+                          <div v-else class="cover-empty">无图</div>
+                        </span>
                       </template>
                       <template v-else-if="column.key === 'position'">
                         <a-tag :color="record.position === '后台首页' ? 'green' : 'blue'">{{ record.position }}</a-tag>
                       </template>
                       <template v-else-if="column.key === 'audit'">
-                        <a-tag :color="record.audit === '待审核' ? 'orange' : record.audit === '已发布' ? 'success' : 'default'">{{ record.audit }}</a-tag>
+                        <span class="annotation-host" style="display:inline-block">
+                          <button v-if="annotationEnabled && rows.length && record.id === rows[0].id" class="annotation-pin" type="button" @click.stop="showAnnotation('banner-publish-status')">2</button>
+                          <a-tag :color="record.audit === '待审核' ? 'orange' : record.audit === '已发布' ? 'success' : 'default'">{{ record.audit }}</a-tag>
+                        </span>
                       </template>
                       <template v-else-if="column.key === 'status'">
-                        <a-switch :checked="record.status" @change="value => toggleStatus(record, value)" />
+                        <span class="annotation-host" style="display:inline-block">
+                          <button v-if="annotationEnabled && rows.length && record.id === rows[0].id" class="annotation-pin" type="button" @click.stop="showAnnotation('banner-enable-status')">3</button>
+                          <a-switch :checked="record.status" @change="value => toggleStatus(record, value)" />
+                        </span>
+                      </template>
+                      <template v-else-if="column.key === 'attachment'">
+                        <a-space v-if="record.attachmentName">
+                          <span :class="'file-thumb ' + record.attachmentType">{{ String(record.attachmentType || 'file').toUpperCase() }}</span>
+                          <span>
+                            <a-tooltip :title="record.attachmentName"><span class="text-ellipsis">{{ record.attachmentName }}</span></a-tooltip>
+                            <div class="muted">{{ record.attachmentSize }}</div>
+                          </span>
+                        </a-space>
+                        <span v-else class="muted">无附件</span>
                       </template>
                       <template v-else-if="column.key === 'action'">
                         <a-space>
@@ -698,7 +1056,8 @@
               </section>
 
               <section v-else-if="currentPage === 'menuResource'" class="tree-layout">
-                <div class="tree-card">
+                <div class="tree-card annotation-host">
+                  <button v-if="annotationEnabled" class="annotation-pin" type="button" @click.stop="showAnnotation('menu-tree')">1</button>
                   <a-space style="margin-bottom:12px">
                     <a-button type="primary" size="small" @click="menuDrawerOpen = true"><span class="mini-icon">＋</span>新增</a-button>
                     <a-button size="small" @click="refresh"><span class="mini-icon">↻</span>刷新</a-button>
@@ -708,7 +1067,8 @@
                   <div class="resource-node" :class="{active: activeResource === '通知公告'}" @click="setResource('通知公告')">　通知公告 <span>4</span></div>
                   <div class="resource-node" :class="{active: activeResource === '师生管理'}" @click="setResource('师生管理')">师生管理 <span>9</span></div>
                 </div>
-                <div class="table-card">
+                <div class="table-card annotation-host">
+                  <button v-if="annotationEnabled" class="annotation-pin" type="button" style="right:36px" @click.stop="showAnnotation('menu-detail')">2</button>
                   <h1 class="page-title">菜单资源</h1>
                   <a-descriptions bordered size="small" :column="2">
                     <a-descriptions-item label="当前菜单">{{ activeResource }}</a-descriptions-item>
@@ -717,7 +1077,8 @@
                     <a-descriptions-item label="操作范围">查询、新增、编辑、删除、导入、导出</a-descriptions-item>
                   </a-descriptions>
                   <a-divider />
-                  <a-space>
+                  <a-space class="annotation-host">
+                    <button v-if="annotationEnabled" class="annotation-pin" type="button" @click.stop="showAnnotation('menu-actions')">3</button>
                     <a-button type="primary" @click="menuDrawerOpen = true">编辑菜单</a-button>
                     <a-button @click="topAction('授权')">角色授权</a-button>
                     <a-button danger @click="removeRow({ id: -1, title: activeResource })">删除菜单</a-button>
@@ -726,7 +1087,8 @@
               </section>
               <section v-else>
                 <div class="preset-grid">
-                  <div class="preset-card">
+                  <div class="preset-card annotation-host">
+                    <button v-if="annotationEnabled" class="annotation-pin" type="button" @click.stop="showAnnotation('component-upload')">1</button>
                     <h3>上传组件</h3>
                     <div class="preset-row">
                       <img v-if="formState.cover" class="upload-preview" :src="formState.cover" alt="上传预览" />
@@ -738,7 +1100,8 @@
                       <a-button size="small" @click="removeCover">移除</a-button>
                     </div>
                   </div>
-                  <div class="preset-card">
+                  <div class="preset-card annotation-host">
+                    <button v-if="annotationEnabled" class="annotation-pin" type="button" @click.stop="showAnnotation('component-status')">2</button>
                     <h3>状态与标签</h3>
                     <div class="preset-row">
                       <a-tag color="success">启用</a-tag>
@@ -776,7 +1139,8 @@
                     </div>
                   </div>
                 </div>
-                <div class="table-card">
+                <div class="table-card annotation-host">
+                  <button v-if="annotationEnabled" class="annotation-pin" type="button" @click.stop="showAnnotation('component-table')">3</button>
                   <div class="toolbar">
                     <div class="toolbar-left">
                       <a-button type="primary" @click="topAction('新增用户')"><span class="mini-icon">＋</span>新增用户</a-button>
@@ -844,10 +1208,47 @@
                   </a-table>
                 </div>
               </section>
+              <section v-if="annotationEnabled" class="annotation-card">
+                <div class="annotation-card-title">
+                  <h2>示例标注 / 需求点说明</h2>
+                  <a-space>
+                    <a-tag color="gold">点击序号查看详情</a-tag>
+                    <a-tag>真实项目以需求文档为准</a-tag>
+                    <a-button size="small" type="primary" @click="openAnnotationAdd"><span class="mini-icon">＋</span>新增标注</a-button>
+                  </a-space>
+                </div>
+                <div class="annotation-list">
+                  <div v-for="note in currentAnnotations" :key="note.id" class="annotation-item" @click="showAnnotation(note.id)">
+                    <span class="annotation-index">{{ note.index }}</span>
+                    <div>
+                      <div class="annotation-item-head">
+                        <h3>{{ note.title }}</h3>
+                        <a-button size="small" type="link" @click.stop="openAnnotationEdit(note)">编辑</a-button>
+                      </div>
+                      <p><strong>{{ note.summary }}</strong></p>
+                      <p>{{ note.detail }}</p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <div v-if="nodeCommentOpen" class="node-comment-popover" :style="nodeCommentStyle" @click.stop>
+                <div class="node-comment-input">
+                  <span class="node-comment-handle">⌘</span>
+                  <a-input v-model:value="nodeCommentText" :placeholder="'给“' + nodeCommentTarget + '”添加注释...'" @pressEnter="saveNodeComment" />
+                  <span class="mini-icon">◦</span>
+                </div>
+                <div class="node-comment-actions">
+                  <a-button size="small" @click="clearNodeSelection">取消</a-button>
+                  <a-button size="small" type="primary" @click="saveNodeComment">添加注释</a-button>
+                </div>
+              </div>
             </a-layout-content>
           </a-layout>
 
           <a-drawer :title="drawerMode === 'detail' ? '内容详情' : drawerMode === 'edit' ? '编辑内容' : '新增内容'" width="560" v-model:open="drawerOpen">
+            <div v-if="annotationEnabled" class="annotation-host" style="height:0">
+              <button class="annotation-pin" type="button" style="top:-18px;right:0" @click.stop="showAnnotation('banner-drawer-cover')">6</button>
+            </div>
             <a-form layout="vertical">
               <a-form-item label="标题" required>
                 <a-input v-model:value="formState.title" :disabled="drawerMode === 'detail'" placeholder="请输入标题" />
@@ -934,10 +1335,33 @@
               <a-checkbox value="position">发布位置</a-checkbox>
               <a-checkbox value="sort">排序</a-checkbox>
               <a-checkbox value="audit">发布状态</a-checkbox>
-              <a-checkbox value="status">状态</a-checkbox>
+              <a-checkbox value="status">是否显示</a-checkbox>
+              <a-checkbox value="attachment">附件</a-checkbox>
               <a-checkbox value="createdAt">创建时间</a-checkbox>
               <a-checkbox value="action">操作</a-checkbox>
             </a-checkbox-group>
+          </a-modal>
+          <a-modal
+            :title="annotationEditorMode === 'edit' ? '编辑标注' : '新增标注'"
+            v-model:open="annotationEditorOpen"
+            ok-text="保存"
+            cancel-text="取消"
+            @ok="saveAnnotation"
+          >
+            <a-form layout="vertical">
+              <a-form-item label="序号">
+                <a-input-number v-model:value="annotationForm.index" :min="1" style="width:100%" />
+              </a-form-item>
+              <a-form-item label="标题" required>
+                <a-input v-model:value="annotationForm.title" placeholder="请输入具体需求点标题" />
+              </a-form-item>
+              <a-form-item label="摘要" required>
+                <a-input v-model:value="annotationForm.summary" placeholder="请输入一句话规则或重点说明" />
+              </a-form-item>
+              <a-form-item label="详细说明">
+                <a-textarea v-model:value="annotationForm.detail" :rows="4" placeholder="请输入详细说明、来源或待确认点" />
+              </a-form-item>
+            </a-form>
           </a-modal>
           <a-modal :title="previewTitle" v-model:open="previewOpen" :footer="null">
             <img v-if="previewImage" :src="previewImage" style="width:100%;border-radius:4px" alt="图片预览" />
