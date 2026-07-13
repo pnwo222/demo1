@@ -2,43 +2,46 @@
 
 本流程图描述本仓库基于 `project/` 现有 Snowy 框架进行增量开发的标准协作流程。业务需求来自 `docs/requirements/**`，框架结构和开发规范来自 `project/docs/**`。
 
+本项目已将 `Agents365-ai/365-skills` 安装到 `.codex/skills/`。本文件以及工作流中涉及流程图、架构图、模块图、ERD、状态机图、时序图、任务图、DAG、依赖图或系统可视化时，默认使用 `.codex/skills/mermaid-skill`；需要可编辑 Draw.io、复杂样式、泳道或厂商图标时使用 `.codex/skills/drawio-skill`；需要 PlantUML/UML/C4 语义时使用 `.codex/skills/plantuml-skill`；需要手绘白板风格时使用 `.codex/skills/excalidraw-skill`。图形产物必须按对应 skill 的校验流程生成和导出。
+
 ## 主流程
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"background": "#ffffff", "mainBkg": "#f8f7ff", "secondBkg": "#ffffff", "primaryColor": "#f8f7ff", "primaryBorderColor": "#7c6fbd", "primaryTextColor": "#222222", "lineColor": "#555555", "edgeLabelBackground": "#ffffff", "fontFamily": "Microsoft YaHei, SimHei, Arial, sans-serif"}}}%%
 flowchart TD
     A([需求或开发请求]) --> B["Orchestrator 进入项目工作流"]
     B --> C["读取 AGENTS.md、workflow、skill"]
-    C --> D["阶段 0: 开发环境检测"]
+    C --> D["前置 1: 开发环境检测"]
     D --> D1["只读自检: Git、Node、npm、依赖、JDK17、Maven、IDEA、MySQL CLI、MySQL、Redis"]
-    D1 --> D2["输出检测清单: ✅ / ⚠️ / ❌"]
+    D1 --> D2["输出检测清单: 通过 / 警告 / 失败"]
     D2 --> D3["写入本机状态: docs/workflow/local-environment-status.md<br/>该文件被 .gitignore 忽略"]
     D3 --> E{"环境选择"}
-    E -- "1 环境通过，进入分支确认" --> E1["阶段 0.1: 分支确认<br/>输出当前 Git 分支和工作区状态"]
-    E -- "2 环境有警告但继续" --> E1
-    E -- "3 环境阻塞先处理" --> D4["处理环境问题后重新自检"]
+    E -- "1 通过" --> E1["前置 2: 分支确认<br/>输出当前 Git 分支和工作区状态"]
+    E -- "2 警告继续" --> E1
+    E -- "3 阻塞处理" --> D4["处理环境问题后重新自检"]
     E -- "4 暂停" --> END0([暂停])
     D4 --> D
     E1 --> E2{"分支选择"}
-    E2 -- "1 以当前分支作为开发分支并继续" --> F["阶段 0.2: 创建需求集成分支"]
-    E2 -- "2 切换到其他分支" --> E1
+    E2 -- "1 当前分支" --> F["前置 3: 创建需求集成分支"]
+    E2 -- "2 切换分支" --> E1
     E2 -- "3 暂停" --> END0
 
-    F --> G["读取 docs/requirements/**"]
+    F --> G["阶段 1: 需求和框架装载<br/>读取 docs/requirements/**"]
     G --> H["读取 project/docs/**、project/docs/patterns/**、project/README.md"]
     H --> I{"需求、框架和环境信息是否充分"}
     I -- 否 --> I1["补充或澄清需求 / 框架文档"]
     I1 --> G
 
     I -- 是 --> J{"选择开发模式"}
-    J -- "简单 CRUD 快速模式" --> J1["优先使用模式缓存<br/>可跳过 PRD/UI<br/>保留最小需求、字段、接口、表结构、验收和风险"]
-    J -- "标准 SDLC 模式" --> K{"是否需要 PRD / 低保真原型"}
-    J -- "高风险严格模式" --> J2["加强技术、数据、安全、QA、Review 门禁"]
+    J -- "快速" --> J1["简单 CRUD 快速模式<br/>优先使用模式缓存<br/>可跳过 PRD/UI<br/>保留最小需求、字段、接口、表结构、验收和风险"]
+    J -- "标准" --> K{"是否需要 PRD / 低保真原型"}
+    J -- "严格" --> J2["高风险严格模式<br/>加强技术、数据、安全、QA、Review 门禁"]
     J -- "自定义" --> J3["记录自定义流程和不可跳过风险"]
     J1 --> N
     J2 --> K
     J3 --> K
 
-    K -- "生成" --> L["Product Agent: PRD、验收标准、HTML PRD、低保真 HTML 原型"]
+    K -- "生成" --> L["Product Agent<br/>PRD、验收标准、HTML PRD、低保真 HTML 原型"]
     L --> L0{"是否涉及后管 / 后台 / 管理端 / 运营端"}
     L0 -- 是 --> L2["使用 snowy-admin-prototype-designer skill<br/>套用 admin-prototype-design-workflow<br/>先输出严格需求到原型页面蓝图"]
     L2 --> L2A["蓝图必须包含原始需求摘录、原子需求清单、字段来源、操作来源和逐项覆盖矩阵<br/>运行 validate_admin_blueprint.py"]
@@ -47,13 +50,13 @@ flowchart TD
     L2B -- 是 --> L3["复制 skill 内置 Demo 模板<br/>按蓝图生成 Snowy 后管拟真原型<br/>输出框架参考清单、菜单映射、CRUD 形式和覆盖矩阵"]
     L0 -- 否 --> L1{"PRD / 原型确认"}
     L3 --> L1
-    K -- "跳过 PRD" --> K1["记录跳过原因和最小需求说明"]
+    K -- "跳过" --> K1["记录跳过原因和最小需求说明"]
     L1 -- 否 --> L
     L1 -- 是 --> M{"是否需要 UI / Figma"}
     K1 --> M
 
-    M -- "生成" --> M1["Design Agent: 设计系统、Figma、Ready for Dev、Handoff"]
-    M -- "跳过 UI" --> M2["复用 Snowy 现有 UI 模式并记录约束"]
+    M -- "生成" --> M1["Design Agent<br/>设计系统、Figma、Ready for Dev、Handoff"]
+    M -- "跳过" --> M2["复用 Snowy 现有 UI 模式并记录约束"]
     M1 --> M3{"UI 设计确认"}
     M3 -- 否 --> M1
     M3 -- 是 --> N
@@ -164,6 +167,7 @@ flowchart TB
 - 技术设计、数据模型、migration 和回滚策略未确认，不进入开发。
 - 开发环境检测必须检测可用 MySQL CLI；PATH 找不到 `mysql` 时自动搜索常见安装目录中的 `mysql.exe` 并用绝对路径验证。PATH 和搜索都找不到时记录全局状态 `blocked_missing_mysql_cli`，不进入 PRD/UI/技术设计或开发阶段。
 - 开发必须基于 `project/` 现有 Snowy 框架增量实现，不按空白项目重建目录。
+- 工作流中的流程图、架构图、ERD、状态机图、任务图、DAG 和依赖图必须使用 `.codex/skills/` 下的 365 diagram skills 生成与校验，默认 Mermaid，复杂可编辑图使用 Draw.io。
 - 涉及金额、权限、状态机、资源数量、业务单据、交易、逆向流程、删除和批量操作的改动必须重点审查。
 - 开发 Agent 不能自己给自己放行，必须经过 Review、CI 和人工审批。
 - P0 必须修复；P1 合并前应修复；CI 和发布检查未通过不进入全量发布。
