@@ -1,6 +1,17 @@
 import { existsSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+
+async function isVisible(locator) {
+  return locator.isVisible().catch(() => false);
+}
+
+async function requireVisible(locator, label, errors) {
+  if (await isVisible(locator)) return true;
+  errors.push(`MISSING OR HIDDEN: ${label}`);
+  return false;
+}
 
 async function main() {
   const target = process.argv[2];
@@ -30,6 +41,20 @@ async function main() {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   const errors = [];
   const warnings = [];
+  const source = await readFile(filePath, 'utf8');
+  const requiredSourceMarkers = [
+    'snowy-admin-prototype-v2',
+    'annotation-toolbar',
+    'const annotationEnabled = ref(false)',
+    'pageRequirements',
+    'requirementDrawerOpen',
+    'saveAsAnnotatedHtml',
+    'snowy-annotation-state',
+  ];
+  for (const marker of requiredSourceMarkers) {
+    if (!source.includes(marker)) errors.push(`SOURCE MARKER MISSING: ${marker}`);
+  }
+  if (source.includes('annotation-card')) errors.push('OBSOLETE STRUCTURE FOUND: annotation-card');
 
   page.on('pageerror', error => errors.push(`PAGEERROR: ${error.message || error}`));
   page.on('console', message => {
@@ -39,6 +64,110 @@ async function main() {
 
   await page.goto(pathToFileURL(filePath).href, { waitUntil: 'networkidle', timeout: 60000 });
   await page.waitForTimeout(1500);
+
+  await requireVisible(page.locator('.app-shell'), 'Snowy application shell', errors);
+  await requireVisible(page.locator('.annotation-toolbar'), 'top annotation toolbar', errors);
+
+  const annotationToggle = page.locator('.annotation-toolbar').getByText('开启', { exact: true });
+  await requireVisible(annotationToggle, 'annotation mode defaults to off', errors);
+
+  const generatedPins = page.locator('.annotation-pin:visible');
+  if (await generatedPins.count() === 0) errors.push('Generated annotation bubbles are not visible while annotation mode is off.');
+
+  const requirementButton = page.locator('.annotation-toolbar').getByText('页面需求', { exact: true });
+  if (await requireVisible(requirementButton, '页面需求 toolbar action', errors)) {
+    await requirementButton.click();
+    const requirementDrawer = page.locator('.ant-drawer:visible').filter({ hasText: '整体需求说明' }).last();
+    if (await requireVisible(requirementDrawer, '页面需求 drawer', errors)) {
+      const preview = requirementDrawer.locator('.requirement-preview');
+      await requireVisible(preview, '页面需求 default preview', errors);
+      if (await isVisible(requirementDrawer.locator('textarea'))) {
+        errors.push('页面需求 opened directly in edit mode; preview must be the default.');
+      }
+
+      const editRequirement = requirementDrawer.getByTitle('编辑整体需求描述');
+      if (await requireVisible(editRequirement, '页面需求 edit action', errors)) {
+        await editRequirement.click();
+        const textarea = requirementDrawer.locator('textarea');
+        if (await requireVisible(textarea, '页面需求 textarea after edit', errors)) {
+          const originalRequirement = await textarea.inputValue();
+          const saveBeforeChange = requirementDrawer.getByText('保存', { exact: true });
+          if (await isVisible(saveBeforeChange)) errors.push('页面需求 Save is visible before content changes.');
+
+          const runtimeRequirement = `${originalRequirement}\n[运行时校验]`;
+          await textarea.fill(runtimeRequirement);
+          const saveRequirement = requirementDrawer.getByText('保存', { exact: true });
+          if (await requireVisible(saveRequirement, '页面需求 Save after change', errors)) {
+            await saveRequirement.click();
+            if (!await isVisible(requirementDrawer.locator('.requirement-preview'))) {
+              errors.push('页面需求 did not return to preview after Save.');
+            }
+          }
+
+          await page.reload({ waitUntil: 'networkidle' });
+          await page.waitForTimeout(800);
+          await page.locator('.annotation-toolbar').getByText('页面需求', { exact: true }).click();
+          const reloadedDrawer = page.locator('.ant-drawer:visible').filter({ hasText: '整体需求说明' }).last();
+          const reloadedPreview = reloadedDrawer.locator('.requirement-preview');
+          if (!(await reloadedPreview.textContent().catch(() => '')).includes('[运行时校验]')) {
+            errors.push('页面需求 edit was not persisted after reload.');
+          }
+
+          await reloadedDrawer.getByTitle('编辑整体需求描述').click();
+          await reloadedDrawer.locator('textarea').fill(originalRequirement);
+          const restoreSave = reloadedDrawer.getByText('保存', { exact: true });
+          if (await isVisible(restoreSave)) await restoreSave.click();
+          const closeRequirement = reloadedDrawer.getByText('关闭', { exact: true });
+          if (await isVisible(closeRequirement)) await closeRequirement.click();
+        }
+      }
+    }
+  }
+
+  const enableAnnotation = page.locator('.annotation-toolbar').getByText('开启', { exact: true });
+  if (await requireVisible(enableAnnotation, 'annotation enable action', errors)) {
+    await enableAnnotation.click();
+    await requireVisible(page.locator('.annotation-toolbar').getByText('关闭', { exact: true }), 'annotation mode enabled state', errors);
+    const commentTarget = page.locator('.query-card .ant-form-item-label').first();
+    if (await requireVisible(commentTarget, 'commentable business node', errors)) {
+      await commentTarget.hover();
+      await commentTarget.click();
+      const commentPopover = page.locator('.node-comment-popover');
+      if (await requireVisible(commentPopover, 'node comment input', errors)) {
+        const commentTextarea = commentPopover.locator('textarea');
+        if (await requireVisible(commentTextarea, 'multiline node comment textarea', errors)) {
+          await commentTextarea.fill('运行时标注校验\n第二行');
+          await commentPopover.locator('.node-comment-submit').click();
+          await page.waitForTimeout(300);
+          await requireVisible(page.locator('.node-comment-pin').last(), 'saved node comment bubble', errors);
+          await page.reload({ waitUntil: 'networkidle' });
+          await page.waitForTimeout(800);
+          await requireVisible(page.locator('.node-comment-pin').last(), 'persisted node comment bubble after reload', errors);
+          await requireVisible(page.locator('.annotation-toolbar').getByText('开启', { exact: true }), 'annotation mode resets to off after reload', errors);
+        }
+      }
+    }
+  }
+
+  const saveAsButton = page.locator('.annotation-toolbar').getByText('另存为', { exact: true });
+  if (await requireVisible(saveAsButton, '另存为 toolbar action', errors)) {
+    const downloadPromise = page.waitForEvent('download', { timeout: 10000 }).catch(error => {
+      errors.push(`SAVE AS DOWNLOAD FAILED: ${error.message}`);
+      return null;
+    });
+    await saveAsButton.click();
+    const download = await downloadPromise;
+    if (download) {
+      const downloadPath = await download.path().catch(() => '');
+      if (!downloadPath) {
+        errors.push('SAVE AS DOWNLOAD PATH MISSING');
+      } else {
+        const exportedHtml = await readFile(downloadPath, 'utf8');
+        if (!exportedHtml.includes('snowy-annotation-state')) errors.push('Exported HTML is missing embedded annotation state.');
+        if (!exportedHtml.includes('运行时标注校验')) errors.push('Exported HTML is missing the latest user annotation.');
+      }
+    }
+  }
 
   const bodyText = await page.locator('body').innerText().catch(() => '');
   if (bodyText.trim().length < 80) {

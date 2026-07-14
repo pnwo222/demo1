@@ -9,6 +9,7 @@ if hasattr(sys.stderr, "reconfigure"):
 
 
 REQUIRED_MARKERS = [
+    "snowy-admin-prototype-v2",
     "prototypeMeta",
     "ant-design-vue",
     "Vue",
@@ -20,6 +21,21 @@ REQUIRED_MARKERS = [
     "a-table",
     "a-drawer",
     "a-modal",
+    "annotation-toolbar",
+    "node-comment-pin",
+    "snowy-annotation-state",
+    "const annotationEnabled = ref(false)",
+    "pageRequirements",
+    "requirementDrawerOpen",
+    "requirementEditing",
+    "saveAsAnnotatedHtml",
+    "localStorage",
+    "页面需求",
+    "另存为",
+]
+
+FORBIDDEN_STRUCTURE_MARKERS = [
+    "annotation-card",
 ]
 
 FORBIDDEN_VISIBLE_HINTS = [
@@ -79,12 +95,21 @@ def main() -> int:
             print(f"FAIL missing marker: {marker}")
             failed = True
 
+    for marker in FORBIDDEN_STRUCTURE_MARKERS:
+        if marker in text:
+            print(f"FAIL obsolete/forbidden structure found: {marker}")
+            failed = True
+
     for hint in FORBIDDEN_VISIBLE_HINTS:
         if hint in text:
-            print(f"WARN forbidden/developer-facing hint found: {hint}")
+            level = "WARN" if template_mode else "FAIL"
+            print(f"{level} forbidden/developer-facing hint found: {hint}")
+            if not template_mode:
+                failed = True
 
     if not template_mode and "需求到原型页面蓝图" not in text and "蓝图条目" not in text:
-        print("WARN no explicit blueprint or blueprint trace found")
+        print("FAIL no explicit blueprint or blueprint trace found")
+        failed = True
 
     if not template_mode and "原型需求覆盖矩阵" not in text and "覆盖矩阵" not in text:
         print("FAIL missing coverage matrix")
@@ -100,7 +125,10 @@ def main() -> int:
         print("WARN generic form hints found; verify pages do not share a universal drawer")
 
     if re.search(r"currentConfig|configs\s*=", text):
-        print("WARN generic config pattern found; verify each page has requirement-specific fields")
+        level = "WARN" if template_mode else "FAIL"
+        print(f"{level} generic config pattern found; each page needs requirement-specific fields")
+        if not template_mode:
+            failed = True
 
     if re.search(r"type\s*:\s*['\"]dashboard['\"][\s\S]{0,4000}preset-grid[\s\S]{0,1000}query-card", text) or re.search(r"(currentConfig|activePageSpec)\.type\s*===\s*['\"]dashboard['\"][\s\S]{0,1200}preset-grid[\s\S]{0,1200}query-card", text):
         print("FAIL dashboard layout places statistics before filters; filters must appear before metric cards")
