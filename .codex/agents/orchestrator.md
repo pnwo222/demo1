@@ -125,9 +125,10 @@
 - PRD/原型未跳过且需求涉及后管、后台、管理端或运营端页面时，必须检查 Product Agent 是否使用 `.codex/skills/snowy-admin-prototype-designer`，并引用其 Demo 模板、页面蓝图模板和验收清单。
 - PRD/原型未跳过且需求涉及后管、后台、管理端或运营端页面时，必须检查是否先输出“需求到原型页面蓝图”。蓝图必须逐个独立页面列出需求编号、原始需求摘录、原子需求清单、菜单路径、路由路径、权限标识、页面类型、参考 Snowy 页面、同步字段、展示字段、筛选字段、查询字段、表格字段、详情字段、新增字段、编辑字段、状态字段、敏感字段、操作按钮、状态/异常、权限差异、字段展示形态和点击交互；每个字段、按钮、状态和权限必须标记来源：`需求明确`、`框架惯例`、`待确认` 或 `不适用`；缺少蓝图、蓝图没有逐页字段、蓝图未通过 `.codex/skills/snowy-admin-prototype-designer/scripts/validate_admin_blueprint.py`、出现 `等状态`/`多条件筛选`/`同新增` 等压缩写法时退回 Product 阶段重做。
 - PRD/原型未跳过且需求涉及后管、后台、管理端或运营端页面时，必须检查覆盖矩阵是否能追溯到蓝图和 HTML。`已覆盖` 项必须有对应页面、字段、操作或交互；不能只在矩阵中自称已覆盖；不得用 `ADM-S-001~020` 这类范围行证明覆盖。
-- PRD/原型未跳过且需求涉及后管、后台、管理端或运营端页面时，必须检查后管原型是否从 `.codex/skills/snowy-admin-prototype-designer/assets/prototype-demo-framework/index.html` 复制模板生成，并保留 `prototypeMeta`、Vue + Ant Design Vue CDN、`.snowy-sider`、`.snowy-header`、`.tabs-row`、查询卡片、工具栏、`a-table`、`a-drawer`、`a-modal`、图片上传预设和组件预设页面；缺少任一关键结构时退回 Product 阶段重做。
+- PRD/原型未跳过且需求涉及后管、后台、管理端或运营端页面时，必须检查后管原型是否从 `.codex/skills/snowy-admin-prototype-designer/assets/prototype-demo-framework/index.html` 复制模板生成，并保留 Demo 版本标识、`prototypeMeta`、Vue + Ant Design Vue CDN、`.snowy-sider`、`.snowy-header`、`.tabs-row`、查询卡片、工具栏、`a-table`、`a-drawer`、`a-modal`、顶部标注工具栏、节点标注与本地持久化、页面需求抽屉和另存为能力；组件预设只按业务需要复用，不得作为无关菜单或页面保留。缺少任一必需关键结构时退回 Product 阶段重做。
 - PRD/原型未跳过且需求涉及后管、后台、管理端或运营端页面时，还必须检查后管原型是否符合 Demo 原型设计规则：菜单层级来自需求；字段展示形态匹配语义；业务状态和启停操作按 Snowy 习惯拆分；上传可选择并预览/移除；所有可点击元素有交互；无开发提示、教学说明和无关功能。不符合时退回 Product 阶段重做。
 - PRD/原型未跳过且需求涉及后管、后台、管理端或运营端页面时，必须抽查 HTML 是否逐页实现蓝图，不得出现多个业务页面共用一个万能查询区、万能表格列、万能新增/编辑/详情抽屉或万能操作流程。存在万能 CRUD 时退回 Product 阶段重做。
+- PRD/原型未跳过且需求涉及后管、后台、管理端或运营端页面时，必须检查页面底部不存在 `annotation-card`；顶部标注工具、页面需求抽屉、刷新持久化和另存为均通过运行时校验。页面需求必须默认预览、点击编辑后才出现 textarea，且只有内容变化时显示保存。
 - UI 被跳过时，必须记录使用现有 Snowy UI 模式和组件规范。
 - 技术设计未确认，不进入开发。
 - 数据模型、migration 和回滚策略未确认，不进入开发。

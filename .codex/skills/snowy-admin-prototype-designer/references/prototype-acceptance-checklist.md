@@ -3,8 +3,9 @@
 ## 模板门禁
 
 - 使用 `assets/prototype-demo-framework/index.html` 复制生成。
-- 保留 `prototypeMeta`、Vue、Ant Design Vue、`.snowy-sider`、`.snowy-header`、`.tabs-row`、查询卡片、工具栏、`a-table`、`a-drawer`、`a-modal`、上传预设。
+- 保留 Demo 版本标识、`prototypeMeta`、Vue、Ant Design Vue、`.snowy-sider`、`.snowy-header`、`.tabs-row`、查询卡片、工具栏、`a-table`、`a-drawer`、`a-modal`、顶部标注工具栏、节点标注、本地持久化、页面需求抽屉和另存为。
 - 系统标题、Logo 简称、浏览器标题来自需求或标记待确认。
+- 图片上传和组件预设按需求复用；未涉及的组件不得作为无关业务菜单或页面保留。
 
 ## 需求门禁
 
@@ -26,6 +27,10 @@
 - 编辑和详情必须带入当前行数据。
 - 删除和批量删除必须改变列表状态或展示明确反馈。
 - 查询和重置必须改变筛选条件或列表状态。
+- 标注模式默认关闭，已有标注气泡始终可见；开启后可选择节点并新增、修改、删除标注，刷新后结果不丢失。
+- “页面需求”按当前页面分别展示蓝图中的整体需求说明；默认预览，点击编辑图标后才显示 textarea，只有内容变化时显示保存，取消恢复原内容。
+- “另存为”导出的 HTML 包含最新标注和页面需求状态，重新打开后可查看。
+- 页面底部不存在 `annotation-card` 或需求说明列表。
 
 ## 展示门禁
 

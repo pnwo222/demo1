@@ -383,7 +383,7 @@ HTML PRD 要求：
 - 必须参考现有框架：后管参考 Snowy 管理端菜单、标签页、查询表单、表格、分页、工具栏、弹窗/抽屉、权限按钮和状态反馈；H5/移动端参考项目中已有或后续补充的 H5 框架。
 - 后管原型必须执行 `.codex/workflows/admin-prototype-design-workflow.md`，从 `.codex/skills/snowy-admin-prototype-designer/assets/prototype-demo-framework/index.html` 复制模板生成，并输出框架参考清单、菜单映射、CRUD 形式选择和原型需求覆盖矩阵。
 - 后管原型 HTML 生成前必须先输出需求到原型页面蓝图。没有蓝图、蓝图缺少逐页原始需求摘录、原子需求清单、同步/展示/筛选/查询/表格/详情/新增/编辑/状态/敏感/操作/权限/字段展示形态，蓝图字段不能追溯到需求，或蓝图未通过 `validate_admin_blueprint.py` 时，不得生成 HTML。
-- 后管原型 HTML 必须保留 Demo 框架关键结构：`prototypeMeta`、Vue + Ant Design Vue CDN、`.snowy-sider`、`.snowy-header`、`.tabs-row`、查询卡片、工具栏、`a-table`、`a-drawer`、`a-modal`、图片上传预设和组件预设页面；缺少时不得进入 UI 设计、技术设计或开发。
+- 后管原型 HTML 必须保留 Demo 版本标识、`prototypeMeta`、Vue + Ant Design Vue CDN、`.snowy-sider`、`.snowy-header`、`.tabs-row`、查询卡片、工具栏、`a-table`、`a-drawer`、`a-modal`、顶部标注工具栏、节点标注与本地持久化、页面需求抽屉和另存为能力；图片上传和组件预设按需求复用，不得保留无关的组件展示菜单或页面。缺少必需结构时不得进入 UI 设计、技术设计或开发。
 - 如同时涉及后管和 H5/移动端，必须分别保存为后管原型和 H5/移动端原型，例如 `docs/design/<需求ID>-admin-low-fidelity.html` 与 `docs/design/<需求ID>-h5-low-fidelity.html`。
 - 如果 H5 框架尚未补充，H5/移动端原型必须单独保留移动端信息结构和交互草案，并标记 `H5 框架待补充`。
 - 如涉及后管、后台、管理端或运营端，必须体现菜单入口、所在层级和页面切换关系。
