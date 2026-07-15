@@ -151,36 +151,36 @@
 <td>ADM-S-001</td>
 <td>业务首页</td>
 <td>专区用户、校园用户、活跃、社保卡码应用数据及图表</td>
-<td>查看、按允许范围导出报表</td>
+<td>按时间筛选、查看、按允许范围导出报表</td>
 <td>学校范围；加载/空/异常</td>
 </tr>
 <tr>
 <td>ADM-S-002</td>
 <td>师生管理分组</td>
-<td>学生、教职工、历史学生菜单分组与统计入口</td>
+<td>学生、教职工、历史学生菜单分组；师生信息统计与社保卡绑定状态查看入口</td>
 <td>导航、查看</td>
 <td>学校端可见，无独立 CRUD</td>
 </tr>
 <tr>
 <td>ADM-S-003</td>
 <td>学生管理</td>
-<td>姓名、身份证号、手机号、学院、专业、班级、学号、注册与社保卡状态</td>
-<td>同步、查询、详情</td>
+<td>姓名、身份证号、手机号、学院、专业、班级、学号、专区注册状态、社保绑卡状态、省内持卡状态、卡规范版本、社保卡金融账户激活状态</td>
+<td>同步、按上述字段筛选、查看清单与详情</td>
 <td>同步只读；敏感字段脱敏</td>
 </tr>
 <tr>
 <td>ADM-S-004</td>
 <td>教职工管理</td>
-<td>姓名、身份证号、手机号、入职年份、部门、工号、注册与社保卡状态</td>
-<td>同步、查询、详情</td>
+<td>姓名、身份证号、手机号、入职年份、当前状态、部门、工号、专区注册状态、社保绑卡状态、省内持卡状态、卡规范版本、社保卡金融账户激活状态</td>
+<td>同步、按上述字段筛选、查看清单与详情</td>
 <td>同步只读；敏感字段脱敏</td>
 </tr>
 <tr>
 <td>ADM-S-005</td>
 <td>历史学生管理</td>
-<td>姓名、证件/手机、学院、专业、学籍变更类型</td>
-<td>查询、详情</td>
-<td>只读；历史状态明确</td>
+<td>姓名、身份证、手机号、学院、专业；毕业、取消入学资格、结业、退学、休学、保留入学资格、交换生返校、保留学籍、死亡、转学（转出）类型</td>
+<td>按姓名、身份证、手机号、学院、专业筛选，查看清单与详情</td>
+<td>只读；历史类型明确</td>
 </tr>
 <tr>
 <td>ADM-S-006</td>
@@ -192,7 +192,7 @@
 <tr>
 <td>ADM-S-007</td>
 <td>应用上线管理</td>
-<td>名称、图标、链接、可见身份、可用状态、展示状态</td>
+<td>应用名称、应用图标、应用链接、可见身份、可用状态、展示状态</td>
 <td>查看、新增、编辑、删除</td>
 <td>按权限操作；状态分别控制</td>
 </tr>
@@ -213,8 +213,8 @@
 <tr>
 <td>ADM-S-010</td>
 <td>文章管理</td>
-<td>标题、发布人、展示模式、审核、推荐、发布时间</td>
-<td>新增、编辑、删除、筛选、发布/推荐</td>
+<td>标题、发布人、展示模式、审核状态、推荐状态、发布时间</td>
+<td>新增、编辑、删除、筛选、发布至 APP 校园资讯/推荐</td>
 <td>审核与发布权限分离</td>
 </tr>
 <tr>
@@ -227,14 +227,14 @@
 <tr>
 <td>ADM-S-012</td>
 <td>社保卡申领记录</td>
-<td>姓名、证件类型/号码、手机、民族、性别、职业、绑卡/参保/持卡/金融激活状态、申领时间</td>
-<td>同步、筛选、详情、清单导出</td>
+<td>姓名、证件类型、证件号码、手机号、民族、性别、职业、社保绑卡状态、参保地、省内持卡状态、卡规范版本、社保卡金融账户激活状态、申领时间</td>
+<td>同步、按上述字段筛选、查看清单与详情、清单导出</td>
 <td>只读；导出鉴权并审计</td>
 </tr>
 <tr>
 <td>ADM-S-013</td>
 <td>设备状态监控</td>
-<td>设备信息、位置、在线、门长开及非法时段开门报警</td>
+<td>设备信息、设备位置、在线状态、门长开报警状态、非法时段开门报警状态</td>
 <td>监控、筛选、详情</td>
 <td>在线/离线/异常；不提供远程配置</td>
 </tr>
@@ -248,35 +248,35 @@
 <tr>
 <td>ADM-S-015</td>
 <td>访客记录管理</td>
-<td>来访人/单位/手机、被访人/部门、事由、起止日期</td>
-<td>查询、详情、导出</td>
+<td>来访人、来访单位、手机号、被访人、拜访部门、拜访事由、拜访开始日期、拜访结束日期、审核状态、预约渠道</td>
+<td>按被访人筛选、查看清单与详情、导出</td>
 <td>只读；手机脱敏；导出审计</td>
 </tr>
 <tr>
 <td>ADM-S-016</td>
 <td>通行记录管理</td>
-<td>通行人员、设备位置、验证方式、方向、时间</td>
-<td>查询、详情</td>
+<td>通行人员信息、设备位置、验证方式、通行方向、通行时间</td>
+<td>按展示字段筛选、查看清单与详情</td>
 <td>只读；异常同步提示</td>
 </tr>
 <tr>
 <td>ADM-S-017</td>
 <td>消费记录管理</td>
-<td>姓名、商家、金额、流水号、支付类型/方式/时间</td>
-<td>同步、查询、详情</td>
+<td>姓名、商家名称、交易金额、支付流水号、支付类型、付款方式、支付时间</td>
+<td>同步、按支付时间筛选、查看清单与详情</td>
 <td>只读；金额和流水受控</td>
 </tr>
 <tr>
 <td>ADM-S-018</td>
 <td>图书借阅记录管理</td>
-<td>姓名、学/工号、题名、条码、借阅/应还/归还日期</td>
-<td>同步、查询、详情</td>
+<td>姓名、学号/工号、书籍题名、条码号、借阅日期、应还日期、归还日期</td>
+<td>同步、按姓名/书籍题名/条码号筛选、查看清单与详情</td>
 <td>只读；逾期仅展示来源状态</td>
 </tr>
 <tr>
 <td>ADM-S-019</td>
 <td>用户管理</td>
-<td>姓名、手机、身份、绑卡/持卡、首次及最近登录日期</td>
+<td>汇聚访客、在校生、教职工；展示姓名、手机、用户身份、社保绑卡状态、省内持卡状态、首次登录日期、最近登录日期</td>
 <td>查询、详情</td>
 <td>只读；不增加账号维护操作</td>
 </tr>
@@ -302,8 +302,8 @@
 <tbody><tr>
 <td>ADM-P-001</td>
 <td>系统首页</td>
-<td>高校专区/用户数据、学校排行、活跃排行、时间维度、报表</td>
-<td>查看、报表导出</td>
+<td>所有高校专区数据、专区用户数据、校园用户数据、高校用户排行、活跃度排行、时间维度、报表</td>
+<td>按时间筛选、查看、报表导出</td>
 <td>平台范围；导出审计</td>
 </tr>
 <tr>
@@ -324,15 +324,15 @@
 <td>ADM-P-004</td>
 <td>角色管理</td>
 <td>名称、编码、权限集合、状态、关联用户、数据范围</td>
-<td>新增、编辑、删除、授权</td>
+<td>新增、编辑、删除、启用/禁用、授权、关联用户</td>
 <td>资源树授权；高风险权限提示</td>
 </tr>
 <tr>
 <td>ADM-P-005</td>
 <td>模块管理</td>
-<td>模块名称、显示名称、图标、排序、状态</td>
-<td>新增、编辑、删除</td>
-<td>引用校验；启停与删除分离</td>
+<td>模块显示名称、图标、排序及与菜单、权限的关系</td>
+<td>配置显示名称、图标和排序，支撑菜单配置与权限分配</td>
+<td>标书未明确模块新增/编辑/删除，不擅自增加</td>
 </tr>
 <tr>
 <td>ADM-P-006</td>
@@ -358,14 +358,14 @@
 <tr>
 <td>ADM-P-009</td>
 <td>外部调用日志</td>
-<td>分类、名称、状态、请求方式、参数、时间、调用方</td>
-<td>查询、详情</td>
+<td>日志分类、日志名称、执行状态、请求方式、请求参数、操作时间、调用方</td>
+<td>按时间/日志名称筛选、查看清单与详情</td>
 <td>只读；参数脱敏</td>
 </tr>
 <tr>
 <td>ADM-P-010</td>
 <td>宁波一卡通后管对接</td>
-<td>用户、内容、访客、门禁、借阅、消费、用卡统计对接概况</td>
+<td>用户中心、内容管理、信息查询、审核中心、系统监控的数据对接概况</td>
 <td>查看、数据对接监控</td>
 <td>不虚构外部系统维护 CRUD</td>
 </tr>
@@ -379,7 +379,7 @@
 <tr>
 <td>ADM-P-012</td>
 <td>审核中心数据对接</td>
-<td>业务类型、审核单号、提交人/时间、状态、结果</td>
+<td>对接审核中心模块数据；业务类型、审核单号、提交人/时间、状态、结果等具体字段待接口确认</td>
 <td>同步、查询、详情</td>
 <td>只读对接视图；审核动作边界待接口确认</td>
 </tr>
@@ -392,7 +392,7 @@
 </tr>
 </tbody></table>
 <h2>接口中心需求</h2>
-<p>接口管理页展示调用配置状态和日志，不等同于允许人工修改业务数据。最终字段、错误码、签名算法和 SLA 在技术方案确认。</p>
+<p>接口管理页展示调用配置状态和日志，不等同于允许人工修改业务数据。API-001～API-008 均须执行格式校验、重复项检测和异常数据拦截，并支撑数据初始化、实时交互、场景应用和数据反哺闭环；最终字段、错误码、签名算法和 SLA 在技术方案确认。</p>
 <table>
 <thead>
 <tr>
@@ -514,7 +514,7 @@
 <tr>
 <td>PAM-008</td>
 <td>日志与分级权限管理</td>
-<td>操作人/时间/内容/结果、通信时间/数据/状态、管理范围、权限、子账户角色</td>
+<td>操作人员、操作时间、操作内容、操作结果、通信时间、数据内容、交互状态、管理范围、操作权限、子账户角色</td>
 <td>日志查询、子账户与授权管理</td>
 <td>日志只读；分级授权防越权并审计</td>
 </tr>
@@ -534,35 +534,35 @@
 <tbody><tr>
 <td>H5-001</td>
 <td>首页设计</td>
-<td>资讯、公告、应用、Banner 聚合与跳转</td>
+<td>一卡通 APP 未来校园专区按预设布局展示校园资讯、通知公告、特色应用场景及 Banner 跳转</td>
 <td>需求保留、设计延期</td>
 <td>开发者明确本阶段暂不考虑 H5 设计，且不采用当前未跟踪 project/h5 作为正式基线</td>
 </tr>
 <tr>
 <td>H5-002</td>
 <td>学校简介</td>
-<td>学校概况内容展示</td>
+<td>图文展示历史沿革、办学理念、发展目标、师资力量、科研成果</td>
 <td>需求保留、设计延期</td>
 <td>开发者明确本阶段暂不考虑 H5 设计，且不采用当前未跟踪 project/h5 作为正式基线</td>
 </tr>
 <tr>
 <td>H5-003</td>
 <td>专业介绍</td>
-<td>专业清单与详情</td>
+<td>专业清单与详情，包含专业代码、专业名称、所属分院</td>
 <td>需求保留、设计延期</td>
 <td>开发者明确本阶段暂不考虑 H5 设计，且不采用当前未跟踪 project/h5 作为正式基线</td>
 </tr>
 <tr>
 <td>H5-004</td>
 <td>校园地图</td>
-<td>校园地图图片展示</td>
+<td>以图片展示校园内部场所分布</td>
 <td>需求保留、设计延期</td>
 <td>开发者明确本阶段暂不考虑 H5 设计，且不采用当前未跟踪 project/h5 作为正式基线</td>
 </tr>
 <tr>
 <td>H5-005</td>
 <td>招生咨询</td>
-<td>联系渠道展示</td>
+<td>展示招生热线、传真、微信公众号</td>
 <td>需求保留、设计延期</td>
 <td>开发者明确本阶段暂不考虑 H5 设计，且不采用当前未跟踪 project/h5 作为正式基线</td>
 </tr>
@@ -576,49 +576,49 @@
 <tr>
 <td>H5-007</td>
 <td>校园资讯</td>
-<td>资讯清单、详情和推荐</td>
+<td>资讯清单、详情及单条资讯在专区首页 Banner 位展示</td>
 <td>需求保留、设计延期</td>
 <td>开发者明确本阶段暂不考虑 H5 设计，且不采用当前未跟踪 project/h5 作为正式基线</td>
 </tr>
 <tr>
 <td>H5-008</td>
 <td>访客预约</td>
-<td>提交预约、审核同步、记录查看</td>
+<td>姓名、身份证号、手机号、访问时间、通行方式、车牌、拜访人、访问缘由、备注；提交审核并查看已通过、待审核、未通过记录</td>
 <td>需求保留、设计延期</td>
 <td>开发者明确本阶段暂不考虑 H5 设计，且不采用当前未跟踪 project/h5 作为正式基线</td>
 </tr>
 <tr>
 <td>H5-009</td>
 <td>校园启航</td>
-<td>身份认证、社保卡绑定、预约办卡</td>
+<td>新生校园账号激活、社保卡办理/绑定、招生录取数据比对验证；无本省社保卡时预约办卡</td>
 <td>需求保留、设计延期</td>
 <td>开发者明确本阶段暂不考虑 H5 设计，且不采用当前未跟踪 project/h5 作为正式基线</td>
 </tr>
 <tr>
 <td>H5-010</td>
 <td>图书借阅</td>
-<td>书目检索与推荐</td>
+<td>对接图书馆的新书推荐、图书检索、借阅排行；展示书名、著者、出版社、出版时间、封面、图书编号、借阅状态、馆场地</td>
 <td>需求保留、设计延期</td>
 <td>开发者明确本阶段暂不考虑 H5 设计，且不采用当前未跟踪 project/h5 作为正式基线</td>
 </tr>
 <tr>
 <td>H5-011</td>
 <td>我的</td>
-<td>个人中心和个人记录聚合</td>
+<td>聚合个人资料、访客预约、消费、图书借阅、门禁、校园卡账本、社保卡信息、校园码</td>
 <td>需求保留、设计延期</td>
 <td>开发者明确本阶段暂不考虑 H5 设计，且不采用当前未跟踪 project/h5 作为正式基线</td>
 </tr>
 <tr>
 <td>H5-012</td>
 <td>服务消息对接</td>
-<td>校园通知推送到一卡通 APP</td>
+<td>对接宁波一卡通 APP 服务消息，集中展示和查看校园通知</td>
 <td>需求保留、设计延期</td>
 <td>开发者明确本阶段暂不考虑 H5 设计，且不采用当前未跟踪 project/h5 作为正式基线</td>
 </tr>
 <tr>
 <td>H5-013</td>
 <td>我的卡包对接</td>
-<td>校园卡绑定和卡包展示</td>
+<td>对接宁波一卡通 APP 我的卡包，绑定、查看和展示校园卡信息</td>
 <td>需求保留、设计延期</td>
 <td>开发者明确本阶段暂不考虑 H5 设计，且不采用当前未跟踪 project/h5 作为正式基线</td>
 </tr>
@@ -647,34 +647,34 @@
 <tr>
 <td>学校端/师生管理</td>
 <td>学生、教职工、历史学生</td>
-<td>`/fy/school/people/{student</td>
-<td>staff</td>
-<td>history}`</td>
-<td><code>fy:school:people:*:view</code></td>
+<td><code>/fy/school/people/student</code><br><code>/fy/school/people/staff</code><br><code>/fy/school/people/history</code></td>
+<td><code>fy:school:people:student:view</code><br><code>fy:school:people:staff:view</code><br><code>fy:school:people:history:view</code></td>
+<td>学校管理员</td>
+<td>表格、详情抽屉；三条路由依次对应三项权限</td>
 </tr>
 <tr>
 <td>学校端/内容管理</td>
 <td>Banner、应用、首页模块、公告、文章、活动</td>
-<td>`/fy/school/content/{banner</td>
-<td>app</td>
-<td>module</td>
-<td>notice</td>
+<td><code>/fy/school/content/banner</code><br><code>/fy/school/content/app</code><br><code>/fy/school/content/module</code><br><code>/fy/school/content/notice</code><br><code>/fy/school/content/article</code><br><code>/fy/school/content/activity</code></td>
+<td><code>fy:school:content:banner:*</code><br><code>fy:school:content:app:*</code><br><code>fy:school:content:module:*</code><br><code>fy:school:content:notice:*</code><br><code>fy:school:content:article:*</code><br><code>fy:school:content:activity:*</code></td>
+<td>学校管理员、内容运营、审核人员</td>
+<td>依次对应六类资源；复用 notice/slideshow 与 Snowy CRUD</td>
 </tr>
 <tr>
 <td>学校端</td>
 <td>社保卡申领记录、设备监控</td>
-<td>`/fy/school/{social-card</td>
-<td>device}`</td>
-<td>`fy:school:{socialCard</td>
-<td>device}:view`</td>
+<td><code>/fy/school/social-card</code><br><code>/fy/school/device</code></td>
+<td><code>fy:school:socialCard:view</code><br><code>fy:school:device:view</code></td>
+<td>学校管理员、设备运维</td>
+<td>两条路由依次对应查询和监控权限</td>
 </tr>
 <tr>
 <td>学校端/信息查询</td>
 <td>访客、通行、消费、借阅</td>
-<td>`/fy/school/query/{visitor</td>
-<td>access</td>
-<td>consume</td>
-<td>borrow}`</td>
+<td><code>/fy/school/query/visitor</code><br><code>/fy/school/query/access</code><br><code>/fy/school/query/consume</code><br><code>/fy/school/query/borrow</code></td>
+<td><code>fy:school:query:visitor:view</code><br><code>fy:school:query:access:view</code><br><code>fy:school:query:consume:view</code><br><code>fy:school:query:borrow:view</code></td>
+<td>学校管理员、审计人员</td>
+<td>四条路由依次对应只读表格与详情权限</td>
 </tr>
 <tr>
 <td>学校端</td>
@@ -695,50 +695,50 @@
 <tr>
 <td>管理端/组织架构</td>
 <td>学校管理、用户管理</td>
-<td>`/fy/platform/org/{school</td>
-<td>user}`</td>
-<td><code>fy:platform:org:*</code></td>
+<td><code>/fy/platform/org/school</code><br><code>/fy/platform/org/user</code></td>
+<td><code>fy:platform:org:school:*</code><br><code>fy:platform:org:user:*</code></td>
 <td>平台管理员</td>
+<td>两条路由依次复用 sys/org、sys/user</td>
 </tr>
 <tr>
 <td>管理端/权限管理</td>
 <td>角色、模块、菜单</td>
-<td>`/fy/platform/auth/{role</td>
-<td>module</td>
-<td>menu}`</td>
-<td><code>fy:platform:auth:*</code></td>
+<td><code>/fy/platform/auth/role</code><br><code>/fy/platform/auth/module</code><br><code>/fy/platform/auth/menu</code></td>
+<td><code>fy:platform:auth:role:*</code><br><code>fy:platform:auth:module:view</code><br><code>fy:platform:auth:menu:*</code></td>
+<td>平台管理员</td>
+<td>依次复用 sys/role、模块配置、菜单资源树；模块仅开放需求明确能力</td>
 </tr>
 <tr>
 <td>管理端/日志管理</td>
 <td>访问、操作、外部调用日志</td>
-<td>`/fy/platform/log/{access</td>
-<td>operation</td>
-<td>external}`</td>
-<td><code>fy:platform:log:*:view</code></td>
+<td><code>/fy/platform/log/access</code><br><code>/fy/platform/log/operation</code><br><code>/fy/platform/log/external</code></td>
+<td><code>fy:platform:log:access:view</code><br><code>fy:platform:log:operation:view</code><br><code>fy:platform:log:external:view</code></td>
+<td>平台管理员、安全审计</td>
+<td>三条路由依次对应只读日志</td>
 </tr>
 <tr>
 <td>管理端</td>
 <td>宁波一卡通对接、审核中心、系统监控</td>
-<td>`/fy/platform/{integration</td>
-<td>audit</td>
-<td>monitor}`</td>
-<td><code>fy:platform:*:view</code></td>
+<td><code>/fy/platform/integration</code><br><code>/fy/platform/audit</code><br><code>/fy/platform/monitor</code></td>
+<td><code>fy:platform:integration:view</code><br><code>fy:platform:audit:view</code><br><code>fy:platform:monitor:view</code></td>
+<td>平台管理员、审核人员、设备运维人员</td>
+<td>三条路由依次对应数据对接、审核数据、只读监控</td>
 </tr>
 <tr>
 <td>接口中心</td>
 <td>API-001～API-008</td>
-<td>`/fy/interface/{college</td>
-<td>person</td>
-<td>verify</td>
-<td>sync</td>
+<td><code>/fy/interface/college</code><br><code>/fy/interface/person</code><br><code>/fy/interface/verify</code><br><code>/fy/interface/sync</code><br><code>/fy/interface/ecode</code><br><code>/fy/interface/card</code><br><code>/fy/interface/mobile-trade</code><br><code>/fy/interface/card-trade</code></td>
+<td><code>fy:interface:college:view</code><br><code>fy:interface:person:view</code><br><code>fy:interface:verify:view</code><br><code>fy:interface:sync:view</code><br><code>fy:interface:ecode:view</code><br><code>fy:interface:card:view</code><br><code>fy:interface:mobileTrade:view</code><br><code>fy:interface:cardTrade:view</code></td>
+<td>平台管理员、安全审计人员</td>
+<td>八条路由依次对应 API-001～API-008；只看调用状态与日志，不维护业务数据</td>
 </tr>
 <tr>
 <td>PAM 管理</td>
 <td>PAM-001～PAM-008</td>
-<td>`/fy/pam/{org</td>
-<td>feature</td>
-<td>deviceGroup</td>
-<td>personGroup</td>
+<td><code>/fy/pam/org</code><br><code>/fy/pam/feature</code><br><code>/fy/pam/device-group</code><br><code>/fy/pam/person-group</code><br><code>/fy/pam/access</code><br><code>/fy/pam/transfer</code><br><code>/fy/pam/device-ops</code><br><code>/fy/pam/security</code></td>
+<td><code>fy:pam:org:*</code><br><code>fy:pam:feature:*</code><br><code>fy:pam:deviceGroup:*</code><br><code>fy:pam:personGroup:*</code><br><code>fy:pam:access:view</code><br><code>fy:pam:transfer:*</code><br><code>fy:pam:deviceOps:*</code><br><code>fy:pam:security:*</code></td>
+<td>PAM 分级子账户、设备运维人员、安全审计人员</td>
+<td>八条路由依次对应 PAM-001～PAM-008；新 PAM 域按分级数据范围授权</td>
 </tr>
 </tbody></table>
 <h2>状态与业务规则</h2>
