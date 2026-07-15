@@ -628,117 +628,555 @@
 <table>
 <thead>
 <tr>
-<th>二级域</th>
-<th>菜单层级/页面</th>
+<th>需求编号</th>
+<th>一级菜单</th>
+<th>二级菜单</th>
+<th>三级菜单/页面</th>
 <th>路由路径</th>
-<th>权限标识示例</th>
-<th>主要可见角色</th>
+<th>权限标识</th>
+<th>可见角色</th>
+<th>页面类型</th>
 <th>Snowy 关系</th>
 </tr>
 </thead>
 <tbody><tr>
+<td>ADM-S-001</td>
+<td>高校一卡通</td>
 <td>学校端</td>
 <td>业务首页</td>
-<td><code>/fy/school/dashboard</code></td>
-<td><code>fy:school:dashboard:view</code></td>
+<td><code>/unicard/school/dashboard</code></td>
+<td><code>unicardSchoolDashboardView</code></td>
 <td>学校管理员</td>
-<td>新业务看板</td>
+<td>看板</td>
+<td>Snowy 新业务看板</td>
 </tr>
 <tr>
-<td>学校端/师生管理</td>
-<td>学生、教职工、历史学生</td>
-<td><code>/fy/school/people/student</code><br><code>/fy/school/people/staff</code><br><code>/fy/school/people/history</code></td>
-<td><code>fy:school:people:student:view</code><br><code>fy:school:people:staff:view</code><br><code>fy:school:people:history:view</code></td>
-<td>学校管理员</td>
-<td>表格、详情抽屉；三条路由依次对应三项权限</td>
-</tr>
-<tr>
-<td>学校端/内容管理</td>
-<td>Banner、应用、首页模块、公告、文章、活动</td>
-<td><code>/fy/school/content/banner</code><br><code>/fy/school/content/app</code><br><code>/fy/school/content/module</code><br><code>/fy/school/content/notice</code><br><code>/fy/school/content/article</code><br><code>/fy/school/content/activity</code></td>
-<td><code>fy:school:content:banner:*</code><br><code>fy:school:content:app:*</code><br><code>fy:school:content:module:*</code><br><code>fy:school:content:notice:*</code><br><code>fy:school:content:article:*</code><br><code>fy:school:content:activity:*</code></td>
-<td>学校管理员、内容运营、审核人员</td>
-<td>依次对应六类资源；复用 notice/slideshow 与 Snowy CRUD</td>
-</tr>
-<tr>
+<td>ADM-S-002</td>
+<td>高校一卡通</td>
 <td>学校端</td>
-<td>社保卡申领记录、设备监控</td>
-<td><code>/fy/school/social-card</code><br><code>/fy/school/device</code></td>
-<td><code>fy:school:socialCard:view</code><br><code>fy:school:device:view</code></td>
-<td>学校管理员、设备运维</td>
-<td>两条路由依次对应查询和监控权限</td>
+<td>师生管理</td>
+<td><code>/unicard/school/people</code></td>
+<td><code>unicardSchoolPeopleView</code></td>
+<td>学校管理员</td>
+<td>分组入口</td>
+<td>Snowy 菜单分组入口</td>
 </tr>
 <tr>
+<td>ADM-S-003</td>
+<td>高校一卡通</td>
+<td>学校端/师生管理</td>
+<td>学生管理</td>
+<td><code>/unicard/school/people/student</code></td>
+<td><code>unicardSchoolStudentView</code></td>
+<td>学校管理员</td>
+<td>只读查询</td>
+<td>Snowy 查询表格与详情抽屉</td>
+</tr>
+<tr>
+<td>ADM-S-004</td>
+<td>高校一卡通</td>
+<td>学校端/师生管理</td>
+<td>教职工管理</td>
+<td><code>/unicard/school/people/staff</code></td>
+<td><code>unicardSchoolStaffView</code></td>
+<td>学校管理员</td>
+<td>只读查询</td>
+<td>Snowy 查询表格与详情抽屉</td>
+</tr>
+<tr>
+<td>ADM-S-005</td>
+<td>高校一卡通</td>
+<td>学校端/师生管理</td>
+<td>历史学生管理</td>
+<td><code>/unicard/school/people/history</code></td>
+<td><code>unicardSchoolHistoryStudentView</code></td>
+<td>学校管理员</td>
+<td>只读查询</td>
+<td>Snowy 查询表格与详情抽屉</td>
+</tr>
+<tr>
+<td>ADM-S-006</td>
+<td>高校一卡通</td>
+<td>学校端/内容管理</td>
+<td>首页 Banner 管理</td>
+<td><code>/unicard/school/content/banner</code></td>
+<td><code>unicardSchoolBanner*</code></td>
+<td>学校管理员、内容运营人员</td>
+<td>内容管理</td>
+<td>复用 slideshow 与 Snowy CRUD</td>
+</tr>
+<tr>
+<td>ADM-S-007</td>
+<td>高校一卡通</td>
+<td>学校端/内容管理</td>
+<td>应用上线管理</td>
+<td><code>/unicard/school/content/app</code></td>
+<td><code>unicardSchoolApp*</code></td>
+<td>学校管理员、内容运营人员</td>
+<td>内容管理</td>
+<td>Snowy CRUD 与状态交互</td>
+</tr>
+<tr>
+<td>ADM-S-008</td>
+<td>高校一卡通</td>
+<td>学校端/内容管理</td>
+<td>首页模块管理</td>
+<td><code>/unicard/school/content/module</code></td>
+<td><code>unicardSchoolModule*</code></td>
+<td>学校管理员、内容运营人员</td>
+<td>内容管理</td>
+<td>Snowy CRUD、上传与同步反馈</td>
+</tr>
+<tr>
+<td>ADM-S-009</td>
+<td>高校一卡通</td>
+<td>学校端/内容管理</td>
+<td>公告管理</td>
+<td><code>/unicard/school/content/notice</code></td>
+<td><code>unicardSchoolNotice*</code></td>
+<td>学校管理员、内容运营人员、审核人员</td>
+<td>审核流程</td>
+<td>复用 notice 与 Snowy 审核交互</td>
+</tr>
+<tr>
+<td>ADM-S-010</td>
+<td>高校一卡通</td>
+<td>学校端/内容管理</td>
+<td>文章管理</td>
+<td><code>/unicard/school/content/article</code></td>
+<td><code>unicardSchoolArticle*</code></td>
+<td>学校管理员、内容运营人员、审核人员</td>
+<td>内容管理</td>
+<td>Snowy CRUD、审核与发布交互</td>
+</tr>
+<tr>
+<td>ADM-S-011</td>
+<td>高校一卡通</td>
+<td>学校端/内容管理</td>
+<td>活动管理</td>
+<td><code>/unicard/school/content/activity</code></td>
+<td><code>unicardSchoolActivity*</code></td>
+<td>学校管理员、内容运营人员</td>
+<td>内容管理</td>
+<td>Snowy CRUD 与可见范围配置</td>
+</tr>
+<tr>
+<td>ADM-S-012</td>
+<td>高校一卡通</td>
+<td>学校端</td>
+<td>社保卡申领记录</td>
+<td><code>/unicard/school/social-card</code></td>
+<td><code>unicardSchoolSocialCardView</code></td>
+<td>学校管理员、安全审计人员</td>
+<td>只读查询/受控导出</td>
+<td>Snowy 只读查询、详情与受控导出</td>
+</tr>
+<tr>
+<td>ADM-S-013</td>
+<td>高校一卡通</td>
+<td>学校端</td>
+<td>设备状态监控</td>
+<td><code>/unicard/school/device</code></td>
+<td><code>unicardSchoolDeviceView</code></td>
+<td>学校管理员、设备运维人员</td>
+<td>监控看板</td>
+<td>Snowy 状态监控与告警详情</td>
+</tr>
+<tr>
+<td>ADM-S-014</td>
+<td>高校一卡通</td>
+<td>学校端</td>
+<td>信息查询</td>
+<td><code>/unicard/school/query</code></td>
+<td><code>unicardSchoolQueryView</code></td>
+<td>学校管理员、安全审计人员</td>
+<td>分组入口</td>
+<td>Snowy 菜单分组入口</td>
+</tr>
+<tr>
+<td>ADM-S-015</td>
+<td>高校一卡通</td>
 <td>学校端/信息查询</td>
-<td>访客、通行、消费、借阅</td>
-<td><code>/fy/school/query/visitor</code><br><code>/fy/school/query/access</code><br><code>/fy/school/query/consume</code><br><code>/fy/school/query/borrow</code></td>
-<td><code>fy:school:query:visitor:view</code><br><code>fy:school:query:access:view</code><br><code>fy:school:query:consume:view</code><br><code>fy:school:query:borrow:view</code></td>
-<td>学校管理员、审计人员</td>
-<td>四条路由依次对应只读表格与详情权限</td>
+<td>访客记录</td>
+<td><code>/unicard/school/query/visitor</code></td>
+<td><code>unicardSchoolVisitorView</code></td>
+<td>学校管理员、安全审计人员</td>
+<td>只读查询/受控导出</td>
+<td>Snowy 只读查询、详情与受控导出</td>
 </tr>
 <tr>
+<td>ADM-S-016</td>
+<td>高校一卡通</td>
+<td>学校端/信息查询</td>
+<td>通行记录</td>
+<td><code>/unicard/school/query/access</code></td>
+<td><code>unicardSchoolAccessView</code></td>
+<td>学校管理员、安全审计人员</td>
+<td>只读查询</td>
+<td>Snowy 查询表格与详情抽屉</td>
+</tr>
+<tr>
+<td>ADM-S-017</td>
+<td>高校一卡通</td>
+<td>学校端/信息查询</td>
+<td>消费记录</td>
+<td><code>/unicard/school/query/consume</code></td>
+<td><code>unicardSchoolConsumeView</code></td>
+<td>学校管理员、安全审计人员</td>
+<td>只读查询</td>
+<td>Snowy 查询表格与详情抽屉</td>
+</tr>
+<tr>
+<td>ADM-S-018</td>
+<td>高校一卡通</td>
+<td>学校端/信息查询</td>
+<td>图书借阅记录</td>
+<td><code>/unicard/school/query/borrow</code></td>
+<td><code>unicardSchoolBorrowView</code></td>
+<td>学校管理员、安全审计人员</td>
+<td>只读查询</td>
+<td>Snowy 查询表格与详情抽屉</td>
+</tr>
+<tr>
+<td>ADM-S-019</td>
+<td>高校一卡通</td>
 <td>学校端</td>
 <td>用户管理</td>
-<td><code>/fy/school/user</code></td>
-<td><code>fy:school:user:view</code></td>
+<td><code>/unicard/school/user</code></td>
+<td><code>unicardSchoolUserView</code></td>
 <td>学校管理员</td>
+<td>只读查询</td>
 <td>复用 sys/user 只读模式</td>
 </tr>
 <tr>
-<td>管理端</td>
+<td>ADM-S-020</td>
+<td>高校一卡通</td>
+<td>学校端</td>
+<td>权限与菜单说明</td>
+<td><code>/unicard/school/permission-guide</code></td>
+<td><code>unicardSchoolPermissionView</code></td>
+<td>学校管理员</td>
+<td>权限说明</td>
+<td>对接 Snowy 菜单与权限体系</td>
+</tr>
+<tr>
+<td>ADM-P-001</td>
+<td>高校一卡通</td>
+<td>平台端</td>
 <td>系统首页</td>
-<td><code>/fy/platform/dashboard</code></td>
-<td><code>fy:platform:dashboard:view</code></td>
+<td><code>/unicard/platform/dashboard</code></td>
+<td><code>unicardPlatformDashboardView</code></td>
 <td>平台管理员</td>
-<td>新业务看板</td>
+<td>看板</td>
+<td>Snowy 新业务看板</td>
 </tr>
 <tr>
-<td>管理端/组织架构</td>
-<td>学校管理、用户管理</td>
-<td><code>/fy/platform/org/school</code><br><code>/fy/platform/org/user</code></td>
-<td><code>fy:platform:org:school:*</code><br><code>fy:platform:org:user:*</code></td>
+<td>ADM-P-002</td>
+<td>高校一卡通</td>
+<td>平台端/组织架构</td>
+<td>学校管理</td>
+<td><code>/unicard/platform/org/school</code></td>
+<td><code>unicardPlatformSchool*</code></td>
 <td>平台管理员</td>
-<td>两条路由依次复用 sys/org、sys/user</td>
+<td>树形 CRUD</td>
+<td>复用 sys/org 组织树模式</td>
 </tr>
 <tr>
-<td>管理端/权限管理</td>
-<td>角色、模块、菜单</td>
-<td><code>/fy/platform/auth/role</code><br><code>/fy/platform/auth/module</code><br><code>/fy/platform/auth/menu</code></td>
-<td><code>fy:platform:auth:role:*</code><br><code>fy:platform:auth:module:view</code><br><code>fy:platform:auth:menu:*</code></td>
+<td>ADM-P-003</td>
+<td>高校一卡通</td>
+<td>平台端/组织架构</td>
+<td>用户管理</td>
+<td><code>/unicard/platform/org/user</code></td>
+<td><code>unicardPlatformUser*</code></td>
 <td>平台管理员</td>
-<td>依次复用 sys/role、模块配置、菜单资源树；模块仅开放需求明确能力</td>
+<td>标准 CRUD/授权</td>
+<td>复用 sys/user 与角色分配</td>
 </tr>
 <tr>
-<td>管理端/日志管理</td>
-<td>访问、操作、外部调用日志</td>
-<td><code>/fy/platform/log/access</code><br><code>/fy/platform/log/operation</code><br><code>/fy/platform/log/external</code></td>
-<td><code>fy:platform:log:access:view</code><br><code>fy:platform:log:operation:view</code><br><code>fy:platform:log:external:view</code></td>
-<td>平台管理员、安全审计</td>
-<td>三条路由依次对应只读日志</td>
+<td>ADM-P-004</td>
+<td>高校一卡通</td>
+<td>平台端/权限管理</td>
+<td>角色管理</td>
+<td><code>/unicard/platform/auth/role</code></td>
+<td><code>unicardPlatformRole*</code></td>
+<td>平台管理员</td>
+<td>授权分配</td>
+<td>复用 sys/role 资源树授权</td>
 </tr>
 <tr>
-<td>管理端</td>
-<td>宁波一卡通对接、审核中心、系统监控</td>
-<td><code>/fy/platform/integration</code><br><code>/fy/platform/audit</code><br><code>/fy/platform/monitor</code></td>
-<td><code>fy:platform:integration:view</code><br><code>fy:platform:audit:view</code><br><code>fy:platform:monitor:view</code></td>
-<td>平台管理员、审核人员、设备运维人员</td>
-<td>三条路由依次对应数据对接、审核数据、只读监控</td>
+<td>ADM-P-005</td>
+<td>高校一卡通</td>
+<td>平台端/权限管理</td>
+<td>模块管理</td>
+<td><code>/unicard/platform/auth/module</code></td>
+<td><code>unicardPlatformModuleView</code></td>
+<td>平台管理员</td>
+<td>配置管理</td>
+<td>Snowy 配置展示，不增加未明确 CRUD</td>
 </tr>
 <tr>
-<td>接口中心</td>
-<td>API-001～API-008</td>
-<td><code>/fy/interface/college</code><br><code>/fy/interface/person</code><br><code>/fy/interface/verify</code><br><code>/fy/interface/sync</code><br><code>/fy/interface/ecode</code><br><code>/fy/interface/card</code><br><code>/fy/interface/mobile-trade</code><br><code>/fy/interface/card-trade</code></td>
-<td><code>fy:interface:college:view</code><br><code>fy:interface:person:view</code><br><code>fy:interface:verify:view</code><br><code>fy:interface:sync:view</code><br><code>fy:interface:ecode:view</code><br><code>fy:interface:card:view</code><br><code>fy:interface:mobileTrade:view</code><br><code>fy:interface:cardTrade:view</code></td>
+<td>ADM-P-006</td>
+<td>高校一卡通</td>
+<td>平台端/权限管理</td>
+<td>菜单管理</td>
+<td><code>/unicard/platform/auth/menu</code></td>
+<td><code>unicardPlatformMenu*</code></td>
+<td>平台管理员</td>
+<td>树形 CRUD</td>
+<td>复用 Snowy 菜单资源树</td>
+</tr>
+<tr>
+<td>ADM-P-007</td>
+<td>高校一卡通</td>
+<td>平台端/日志管理</td>
+<td>访问日志</td>
+<td><code>/unicard/platform/log/access</code></td>
+<td><code>unicardPlatformAccessLogView</code></td>
 <td>平台管理员、安全审计人员</td>
-<td>八条路由依次对应 API-001～API-008；只看调用状态与日志，不维护业务数据</td>
+<td>只读查询</td>
+<td>Snowy 只读日志与图表</td>
 </tr>
 <tr>
+<td>ADM-P-008</td>
+<td>高校一卡通</td>
+<td>平台端/日志管理</td>
+<td>操作日志</td>
+<td><code>/unicard/platform/log/operation</code></td>
+<td><code>unicardPlatformOperationLogView</code></td>
+<td>平台管理员、安全审计人员</td>
+<td>只读查询</td>
+<td>Snowy 只读日志与详情</td>
+</tr>
+<tr>
+<td>ADM-P-009</td>
+<td>高校一卡通</td>
+<td>平台端/日志管理</td>
+<td>外部调用日志</td>
+<td><code>/unicard/platform/log/external</code></td>
+<td><code>unicardPlatformExternalLogView</code></td>
+<td>平台管理员、安全审计人员</td>
+<td>只读查询</td>
+<td>Snowy 只读日志与敏感参数脱敏</td>
+</tr>
+<tr>
+<td>ADM-P-010</td>
+<td>高校一卡通</td>
+<td>平台端</td>
+<td>宁波一卡通对接</td>
+<td><code>/unicard/platform/integration</code></td>
+<td><code>unicardPlatformIntegrationView</code></td>
+<td>平台管理员、安全审计人员</td>
+<td>只读监控</td>
+<td>Snowy 对接状态与日志监控</td>
+</tr>
+<tr>
+<td>ADM-P-011</td>
+<td>高校一卡通</td>
+<td>平台端</td>
+<td>权限与菜单说明</td>
+<td><code>/unicard/platform/permission-guide</code></td>
+<td><code>unicardPlatformPermissionView</code></td>
+<td>平台管理员</td>
+<td>权限说明</td>
+<td>对接 Snowy 菜单与权限体系</td>
+</tr>
+<tr>
+<td>ADM-P-012</td>
+<td>高校一卡通</td>
+<td>平台端</td>
+<td>审核中心</td>
+<td><code>/unicard/platform/audit</code></td>
+<td><code>unicardPlatformAuditView</code></td>
+<td>平台管理员、审核人员</td>
+<td>只读对接视图</td>
+<td>Snowy 只读对接与详情</td>
+</tr>
+<tr>
+<td>ADM-P-013</td>
+<td>高校一卡通</td>
+<td>平台端</td>
+<td>系统监控</td>
+<td><code>/unicard/platform/monitor</code></td>
+<td><code>unicardPlatformMonitorView</code></td>
+<td>平台管理员、设备运维人员、安全审计人员</td>
+<td>只读监控</td>
+<td>Snowy 接口、设备与告警监控</td>
+</tr>
+<tr>
+<td>API-001</td>
+<td>高校一卡通</td>
+<td>接口中心</td>
+<td>学院数据初始化</td>
+<td><code>/unicard/interface/college</code></td>
+<td><code>unicardInterfaceCollegeView</code></td>
+<td>平台管理员、安全审计人员</td>
+<td>接口监控</td>
+<td>Snowy 接口状态与调用日志</td>
+</tr>
+<tr>
+<td>API-002</td>
+<td>高校一卡通</td>
+<td>接口中心</td>
+<td>人员信息管理</td>
+<td><code>/unicard/interface/person</code></td>
+<td><code>unicardInterfacePersonView</code></td>
+<td>平台管理员、安全审计人员</td>
+<td>接口监控</td>
+<td>Snowy 接口状态与调用日志</td>
+</tr>
+<tr>
+<td>API-003</td>
+<td>高校一卡通</td>
+<td>接口中心</td>
+<td>人员关键信息核验</td>
+<td><code>/unicard/interface/verify</code></td>
+<td><code>unicardInterfaceVerifyView</code></td>
+<td>平台管理员、安全审计人员</td>
+<td>接口监控</td>
+<td>Snowy 接口状态与调用日志</td>
+</tr>
+<tr>
+<td>API-004</td>
+<td>高校一卡通</td>
+<td>接口中心</td>
+<td>人员信息同步</td>
+<td><code>/unicard/interface/sync</code></td>
+<td><code>unicardInterfaceSyncView</code></td>
+<td>平台管理员、安全审计人员</td>
+<td>接口监控</td>
+<td>Snowy 接口状态与调用日志</td>
+</tr>
+<tr>
+<td>API-005</td>
+<td>高校一卡通</td>
+<td>接口中心</td>
+<td>电子社保码认证</td>
+<td><code>/unicard/interface/ecode</code></td>
+<td><code>unicardInterfaceEcodeView</code></td>
+<td>平台管理员、安全审计人员</td>
+<td>接口监控</td>
+<td>Snowy 接口状态与调用日志</td>
+</tr>
+<tr>
+<td>API-006</td>
+<td>高校一卡通</td>
+<td>接口中心</td>
+<td>实体社保卡认证</td>
+<td><code>/unicard/interface/card</code></td>
+<td><code>unicardInterfaceCardView</code></td>
+<td>平台管理员、安全审计人员</td>
+<td>接口监控</td>
+<td>Snowy 接口状态与调用日志</td>
+</tr>
+<tr>
+<td>API-007</td>
+<td>高校一卡通</td>
+<td>接口中心</td>
+<td>移动支付交易推送</td>
+<td><code>/unicard/interface/mobile-trade</code></td>
+<td><code>unicardInterfaceMobileTradeView</code></td>
+<td>平台管理员、安全审计人员</td>
+<td>交易接口监控</td>
+<td>Snowy 高风险交易接口监控</td>
+</tr>
+<tr>
+<td>API-008</td>
+<td>高校一卡通</td>
+<td>接口中心</td>
+<td>实体社保卡交易接收</td>
+<td><code>/unicard/interface/card-trade</code></td>
+<td><code>unicardInterfaceCardTradeView</code></td>
+<td>平台管理员、安全审计人员</td>
+<td>交易接口监控</td>
+<td>Snowy 高风险交易接口监控</td>
+</tr>
+<tr>
+<td>PAM-001</td>
+<td>高校一卡通</td>
 <td>PAM 管理</td>
-<td>PAM-001～PAM-008</td>
-<td><code>/fy/pam/org</code><br><code>/fy/pam/feature</code><br><code>/fy/pam/device-group</code><br><code>/fy/pam/person-group</code><br><code>/fy/pam/access</code><br><code>/fy/pam/transfer</code><br><code>/fy/pam/device-ops</code><br><code>/fy/pam/security</code></td>
-<td><code>fy:pam:org:*</code><br><code>fy:pam:feature:*</code><br><code>fy:pam:deviceGroup:*</code><br><code>fy:pam:personGroup:*</code><br><code>fy:pam:access:view</code><br><code>fy:pam:transfer:*</code><br><code>fy:pam:deviceOps:*</code><br><code>fy:pam:security:*</code></td>
-<td>PAM 分级子账户、设备运维人员、安全审计人员</td>
-<td>八条路由依次对应 PAM-001～PAM-008；新 PAM 域按分级数据范围授权</td>
+<td>组织架构与人员</td>
+<td><code>/unicard/pam/org</code></td>
+<td><code>unicardPamOrg*</code></td>
+<td>PAM 分级子账户</td>
+<td>树形 CRUD/导入导出/授权</td>
+<td>Snowy 组织树与受控批量操作</td>
+</tr>
+<tr>
+<td>PAM-002</td>
+<td>高校一卡通</td>
+<td>PAM 管理</td>
+<td>掌静脉特征库</td>
+<td><code>/unicard/pam/feature</code></td>
+<td><code>unicardPamFeature*</code></td>
+<td>PAM 分级子账户、安全审计人员</td>
+<td>敏感配置管理</td>
+<td>Snowy 敏感状态展示与受控配置</td>
+</tr>
+<tr>
+<td>PAM-003</td>
+<td>高校一卡通</td>
+<td>PAM 管理</td>
+<td>设备分组</td>
+<td><code>/unicard/pam/device-group</code></td>
+<td><code>unicardPamDeviceGroup*</code></td>
+<td>PAM 分级子账户、设备运维人员</td>
+<td>标准 CRUD/导入导出/授权</td>
+<td>Snowy CRUD 与受控批量操作</td>
+</tr>
+<tr>
+<td>PAM-004</td>
+<td>高校一卡通</td>
+<td>PAM 管理</td>
+<td>人员分组</td>
+<td><code>/unicard/pam/person-group</code></td>
+<td><code>unicardPamPersonGroup*</code></td>
+<td>PAM 分级子账户</td>
+<td>标准 CRUD/导入导出/授权</td>
+<td>Snowy CRUD 与受控批量操作</td>
+</tr>
+<tr>
+<td>PAM-005</td>
+<td>高校一卡通</td>
+<td>PAM 管理</td>
+<td>用户通行实时同步</td>
+<td><code>/unicard/pam/access</code></td>
+<td><code>unicardPamAccessView</code></td>
+<td>PAM 分级子账户、设备运维人员</td>
+<td>只读实时查询</td>
+<td>Snowy 实时状态与只读详情</td>
+</tr>
+<tr>
+<td>PAM-006</td>
+<td>高校一卡通</td>
+<td>PAM 管理</td>
+<td>通行与用户导入导出</td>
+<td><code>/unicard/pam/transfer</code></td>
+<td><code>unicardPamTransfer*</code></td>
+<td>PAM 分级子账户、安全审计人员</td>
+<td>只读查询/导入导出</td>
+<td>Snowy 只读记录与受控导入导出</td>
+</tr>
+<tr>
+<td>PAM-007</td>
+<td>高校一卡通</td>
+<td>PAM 管理</td>
+<td>设备运维与远程配置</td>
+<td><code>/unicard/pam/device-ops</code></td>
+<td><code>unicardPamDeviceOps*</code></td>
+<td>设备运维人员、安全审计人员</td>
+<td>监控/远程设备配置</td>
+<td>Snowy 监控、二次确认与结果明细</td>
+</tr>
+<tr>
+<td>PAM-008</td>
+<td>高校一卡通</td>
+<td>PAM 管理</td>
+<td>日志与分级权限</td>
+<td><code>/unicard/pam/security</code></td>
+<td><code>unicardPamSecurity*</code></td>
+<td>平台管理员、安全审计人员、PAM 分级子账户</td>
+<td>日志查询/授权分配</td>
+<td>Snowy 只读日志与资源树授权</td>
 </tr>
 </tbody></table>
 <h2>状态与业务规则</h2>

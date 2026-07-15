@@ -149,21 +149,57 @@
 
 根入口为“高校一卡通”。权限标识用于后续技术设计，须与 Snowy 菜单资源、角色授权、按钮权限和服务端注解统一。
 
-| 二级域 | 菜单层级/页面 | 路由路径 | 权限标识示例 | 主要可见角色 | Snowy 关系 |
-| --- | --- | --- | --- | --- | --- |
-| 学校端 | 业务首页 | `/fy/school/dashboard` | `fy:school:dashboard:view` | 学校管理员 | 新业务看板 |
-| 学校端/师生管理 | 学生、教职工、历史学生 | `/fy/school/people/student`<br>`/fy/school/people/staff`<br>`/fy/school/people/history` | `fy:school:people:student:view`<br>`fy:school:people:staff:view`<br>`fy:school:people:history:view` | 学校管理员 | 表格、详情抽屉；三条路由依次对应三项权限 |
-| 学校端/内容管理 | Banner、应用、首页模块、公告、文章、活动 | `/fy/school/content/banner`<br>`/fy/school/content/app`<br>`/fy/school/content/module`<br>`/fy/school/content/notice`<br>`/fy/school/content/article`<br>`/fy/school/content/activity` | `fy:school:content:banner:*`<br>`fy:school:content:app:*`<br>`fy:school:content:module:*`<br>`fy:school:content:notice:*`<br>`fy:school:content:article:*`<br>`fy:school:content:activity:*` | 学校管理员、内容运营、审核人员 | 依次对应六类资源；复用 notice/slideshow 与 Snowy CRUD |
-| 学校端 | 社保卡申领记录、设备监控 | `/fy/school/social-card`<br>`/fy/school/device` | `fy:school:socialCard:view`<br>`fy:school:device:view` | 学校管理员、设备运维 | 两条路由依次对应查询和监控权限 |
-| 学校端/信息查询 | 访客、通行、消费、借阅 | `/fy/school/query/visitor`<br>`/fy/school/query/access`<br>`/fy/school/query/consume`<br>`/fy/school/query/borrow` | `fy:school:query:visitor:view`<br>`fy:school:query:access:view`<br>`fy:school:query:consume:view`<br>`fy:school:query:borrow:view` | 学校管理员、审计人员 | 四条路由依次对应只读表格与详情权限 |
-| 学校端 | 用户管理 | `/fy/school/user` | `fy:school:user:view` | 学校管理员 | 复用 sys/user 只读模式 |
-| 管理端 | 系统首页 | `/fy/platform/dashboard` | `fy:platform:dashboard:view` | 平台管理员 | 新业务看板 |
-| 管理端/组织架构 | 学校管理、用户管理 | `/fy/platform/org/school`<br>`/fy/platform/org/user` | `fy:platform:org:school:*`<br>`fy:platform:org:user:*` | 平台管理员 | 两条路由依次复用 sys/org、sys/user |
-| 管理端/权限管理 | 角色、模块、菜单 | `/fy/platform/auth/role`<br>`/fy/platform/auth/module`<br>`/fy/platform/auth/menu` | `fy:platform:auth:role:*`<br>`fy:platform:auth:module:view`<br>`fy:platform:auth:menu:*` | 平台管理员 | 依次复用 sys/role、模块配置、菜单资源树；模块仅开放需求明确能力 |
-| 管理端/日志管理 | 访问、操作、外部调用日志 | `/fy/platform/log/access`<br>`/fy/platform/log/operation`<br>`/fy/platform/log/external` | `fy:platform:log:access:view`<br>`fy:platform:log:operation:view`<br>`fy:platform:log:external:view` | 平台管理员、安全审计 | 三条路由依次对应只读日志 |
-| 管理端 | 宁波一卡通对接、审核中心、系统监控 | `/fy/platform/integration`<br>`/fy/platform/audit`<br>`/fy/platform/monitor` | `fy:platform:integration:view`<br>`fy:platform:audit:view`<br>`fy:platform:monitor:view` | 平台管理员、审核人员、设备运维人员 | 三条路由依次对应数据对接、审核数据、只读监控 |
-| 接口中心 | API-001～API-008 | `/fy/interface/college`<br>`/fy/interface/person`<br>`/fy/interface/verify`<br>`/fy/interface/sync`<br>`/fy/interface/ecode`<br>`/fy/interface/card`<br>`/fy/interface/mobile-trade`<br>`/fy/interface/card-trade` | `fy:interface:college:view`<br>`fy:interface:person:view`<br>`fy:interface:verify:view`<br>`fy:interface:sync:view`<br>`fy:interface:ecode:view`<br>`fy:interface:card:view`<br>`fy:interface:mobileTrade:view`<br>`fy:interface:cardTrade:view` | 平台管理员、安全审计人员 | 八条路由依次对应 API-001～API-008；只看调用状态与日志，不维护业务数据 |
-| PAM 管理 | PAM-001～PAM-008 | `/fy/pam/org`<br>`/fy/pam/feature`<br>`/fy/pam/device-group`<br>`/fy/pam/person-group`<br>`/fy/pam/access`<br>`/fy/pam/transfer`<br>`/fy/pam/device-ops`<br>`/fy/pam/security` | `fy:pam:org:*`<br>`fy:pam:feature:*`<br>`fy:pam:deviceGroup:*`<br>`fy:pam:personGroup:*`<br>`fy:pam:access:view`<br>`fy:pam:transfer:*`<br>`fy:pam:deviceOps:*`<br>`fy:pam:security:*` | PAM 分级子账户、设备运维人员、安全审计人员 | 八条路由依次对应 PAM-001～PAM-008；新 PAM 域按分级数据范围授权 |
+| 需求编号 | 一级菜单 | 二级菜单 | 三级菜单/页面 | 路由路径 | 权限标识 | 可见角色 | 页面类型 | Snowy 关系 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| ADM-S-001 | 高校一卡通 | 学校端 | 业务首页 | `/unicard/school/dashboard` | `unicardSchoolDashboardView` | 学校管理员 | 看板 | Snowy 新业务看板 |
+| ADM-S-002 | 高校一卡通 | 学校端 | 师生管理 | `/unicard/school/people` | `unicardSchoolPeopleView` | 学校管理员 | 分组入口 | Snowy 菜单分组入口 |
+| ADM-S-003 | 高校一卡通 | 学校端/师生管理 | 学生管理 | `/unicard/school/people/student` | `unicardSchoolStudentView` | 学校管理员 | 只读查询 | Snowy 查询表格与详情抽屉 |
+| ADM-S-004 | 高校一卡通 | 学校端/师生管理 | 教职工管理 | `/unicard/school/people/staff` | `unicardSchoolStaffView` | 学校管理员 | 只读查询 | Snowy 查询表格与详情抽屉 |
+| ADM-S-005 | 高校一卡通 | 学校端/师生管理 | 历史学生管理 | `/unicard/school/people/history` | `unicardSchoolHistoryStudentView` | 学校管理员 | 只读查询 | Snowy 查询表格与详情抽屉 |
+| ADM-S-006 | 高校一卡通 | 学校端/内容管理 | 首页 Banner 管理 | `/unicard/school/content/banner` | `unicardSchoolBanner*` | 学校管理员、内容运营人员 | 内容管理 | 复用 slideshow 与 Snowy CRUD |
+| ADM-S-007 | 高校一卡通 | 学校端/内容管理 | 应用上线管理 | `/unicard/school/content/app` | `unicardSchoolApp*` | 学校管理员、内容运营人员 | 内容管理 | Snowy CRUD 与状态交互 |
+| ADM-S-008 | 高校一卡通 | 学校端/内容管理 | 首页模块管理 | `/unicard/school/content/module` | `unicardSchoolModule*` | 学校管理员、内容运营人员 | 内容管理 | Snowy CRUD、上传与同步反馈 |
+| ADM-S-009 | 高校一卡通 | 学校端/内容管理 | 公告管理 | `/unicard/school/content/notice` | `unicardSchoolNotice*` | 学校管理员、内容运营人员、审核人员 | 审核流程 | 复用 notice 与 Snowy 审核交互 |
+| ADM-S-010 | 高校一卡通 | 学校端/内容管理 | 文章管理 | `/unicard/school/content/article` | `unicardSchoolArticle*` | 学校管理员、内容运营人员、审核人员 | 内容管理 | Snowy CRUD、审核与发布交互 |
+| ADM-S-011 | 高校一卡通 | 学校端/内容管理 | 活动管理 | `/unicard/school/content/activity` | `unicardSchoolActivity*` | 学校管理员、内容运营人员 | 内容管理 | Snowy CRUD 与可见范围配置 |
+| ADM-S-012 | 高校一卡通 | 学校端 | 社保卡申领记录 | `/unicard/school/social-card` | `unicardSchoolSocialCardView` | 学校管理员、安全审计人员 | 只读查询/受控导出 | Snowy 只读查询、详情与受控导出 |
+| ADM-S-013 | 高校一卡通 | 学校端 | 设备状态监控 | `/unicard/school/device` | `unicardSchoolDeviceView` | 学校管理员、设备运维人员 | 监控看板 | Snowy 状态监控与告警详情 |
+| ADM-S-014 | 高校一卡通 | 学校端 | 信息查询 | `/unicard/school/query` | `unicardSchoolQueryView` | 学校管理员、安全审计人员 | 分组入口 | Snowy 菜单分组入口 |
+| ADM-S-015 | 高校一卡通 | 学校端/信息查询 | 访客记录 | `/unicard/school/query/visitor` | `unicardSchoolVisitorView` | 学校管理员、安全审计人员 | 只读查询/受控导出 | Snowy 只读查询、详情与受控导出 |
+| ADM-S-016 | 高校一卡通 | 学校端/信息查询 | 通行记录 | `/unicard/school/query/access` | `unicardSchoolAccessView` | 学校管理员、安全审计人员 | 只读查询 | Snowy 查询表格与详情抽屉 |
+| ADM-S-017 | 高校一卡通 | 学校端/信息查询 | 消费记录 | `/unicard/school/query/consume` | `unicardSchoolConsumeView` | 学校管理员、安全审计人员 | 只读查询 | Snowy 查询表格与详情抽屉 |
+| ADM-S-018 | 高校一卡通 | 学校端/信息查询 | 图书借阅记录 | `/unicard/school/query/borrow` | `unicardSchoolBorrowView` | 学校管理员、安全审计人员 | 只读查询 | Snowy 查询表格与详情抽屉 |
+| ADM-S-019 | 高校一卡通 | 学校端 | 用户管理 | `/unicard/school/user` | `unicardSchoolUserView` | 学校管理员 | 只读查询 | 复用 sys/user 只读模式 |
+| ADM-S-020 | 高校一卡通 | 学校端 | 权限与菜单说明 | `/unicard/school/permission-guide` | `unicardSchoolPermissionView` | 学校管理员 | 权限说明 | 对接 Snowy 菜单与权限体系 |
+| ADM-P-001 | 高校一卡通 | 平台端 | 系统首页 | `/unicard/platform/dashboard` | `unicardPlatformDashboardView` | 平台管理员 | 看板 | Snowy 新业务看板 |
+| ADM-P-002 | 高校一卡通 | 平台端/组织架构 | 学校管理 | `/unicard/platform/org/school` | `unicardPlatformSchool*` | 平台管理员 | 树形 CRUD | 复用 sys/org 组织树模式 |
+| ADM-P-003 | 高校一卡通 | 平台端/组织架构 | 用户管理 | `/unicard/platform/org/user` | `unicardPlatformUser*` | 平台管理员 | 标准 CRUD/授权 | 复用 sys/user 与角色分配 |
+| ADM-P-004 | 高校一卡通 | 平台端/权限管理 | 角色管理 | `/unicard/platform/auth/role` | `unicardPlatformRole*` | 平台管理员 | 授权分配 | 复用 sys/role 资源树授权 |
+| ADM-P-005 | 高校一卡通 | 平台端/权限管理 | 模块管理 | `/unicard/platform/auth/module` | `unicardPlatformModuleView` | 平台管理员 | 配置管理 | Snowy 配置展示，不增加未明确 CRUD |
+| ADM-P-006 | 高校一卡通 | 平台端/权限管理 | 菜单管理 | `/unicard/platform/auth/menu` | `unicardPlatformMenu*` | 平台管理员 | 树形 CRUD | 复用 Snowy 菜单资源树 |
+| ADM-P-007 | 高校一卡通 | 平台端/日志管理 | 访问日志 | `/unicard/platform/log/access` | `unicardPlatformAccessLogView` | 平台管理员、安全审计人员 | 只读查询 | Snowy 只读日志与图表 |
+| ADM-P-008 | 高校一卡通 | 平台端/日志管理 | 操作日志 | `/unicard/platform/log/operation` | `unicardPlatformOperationLogView` | 平台管理员、安全审计人员 | 只读查询 | Snowy 只读日志与详情 |
+| ADM-P-009 | 高校一卡通 | 平台端/日志管理 | 外部调用日志 | `/unicard/platform/log/external` | `unicardPlatformExternalLogView` | 平台管理员、安全审计人员 | 只读查询 | Snowy 只读日志与敏感参数脱敏 |
+| ADM-P-010 | 高校一卡通 | 平台端 | 宁波一卡通对接 | `/unicard/platform/integration` | `unicardPlatformIntegrationView` | 平台管理员、安全审计人员 | 只读监控 | Snowy 对接状态与日志监控 |
+| ADM-P-011 | 高校一卡通 | 平台端 | 权限与菜单说明 | `/unicard/platform/permission-guide` | `unicardPlatformPermissionView` | 平台管理员 | 权限说明 | 对接 Snowy 菜单与权限体系 |
+| ADM-P-012 | 高校一卡通 | 平台端 | 审核中心 | `/unicard/platform/audit` | `unicardPlatformAuditView` | 平台管理员、审核人员 | 只读对接视图 | Snowy 只读对接与详情 |
+| ADM-P-013 | 高校一卡通 | 平台端 | 系统监控 | `/unicard/platform/monitor` | `unicardPlatformMonitorView` | 平台管理员、设备运维人员、安全审计人员 | 只读监控 | Snowy 接口、设备与告警监控 |
+| API-001 | 高校一卡通 | 接口中心 | 学院数据初始化 | `/unicard/interface/college` | `unicardInterfaceCollegeView` | 平台管理员、安全审计人员 | 接口监控 | Snowy 接口状态与调用日志 |
+| API-002 | 高校一卡通 | 接口中心 | 人员信息管理 | `/unicard/interface/person` | `unicardInterfacePersonView` | 平台管理员、安全审计人员 | 接口监控 | Snowy 接口状态与调用日志 |
+| API-003 | 高校一卡通 | 接口中心 | 人员关键信息核验 | `/unicard/interface/verify` | `unicardInterfaceVerifyView` | 平台管理员、安全审计人员 | 接口监控 | Snowy 接口状态与调用日志 |
+| API-004 | 高校一卡通 | 接口中心 | 人员信息同步 | `/unicard/interface/sync` | `unicardInterfaceSyncView` | 平台管理员、安全审计人员 | 接口监控 | Snowy 接口状态与调用日志 |
+| API-005 | 高校一卡通 | 接口中心 | 电子社保码认证 | `/unicard/interface/ecode` | `unicardInterfaceEcodeView` | 平台管理员、安全审计人员 | 接口监控 | Snowy 接口状态与调用日志 |
+| API-006 | 高校一卡通 | 接口中心 | 实体社保卡认证 | `/unicard/interface/card` | `unicardInterfaceCardView` | 平台管理员、安全审计人员 | 接口监控 | Snowy 接口状态与调用日志 |
+| API-007 | 高校一卡通 | 接口中心 | 移动支付交易推送 | `/unicard/interface/mobile-trade` | `unicardInterfaceMobileTradeView` | 平台管理员、安全审计人员 | 交易接口监控 | Snowy 高风险交易接口监控 |
+| API-008 | 高校一卡通 | 接口中心 | 实体社保卡交易接收 | `/unicard/interface/card-trade` | `unicardInterfaceCardTradeView` | 平台管理员、安全审计人员 | 交易接口监控 | Snowy 高风险交易接口监控 |
+| PAM-001 | 高校一卡通 | PAM 管理 | 组织架构与人员 | `/unicard/pam/org` | `unicardPamOrg*` | PAM 分级子账户 | 树形 CRUD/导入导出/授权 | Snowy 组织树与受控批量操作 |
+| PAM-002 | 高校一卡通 | PAM 管理 | 掌静脉特征库 | `/unicard/pam/feature` | `unicardPamFeature*` | PAM 分级子账户、安全审计人员 | 敏感配置管理 | Snowy 敏感状态展示与受控配置 |
+| PAM-003 | 高校一卡通 | PAM 管理 | 设备分组 | `/unicard/pam/device-group` | `unicardPamDeviceGroup*` | PAM 分级子账户、设备运维人员 | 标准 CRUD/导入导出/授权 | Snowy CRUD 与受控批量操作 |
+| PAM-004 | 高校一卡通 | PAM 管理 | 人员分组 | `/unicard/pam/person-group` | `unicardPamPersonGroup*` | PAM 分级子账户 | 标准 CRUD/导入导出/授权 | Snowy CRUD 与受控批量操作 |
+| PAM-005 | 高校一卡通 | PAM 管理 | 用户通行实时同步 | `/unicard/pam/access` | `unicardPamAccessView` | PAM 分级子账户、设备运维人员 | 只读实时查询 | Snowy 实时状态与只读详情 |
+| PAM-006 | 高校一卡通 | PAM 管理 | 通行与用户导入导出 | `/unicard/pam/transfer` | `unicardPamTransfer*` | PAM 分级子账户、安全审计人员 | 只读查询/导入导出 | Snowy 只读记录与受控导入导出 |
+| PAM-007 | 高校一卡通 | PAM 管理 | 设备运维与远程配置 | `/unicard/pam/device-ops` | `unicardPamDeviceOps*` | 设备运维人员、安全审计人员 | 监控/远程设备配置 | Snowy 监控、二次确认与结果明细 |
+| PAM-008 | 高校一卡通 | PAM 管理 | 日志与分级权限 | `/unicard/pam/security` | `unicardPamSecurity*` | 平台管理员、安全审计人员、PAM 分级子账户 | 日志查询/授权分配 | Snowy 只读日志与资源树授权 |
 
 ## 状态与业务规则
 
