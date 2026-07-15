@@ -4058,7 +4058,7 @@
 | 路由路径 | /unicard/pam/feature |
 | 权限标识 | unicardPamFeature* |
 | 可见角色 | PAM 分级子账户、安全审计人员 |
-| 页面类型 | 敏感元数据管理 |
+| 页面类型 | 敏感配置管理 |
 | 参考 Snowy 页面 | project/snowy-admin-web/src/views/dev/log |
 | 页面结论 | 页面仅展示不可逆模板标识、版本、登记状态、容量和时间元数据；掌静脉真实模板绝不进入 UI、日志或导出，不存在任何明文查看权限。 |
 
