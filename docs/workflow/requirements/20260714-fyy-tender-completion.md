@@ -10,7 +10,7 @@
 | 需求名称 | 纺院标书软件需求完成 |
 | 来源文档 | `docs/requirements/纺院需求.md`、`docs/tenders/纺院标书技术部分.docx` |
 | 创建时间 | 2026-07-14 +08:00 |
-| 当前阶段 | Product 方案规格审阅 |
+| 当前阶段 | UI/Figma 决策 |
 | 总状态 | 需确认 |
 | 本机环境状态 | `developer_confirmed_ready` |
 | 原始开发分支 | `p6` |
@@ -21,7 +21,7 @@
 | 开发模式 | 高风险严格模式 |
 | 缓存读取 | `project/docs/patterns/*.md` 全部缓存 |
 | 缓存命中 | 部分命中：Snowy CRUD、banner、组织、用户、角色、权限、日志、文件上传；H5、PAM、跨系统接口需新增设计 |
-| 缓存更新 | 本阶段无需更新；尚未形成已验证的新代码模式 |
+| 缓存更新 | 无需更新；Product 阶段未产生已验证代码模式 |
 
 ## 阶段状态
 
@@ -33,8 +33,8 @@
 | 需求和框架装载 | 已完成 | 需求 Markdown/HTML、标书抽取文本和素材 | 标书解析、需求明细校验、框架缓存与源码核验 | 2026-07-14 |
 | 开发模式决策 | 已完成 | 高风险严格模式 | 用户选择 1 | 2026-07-15 |
 | PRD/原型决策 | 已完成 | 生成 PRD 和完整后管低保真原型；跳过 H5 设计 | 用户选择 1 并补充 H5 暂不考虑 | 2026-07-15 |
-| Product 产物 | 需确认 | `docs/superpowers/specs/2026-07-15-fyy-product-design.md` | 待开发者审阅设计规格 | 2026-07-15 |
-| UI/Figma 决策 | 未开始 | - | - | - |
+| Product 产物 | 已完成 | PRD Markdown/HTML、后管页面蓝图、后管低保真原型 | 规格已确认；蓝图、静态和运行时校验均为 PASS | 2026-07-15 |
+| UI/Figma 决策 | 需确认 | - | 等待开发者选择生成 UI/Figma 或跳过 UI 并复用 Snowy 现有 UI | 2026-07-15 |
 | Design 产物 | 未开始 | - | - | - |
 | 技术设计 | 未开始 | - | - | - |
 | 数据设计 | 未开始 | - | - | - |
@@ -49,10 +49,10 @@
 ## 当前可选项
 
 ```text
-节点: Product 方案规格审阅
-推荐选项: 确认规格并生成 PRD、页面蓝图和后管原型
-其他选项: 修改规格；暂停
-推荐原因: 规格已记录统一交付方案、后管信息架构、高风险规则和 H5 设计跳过项
+节点: UI/Figma 决策
+推荐选项: 生成 UI/Figma
+其他选项: 跳过 UI，复用 Snowy 现有 UI；返回补充 PRD
+推荐原因: Product 产物和后管低保真原型已完成，可据此进入正式 UI 设计或明确复用现有 Snowy UI
 记录时间: 2026-07-15
 ```
 
@@ -128,5 +128,21 @@ Worktree 合回需求集成分支: 未开始
 来源: 用户选择生成 PRD 和低保真原型；确认统一交付方案；确认后管信息架构和高风险规则；明确跳过 H5 设计
 产物: docs/superpowers/specs/2026-07-15-fyy-product-design.md
 下一步: 开发者审阅并确认产品设计规格
+时间: 2026-07-15
+```
+
+```text
+阶段: Product 产物
+状态: 已完成
+来源: 已确认的产品设计规格；Task 1 至 Task 5 验证证据
+Product 产物: 已完成
+H5 设计: 已跳过
+H5 跳过原因: 开发者明确暂不考虑 H5 设计，且不采用未跟踪 project/h5 作为正式基线
+产物: docs/prd/FY-20260714-UNICARD-prd.md；docs/prd/FY-20260714-UNICARD-prd.html；docs/design/FY-20260714-UNICARD-admin-page-blueprint.md；docs/design/FY-20260714-UNICARD-admin-low-fidelity.html
+蓝图校验: PASS
+原型静态校验: PASS
+运行时校验: PASS
+缓存更新: 无需更新，Product 阶段未产生已验证代码模式
+下一步: UI/Figma 决策
 时间: 2026-07-15
 ```
