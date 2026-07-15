@@ -14,6 +14,7 @@
 
 | 需求ID | 需求名称 | 来源文档 | 状态文件 | 当前阶段 | 状态 |
 | --- | --- | --- | --- | --- | --- |
+| 20260714-fyy-tender-completion | 纺院标书软件需求完成 | `docs/requirements/纺院需求.md` | `docs/workflow/requirements/20260714-fyy-tender-completion.md` | Product 方案规格审阅 | 需确认 |
 
 ## 状态值
 
