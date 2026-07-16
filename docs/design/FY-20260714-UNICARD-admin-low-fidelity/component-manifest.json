@@ -3,7 +3,7 @@
   "goldenFile": "golden/original-demo.html",
   "goldenSha256": "8543e869e1deeb9a4aac98e007f0edaacb0666e6160ccb98bb62fcf5f6ba2fa7",
   "entry": "index.html",
-  "entrySha256": "8773a6bf4cd844436f014f20ee2cceb109cd1ab060ed0519580ad2604738985a",
+  "entrySha256": "2da0b442a05121aaebc8f6ae7273ce51e44432f90799b3fbc077a5efa6d904dc",
   "styles": [
     {
       "file": "styles/snowy-prototype.css",
@@ -14,6 +14,26 @@
     {
       "file": "app/prototype-data.js",
       "sha256": "91243569687d1ec6a6e05216db92a43df623e6fcb9b2f1c633c7f6aac570c9f5"
+    },
+    {
+      "file": "app/modules/school-pages.js",
+      "sha256": "3f9f5e267802545b56501f275e38893ac6dcab1f6764342d2f429148a3064ff9"
+    },
+    {
+      "file": "app/modules/platform-pages.js",
+      "sha256": "8190916f9d88a7156fc8195cbd38704fac578b6c3e6aab06d67d14b3e9423acb"
+    },
+    {
+      "file": "app/modules/page-requirements.js",
+      "sha256": "e405f0e2f203d8337d1b3d594e407b249c9801b3464aa0ad5f8543a74e9c7e32"
+    },
+    {
+      "file": "app/modules/page-annotations.js",
+      "sha256": "fb0e7332801ee3fae3ba3572175008a4739accb84ac17d28a4b9121010735134"
+    },
+    {
+      "file": "app/modules/coverage-data.js",
+      "sha256": "9dd1e20f1c4a46686c4776f215a13bde08ec00071465fe83b888291c71e2e2ac"
     },
     {
       "file": "app/prototype-state.js",
