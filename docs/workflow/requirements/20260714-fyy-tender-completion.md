@@ -10,8 +10,8 @@
 | 需求名称 | 纺院标书软件需求完成 |
 | 来源文档 | `docs/requirements/纺院需求.md`、`docs/tenders/纺院标书技术部分.docx` |
 | 创建时间 | 2026-07-14 +08:00 |
-| 当前阶段 | Product 原型重画执行 |
-| 总状态 | 已开始 |
+| 当前阶段 | UI/Figma 决策 |
+| 总状态 | 需确认 |
 | 本机环境状态 | `developer_confirmed_ready` |
 | 原始开发分支 | `p6` |
 | 需求集成分支 | `codex/fyy-tender-completion-integration` |
@@ -36,7 +36,7 @@
 | Product 产物 | 已完成 | PRD Markdown/HTML、后管页面蓝图、后管低保真原型 | 规格已确认；蓝图、静态和运行时校验均为 PASS | 2026-07-15 |
 | Product 原型重画规格 | 已完成 | `docs/superpowers/specs/2026-07-16-fyy-admin-prototype-redesign.md` | 用户选择 1，确认规格并进入实施计划 | 2026-07-16 |
 | Product 原型重画计划 | 已完成 | `docs/superpowers/plans/2026-07-16-fyy-admin-prototype-redesign.md` | 用户选择 1，当前会话内联执行 | 2026-07-16 |
-| Product 原型重画执行 | 已开始 | 33 页多文件 Snowy 后管原型 | 学校端 20 页、平台端 13 页；接口中心与 PAM 仅跳过本次原型 | 2026-07-16 |
+| Product 原型重画执行 | 已完成 | `docs/design/FY-20260714-UNICARD-admin-low-fidelity/index.html`、`coverage.html`、兼容跳转入口 | 用户要求不走 executing-plans、直接画；学校端 20 页、平台端 13 页均完成，接口中心与 PAM 仅跳过本次原型 | 2026-07-16 |
 | UI/Figma 决策 | 需确认 | - | 等待开发者选择生成 UI/Figma 或跳过 UI 并复用 Snowy 现有 UI | 2026-07-15 |
 | Design 产物 | 未开始 | - | - | - |
 | 技术设计 | 未开始 | - | - | - |
@@ -52,10 +52,10 @@
 ## 当前可选项
 
 ```text
-节点: Product 原型重画执行
-推荐选项: 执行中，无需选择
-其他选项: 暂停
-推荐原因: 用户已选择当前会话内联执行，正在按 33 页确认范围生成多文件原型
+节点: UI/Figma 决策
+推荐选项: 跳过 UI，复用本次 Snowy 原型进入技术方案
+其他选项: 生成 UI/Figma；返回调整后管原型；暂停
+推荐原因: 后管原型已基于 Snowy 原始 Demo 金标完成并通过静态、浏览器和覆盖校验
 记录时间: 2026-07-16
 ```
 
@@ -70,7 +70,13 @@ H5: 继续需求保留、设计延期
 标注迁移: 保留页面需求，自动标注按蓝图重建，不迁移旧手工评论
 规格: docs/superpowers/specs/2026-07-16-fyy-admin-prototype-redesign.md
 计划: docs/superpowers/plans/2026-07-16-fyy-admin-prototype-redesign.md
-状态: 已开始
+交付入口: docs/design/FY-20260714-UNICARD-admin-low-fidelity/index.html
+覆盖矩阵: docs/design/FY-20260714-UNICARD-admin-low-fidelity/coverage.html
+兼容入口: docs/design/FY-20260714-UNICARD-admin-low-fidelity.html
+组件清单: snowy-runtime-components-v1，26 个运行时组件
+验证结果: 范围 33/16 PASS；蓝图 PASS；原始模板 PASS；目标原型 PASS；33 页模型与 49 行覆盖 PASS；浏览器交互 PASS；UTF-8 PASS；旧精简引擎禁用词为 0
+残余风险: 接口中心 8 页、PAM 8 页仅跳过本次原型；H5 13 项设计继续延期；正式接口契约、数据库和业务代码尚未进入技术设计与开发
+状态: 已完成
 记录时间: 2026-07-16
 ```
 
