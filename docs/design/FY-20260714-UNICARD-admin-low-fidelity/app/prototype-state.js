@@ -8,7 +8,7 @@
         const currentPage = ref('ADM-S-001');
         const activeTab = ref('业务首页');
         const selectedKeys = ref(['ADM-S-001']);
-        const openKeys = ref(['school-root', 'school-people', 'school-content', 'school-query', 'platform-root', 'platform-org', 'platform-auth', 'platform-log']);
+        const openKeys = ref(['school-root']);
         const tableSize = ref('middle');
         const selectedRowKeys = ref([]);
         const rows = ref(seedRows.map(item => ({ ...item })));
@@ -36,7 +36,14 @@
           const rowsForPage = Array.from({ length: 15 }, (_, index) => {
             const record = { ...page.sampleRows[0], _key: `${page.id}-${index + 1}` };
             page.tableFields.forEach(field => {
-              if (field.shape.includes('状态') || field.shape.includes('告警')) record[field.key] = page.states[index % page.states.length]?.name || '正常';
+              if (field.shape.includes('状态') || field.shape.includes('告警')) {
+                let candidates = page.states;
+                if (/^状态$|账号状态|启用状态|展示状态/.test(field.label)) candidates = page.states.filter(state => /启用|停用|展示|隐藏/.test(state.name));
+                if (/审核状态/.test(field.label)) candidates = page.states.filter(state => /草稿|审核|发布/.test(state.name));
+                if (/在线状态/.test(field.label)) candidates = page.states.filter(state => /在线|离线/.test(state.name));
+                if (/报警状态/.test(field.label)) candidates = page.states.filter(state => /报警|正常/.test(state.name));
+                record[field.key] = (candidates.length ? candidates : page.states)[index % (candidates.length || page.states.length)]?.name || '正常';
+              }
               if (field.shape.includes('图片')) record[field.key] = demoImages[index % 2];
               if (field.shape.includes('数字')) record[field.key] = (index + 1) * 10;
             });
@@ -372,6 +379,14 @@
           activeTab.value = target.title;
           currentPage.value = key;
           currentRole.value = target.roles[0];
+          const nextOpenKeys = [target.id.startsWith('ADM-S-') ? 'school-root' : 'platform-root'];
+          if (/ADM-S-00[2-5]/.test(target.id)) nextOpenKeys.push('school-people');
+          if (/ADM-S-0(0[6-9]|1[01])/.test(target.id)) nextOpenKeys.push('school-content');
+          if (/ADM-S-01[4-8]/.test(target.id)) nextOpenKeys.push('school-query');
+          if (/ADM-P-00[23]/.test(target.id)) nextOpenKeys.push('platform-org');
+          if (/ADM-P-00[4-6]/.test(target.id)) nextOpenKeys.push('platform-auth');
+          if (/ADM-P-00[7-9]/.test(target.id)) nextOpenKeys.push('platform-log');
+          openKeys.value = nextOpenKeys;
           resetBusinessQuery();
           nextTick(restoreNodeCommentPinsForCurrentPage);
           showMessage('success', '已切换到' + activeTab.value);

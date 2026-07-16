@@ -17,7 +17,7 @@
   "app": [
     {
       "file": "app/prototype-data.js",
-      "sha256": "a4ff0b01c159b6a84925bd82e255d0c44207468b14049fefad48593f1e686eec"
+      "sha256": "66ded5b1bc80a7df95e94348915ef0a7472e3ced71d3bf03f905f448ddb70a6e"
     },
     {
       "file": "app/modules/school-pages.js",
@@ -41,7 +41,7 @@
     },
     {
       "file": "app/prototype-state.js",
-      "sha256": "e877aae7a1d8ecba5c23b58173d7479ecf7e62e1c92723af202cf051818f7ded"
+      "sha256": "b45043b3df8cf2b126cdd564c72d3551886928e410540fb9c654e1d6c034eeba"
     },
     {
       "file": "app/main.js",

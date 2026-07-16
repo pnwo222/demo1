@@ -31,6 +31,7 @@ try {
   assert.match(menuText, /平台端/);
   assert.doesNotMatch(menuText, /接口中心|PAM|H5/);
 
+  await page.locator('.snowy-sider .ant-menu-submenu-title').filter({ hasText: '师生管理' }).click();
   await page.getByText('学生管理', { exact: true }).last().click();
   await page.locator('[data-page-id="ADM-S-003"]').waitFor();
   assert.match(await page.locator('[data-page-id="ADM-S-003"]').innerText(), /身份证号/);
@@ -43,6 +44,7 @@ try {
   await page.getByRole('button', { name: /关\s*闭/ }).click();
   console.log('RUNTIME: student flow ready');
 
+  await page.locator('.snowy-sider .ant-menu-submenu-title').filter({ hasText: '内容管理' }).click();
   await page.getByText('首页 Banner 管理', { exact: true }).click();
   await page.locator('[data-page-id="ADM-S-006"]').waitFor();
   await page.locator('[data-page-id="ADM-S-006"] .ant-pagination-next').click();
@@ -69,6 +71,8 @@ try {
   await page.getByRole('button', { name: /确\s*定/ }).click();
   console.log('RUNTIME: notice flow ready');
 
+  await page.locator('.snowy-sider .ant-menu-submenu-title').filter({ hasText: '平台端' }).click();
+  await page.locator('.snowy-sider .ant-menu-submenu-title').filter({ hasText: '权限管理' }).click();
   await page.getByText('角色管理', { exact: true }).last().click();
   await page.locator('[data-page-id="ADM-P-004"]').waitFor();
   await page.getByText('授权', { exact: true }).first().click();
@@ -77,6 +81,7 @@ try {
   await page.locator('.ant-drawer:visible').getByRole('button', { name: /取\s*消/ }).click();
   console.log('RUNTIME: role flow ready');
 
+  await page.locator('.snowy-sider .ant-menu-submenu-title').filter({ hasText: '学校端' }).click();
   await page.locator('.snowy-sider').getByText('设备状态监控', { exact: true }).click();
   await page.locator('[data-page-id="ADM-S-013"]').waitFor();
   assert.match(await page.locator('[data-page-id="ADM-S-013"]').innerText(), /离线|报警/);
