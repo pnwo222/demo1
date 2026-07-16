@@ -10,168 +10,148 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8")
 
 
-KIT_VERSION = "snowy-prototype-kit-v1"
-SECTIONS = {
-    "coreCss": ("SNOWY_ADMIN_CORE_CSS_START", "SNOWY_ADMIN_CORE_CSS_END", "snowy-core.css"),
-    "annotationCss": ("SNOWY_ANNOTATION_CSS_START", "SNOWY_ANNOTATION_CSS_END", "annotation.css"),
-    "components": ("SNOWY_COMPONENTS_SOURCE_START", "SNOWY_COMPONENTS_SOURCE_END", "snowy-components.js"),
-    "annotation": ("SNOWY_ANNOTATION_COMPONENT_START", "SNOWY_ANNOTATION_COMPONENT_END", "annotation-runtime.js"),
-    "app": ("SNOWY_DEMO_APP_START", "SNOWY_DEMO_APP_END", "demo-app.js"),
-}
-SCHEMA_SECTIONS = (
-    "queryFields", "columns", "detailFields", "createFields", "editFields",
-    "toolbarActions", "rowActions",
-)
-REQUIRED_TEXT = (
-    "snowy-component-manifest", "snowy-prototype-schema", "snowy-annotation-state",
-    "ant-design-vue", "Vue", "createSnowyComponents", "createSnowyAnnotationComponent",
-    "snowy-sider", "snowy-header", "snowy-tabs-row", "snowy-query-card", "snowy-table-card",
-    "a-form", "a-form-item", "a-row", "a-col", "a-table", "a-drawer", "a-modal",
-    "a-upload", "a-upload-dragger", "localStorage", "saveAsHtml",
-)
-FORBIDDEN_PATTERNS = (
-    (r"\bpageSpecs\b", "legacy pageSpecs engine"),
-    (r"active\.query", "universal query renderer"),
-    (r"active\.details", "universal detail renderer"),
-    (r"\bformFields\b", "universal form renderer"),
-    (r"visibleFields\.value\.map", "universal table-column renderer"),
-    (r"\ballowedActions\b", "universal operation renderer"),
-    (r"\bannotationDrawerOpen\b", "custom annotation reimplementation"),
-    (r"function\s+renderPins", "custom annotation reimplementation"),
-    (r"node-comment-hover|node-comment-selected", "legacy annotation selection style"),
-    (r"<input\s+[^>]*type\s*=\s*['\"]file['\"]", "raw file input used instead of upload component"),
-    (r"class\s*=\s*['\"][^'\"]*\bquery-grid\b", "custom query grid"),
-    (r"class\s*=\s*['\"][^'\"]*\bdrawer-grid\b", "custom drawer grid"),
-    (r"class\s*=\s*['\"][^'\"]*\bcontent-card\b", "custom content card"),
+REQUIRED_RUNTIME_MARKERS = (
+    "snowy-admin-prototype-v2",
+    "prototypeMeta",
+    "annotation-toolbar",
+    "annotation-tool-button",
+    "snowy-annotation-state",
+    "baseAnnotationGroups",
+    "pageRequirements",
+    "saveAsAnnotatedHtml",
+    "node-comment-popover",
+    "requirementDrawerOpen",
+    "annotationEditorOpen",
+    "app-shell",
+    "snowy-sider",
+    "snowy-header",
+    "tabs-row",
+    "query-card",
+    "table-card",
+    "preset-grid",
+    "组件预设",
+    "a-form",
+    "a-table",
+    "a-drawer",
+    "a-modal",
+    "a-upload",
+    "a-upload-dragger",
+    "localStorage",
 )
 
-
-def normalize(value: str) -> str:
-    return value.replace("\r\n", "\n").replace("\r", "\n").strip()
-
-
-def sha256(value: str) -> str:
-    return hashlib.sha256(value.encode("utf-8")).hexdigest()
-
-
-def extract_section(text: str, start_marker: str, end_marker: str) -> str | None:
-    match = re.search(
-        rf"^[^\n]*{re.escape(start_marker)}[^\n]*\n([\s\S]*?)^[^\n]*{re.escape(end_marker)}[^\n]*$",
-        text,
-        flags=re.MULTILINE,
-    )
-    if not match:
-        return None
-    return normalize(match.group(1))
+FORBIDDEN_SIMPLIFIED_MARKERS = (
+    "snowy-prototype-kit-v1",
+    "snowy-prototype-schema",
+    "createSnowyComponents",
+    "createSnowyAnnotationComponent",
+    "pageSpecs",
+    "active.query",
+    "active.details",
+    "visibleFields.value.map",
+)
 
 
-def extract_json_script(text: str, element_id: str):
-    match = re.search(
-        rf'<script\s+id=["\']{re.escape(element_id)}["\'][^>]*>([\s\S]*?)</script>',
-        text,
-        flags=re.IGNORECASE,
-    )
-    if not match:
-        raise ValueError(f"missing JSON script: {element_id}")
-    return json.loads(match.group(1))
-
-
-def validate_schema(schema: dict, component_names: set[str], template_mode: bool) -> list[str]:
-    errors = []
-    if schema.get("version") != 1:
-        errors.append("schema.version must be 1")
-    pages = schema.get("pages")
-    if not isinstance(pages, list) or not pages:
-        return errors + ["schema.pages must contain at least one page"]
-    page_ids = set()
-    for page_index, page in enumerate(pages):
-        if not isinstance(page, dict):
-            errors.append(f"pages[{page_index}] must be an object")
-            continue
-        page_id = page.get("id") or f"pages[{page_index}]"
-        if page_id in page_ids:
-            errors.append(f"duplicate page id {page_id}")
-        page_ids.add(page_id)
-        for key in ("id", "title", "route", "permission", "pageType", "requirement"):
-            if not page.get(key):
-                errors.append(f"{page_id}.{key} is required")
-        if not isinstance(page.get("menuPath"), list) or not page["menuPath"]:
-            errors.append(f"{page_id}.menuPath must be a non-empty array")
-        for section in SCHEMA_SECTIONS:
-            items = page.get(section)
-            if not isinstance(items, list):
-                errors.append(f"{page_id}.{section} must be an array")
-                continue
-            identities = set()
-            for index, item in enumerate(items):
-                location = f"{page_id}.{section}[{index}]"
-                if not isinstance(item, dict):
-                    errors.append(f"{location} must be an object")
-                    continue
-                identity = item.get("key") or item.get("dataIndex")
-                if not identity:
-                    errors.append(f"{location}.key is required")
-                elif identity in identities:
-                    errors.append(f"{page_id}.{section} duplicate key {identity}")
-                else:
-                    identities.add(identity)
-                component = item.get("component")
-                if not component:
-                    errors.append(f"{location}.component is required")
-                elif component not in component_names:
-                    errors.append(f"{location} unknown component {component}")
-        if not isinstance(page.get("rows"), list):
-            errors.append(f"{page_id}.rows must be an array")
-        annotations = page.get("annotations")
-        if not isinstance(annotations, list):
-            errors.append(f"{page_id}.annotations must be an array")
-        else:
-            annotation_ids = set()
-            for index, annotation in enumerate(annotations):
-                location = f"{page_id}.annotations[{index}]"
-                if not isinstance(annotation, dict):
-                    errors.append(f"{location} must be an object")
-                    continue
-                for key in ("id", "index", "title", "summary", "nodeKey"):
-                    if annotation.get(key) in (None, ""):
-                        errors.append(f"{location}.{key} is required")
-                if annotation.get("id") in annotation_ids:
-                    errors.append(f"{page_id}.annotations duplicate id {annotation.get('id')}")
-                annotation_ids.add(annotation.get("id"))
-                node_key = str(annotation.get("nodeKey", ""))
-                if node_key and not node_key.startswith(f"{page.get('id')}:"):
-                    errors.append(f"{location}.nodeKey must belong to page {page.get('id')}")
-                if node_key.endswith(":query-card") or node_key == page.get("id"):
-                    errors.append(f"{location}.nodeKey must target a concrete business node")
-    if not template_mode:
-        if not schema.get("blueprintTrace"):
-            errors.append("schema.blueprintTrace is required for generated prototypes")
-        if not schema.get("coverageMatrix"):
-            errors.append("schema.coverageMatrix is required for generated prototypes")
-    return errors
+def sha256_bytes(value: bytes) -> str:
+    return hashlib.sha256(value).hexdigest()
 
 
 def parse_args(raw_args: list[str]):
-    must_contain = []
     template_mode = False
+    must_contain = []
     paths = []
     index = 0
     while index < len(raw_args):
-        arg = raw_args[index]
-        if arg == "--template":
+        value = raw_args[index]
+        if value == "--template":
             template_mode = True
             index += 1
-        elif arg == "--must-contain":
+        elif value == "--must-contain":
             if index + 1 >= len(raw_args):
                 raise ValueError("--must-contain requires a comma-separated value")
-            must_contain.extend(part.strip() for part in raw_args[index + 1].split(",") if part.strip())
+            must_contain.extend(item.strip() for item in raw_args[index + 1].split(",") if item.strip())
             index += 2
         else:
-            paths.append(arg)
+            paths.append(value)
             index += 1
     if len(paths) != 1:
-        raise ValueError("Usage: validate_admin_prototype.py [--template] [--must-contain 字段1,字段2] <admin-prototype.html>")
+        raise ValueError(
+            "Usage: validate_admin_prototype.py [--template] "
+            "[--must-contain 字段1,字段2] <prototype-directory/index.html>"
+        )
     return Path(paths[0]), template_mode, must_contain
+
+
+def runtime_entries(manifest: dict) -> list[dict]:
+    entries = [{"file": manifest.get("entry", "index.html"), "sha256": manifest.get("entrySha256")}]
+    entries.extend(manifest.get("styles", []))
+    entries.extend(manifest.get("app", []))
+    entries.extend(
+        {**component, "file": f"components/{component['file']}"}
+        for component in manifest.get("components", [])
+    )
+    return entries
+
+
+def validate_component_contract(root: Path, entry_path: Path, template_mode: bool):
+    errors = []
+    manifest_path = root / "component-manifest.json"
+    if not manifest_path.exists():
+        return ["component-manifest.json is missing"], ""
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        return [f"component-manifest.json is invalid: {error}"], ""
+    if manifest.get("version") != "snowy-runtime-components-v1":
+        errors.append("runtime component manifest version is invalid")
+
+    combined = []
+    entry_text = ""
+    for item in runtime_entries(manifest):
+        relative_path = item["file"]
+        path = root / relative_path
+        if not path.exists():
+            errors.append(f"runtime component file is missing: {relative_path}")
+            continue
+        raw = path.read_bytes()
+        if item.get("sha256") and sha256_bytes(raw) != item["sha256"]:
+            errors.append(f"runtime component hash mismatch: {relative_path}")
+        try:
+            text = raw.decode("utf-8")
+        except UnicodeDecodeError as error:
+            errors.append(f"runtime component is not UTF-8: {relative_path}: {error}")
+            continue
+        combined.append(text)
+        if path.resolve() == entry_path.resolve():
+            entry_text = text
+
+    for style in manifest.get("styles", []):
+        if entry_text.find(style["file"]) < 0:
+            errors.append(f"entry does not reference runtime component: {style['file']}")
+    app_files = [item["file"] for item in manifest.get("app", [])]
+    component_files = [f"components/{item['file']}" for item in manifest.get("components", [])]
+    referenced_files = app_files[:1] + component_files + app_files[1:]
+    previous_index = -1
+    for relative_path in referenced_files:
+        reference_index = entry_text.find(relative_path)
+        if reference_index < 0:
+            errors.append(f"entry does not reference runtime component: {relative_path}")
+        elif reference_index <= previous_index:
+            errors.append(f"runtime component load order is invalid: {relative_path}")
+        else:
+            previous_index = reference_index
+
+    if len(entry_text.encode("utf-8")) >= 8_000 or re.search(r"<style[\s>]", entry_text, re.IGNORECASE):
+        errors.append("entry contains an inline implementation instead of component references")
+    if re.search(r'type=["\']module["\']', entry_text, re.IGNORECASE) or re.search(r"\bfetch\s*\(", entry_text):
+        errors.append("entry is not compatible with direct file opening")
+
+    if template_mode:
+        golden_path = root / manifest.get("goldenFile", "")
+        if not golden_path.exists():
+            errors.append("original golden Demo is missing")
+        elif sha256_bytes(golden_path.read_bytes()) != manifest.get("goldenSha256"):
+            errors.append("original golden Demo hash mismatch")
+    return errors, "\n".join(combined)
 
 
 def main() -> int:
@@ -183,64 +163,38 @@ def main() -> int:
     if not path.exists():
         print(f"FAIL file not found: {path}")
         return 2
-
-    text = path.read_text(encoding="utf-8")
-    source_root = Path(__file__).resolve().parent.parent / "assets" / "prototype-demo-framework" / "src"
-    errors = []
-    extracted = {}
-    canonical_sources = []
-    for source_key, (start_marker, end_marker, source_name) in SECTIONS.items():
-        actual = extract_section(text, start_marker, end_marker)
-        source_path = source_root / source_name
-        expected = normalize(source_path.read_text(encoding="utf-8"))
-        canonical_sources.append(expected)
-        if actual is None:
-            errors.append(f"missing protected component section: {source_key}")
-            continue
-        extracted[source_key] = actual
-        if actual != expected:
-            errors.append(f"protected component section changed: {source_key}")
-
     try:
-        manifest = extract_json_script(text, "snowy-component-manifest")
-        schema = extract_json_script(text, "snowy-prototype-schema")
-    except (ValueError, json.JSONDecodeError) as error:
-        errors.append(str(error))
-        manifest, schema = {}, {}
+        path.read_text(encoding="utf-8")
+    except UnicodeDecodeError as error:
+        print(f"FAIL file is not UTF-8: {error}")
+        return 1
 
-    if manifest.get("version") != KIT_VERSION:
-        errors.append(f"component kit version must be {KIT_VERSION}")
-    components = manifest.get("components")
-    if not isinstance(components, list) or not components:
-        errors.append("component manifest must contain registered components")
-        component_names = set()
-    else:
-        component_names = {item.get("name") for item in components if isinstance(item, dict) and item.get("name")}
-    hashes = manifest.get("sourceHashes", {})
-    for source_key, actual in extracted.items():
-        if hashes.get(source_key) != sha256(actual):
-            errors.append(f"component source hash mismatch: {source_key}")
-
-    errors.extend(validate_schema(schema, component_names, template_mode))
-    for marker in REQUIRED_TEXT:
-        if marker not in text:
-            errors.append(f"missing marker: {marker}")
-    canonical_text = "\n".join(canonical_sources)
-    for pattern, label in FORBIDDEN_PATTERNS:
-        actual_count = len(re.findall(pattern, text, flags=re.IGNORECASE))
-        expected_count = len(re.findall(pattern, canonical_text, flags=re.IGNORECASE))
-        if actual_count > expected_count:
-            errors.append(f"non-component-kit implementation found: {label}")
+    root = path.parent
+    errors, combined = validate_component_contract(root, path, template_mode)
+    for marker in REQUIRED_RUNTIME_MARKERS:
+        if marker not in combined:
+            errors.append(f"missing runtime Demo marker: {marker}")
+    for marker in FORBIDDEN_SIMPLIFIED_MARKERS:
+        if marker in combined:
+            errors.append(f"simplified/custom renderer is forbidden: {marker}")
     for required in must_contain:
-        if required not in text:
+        if required not in combined:
             errors.append(f"missing required demand field/text: {required}")
 
+    if not template_mode:
+        if "需求到原型页面蓝图" not in combined and "蓝图条目" not in combined:
+            errors.append("generated prototype has no blueprint trace")
+        if "原型需求覆盖矩阵" not in combined and "覆盖矩阵" not in combined:
+            errors.append("generated prototype has no coverage matrix")
+        if re.search(r'<input\s+[^>]*type=["\']file["\']', combined, flags=re.IGNORECASE):
+            errors.append("raw file input is forbidden; reuse the preset a-upload components")
+
     if errors:
-        for error in errors:
+        for error in dict.fromkeys(errors):
             print(f"FAIL {error}")
         return 1
     mode = "template" if template_mode else "prototype"
-    print(f"PASS Snowy admin component-kit {mode} checks")
+    print(f"PASS Snowy runtime component contract ({mode})")
     return 0
 
 

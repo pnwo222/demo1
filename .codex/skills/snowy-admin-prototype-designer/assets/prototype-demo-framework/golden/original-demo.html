@@ -1,0 +1,2202 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snowy 后管原型 Demo 框架</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/reset.css" />
+  <style>
+    :root {
+      --sidebar: #001529;
+      --sidebar-soft: #031f3a;
+      --brand: #1677ff;
+      --page: #f5f7fb;
+      --line: #edf0f5;
+      --text-soft: #667085;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--page);
+      color: #1f2937;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+    }
+    #app { min-height: 100vh; }
+    .app-shell { min-height: 100vh; }
+    .brand {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 16px;
+      color: #fff;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      white-space: nowrap;
+    }
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: var(--brand);
+      color: #fff;
+      font-weight: 800;
+    }
+    .snowy-sider {
+      background: var(--sidebar) !important;
+      box-shadow: 2px 0 10px rgba(15, 23, 42, .08);
+    }
+    .snowy-sider .ant-menu {
+      background: var(--sidebar);
+      color: rgba(255,255,255,.76);
+      border-inline-end: 0;
+    }
+    .snowy-sider .ant-menu-submenu-title,
+    .snowy-sider .ant-menu-item { border-radius: 0; margin-inline: 0; width: 100%; }
+    .snowy-sider .ant-menu-item-selected {
+      background: #0b3a72 !important;
+      color: #fff;
+      border-left: 3px solid var(--brand);
+    }
+    .snowy-header {
+      height: 56px;
+      padding: 0 18px;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-left, .header-right { display: flex; align-items: center; gap: 14px; }
+    .icon-action {
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      color: #475467;
+      cursor: pointer;
+    }
+    .icon-action:hover { background: #f2f4f7; color: var(--brand); }
+    .mini-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1em;
+      min-width: 1em;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .tabs-row {
+      height: 44px;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      gap: 8px;
+    }
+    .content {
+      padding: 16px;
+      overflow: auto;
+    }
+    .query-card,
+    .table-card,
+    .tree-card {
+      background: #fff;
+      border: 1px solid #e8edf3;
+      border-radius: 4px;
+    }
+    .query-card { padding: 16px 16px 12px; margin-bottom: 14px; }
+    .table-card { padding: 16px; }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .toolbar-left,
+    .toolbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .cover {
+      width: 92px;
+      height: 46px;
+      border-radius: 4px;
+      object-fit: cover;
+      border: 1px solid #d9e2ef;
+      display: block;
+      background: #f3f4f6;
+    }
+    .cover-empty {
+      width: 92px;
+      height: 46px;
+      border-radius: 4px;
+      border: 1px dashed #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #98a2b3;
+      background: #fafafa;
+      font-size: 12px;
+    }
+    .page-title {
+      margin: 0 0 12px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .muted { color: var(--text-soft); }
+    .tree-layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 14px;
+    }
+    .tree-card { padding: 14px; }
+    .resource-node {
+      padding: 8px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .resource-node:hover,
+    .resource-node.active { background: #eef5ff; color: var(--brand); }
+    .drawer-cover {
+      width: 180px;
+      height: 90px;
+      border-radius: 4px;
+      object-fit: cover;
+      border: 1px solid #e5e7eb;
+      background: #f8fafc;
+    }
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .preset-card {
+      background: #fff;
+      border: 1px solid #e8edf3;
+      border-radius: 4px;
+      padding: 14px;
+    }
+    .preset-card h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+    }
+    .preset-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 32px;
+      flex-wrap: wrap;
+    }
+    .text-ellipsis {
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .file-thumb {
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      background: #667085;
+    }
+    .file-thumb.pdf { background: #ef4444; }
+    .file-thumb.xls { background: #16a34a; }
+    .file-thumb.doc { background: #2563eb; }
+    .upload-preview {
+      width: 102px;
+      height: 102px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+      display: block;
+    }
+    .annotation-host {
+      position: relative;
+    }
+    .annotation-pin {
+      position: absolute;
+      top: -14px;
+      right: -14px;
+      z-index: 5;
+      width: 30px;
+      height: 30px;
+      border: 0;
+      background: transparent;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1;
+      text-align: center;
+      text-shadow: 0 1px 2px rgba(15, 23, 42, .45);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .annotation-pin {
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1024 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M186.368 847.361c2.047 13.996-3.755 24.746-17.408 32.256-24.575 14.334-56.32 24.574-95.232 30.719-6.143 1.365 8.192 7.682 43.007 18.945 34.818 11.266 88.405 20.65 160.771 28.16 32.768 2.73 62.123 4.439 88.063 5.121 25.942 0.68 49.665 0.68 71.167 0 21.505-0.686 40.96-1.711 58.37-3.07 17.408-1.371 33.965-3.076 49.665-5.121 58.71-6.148 113.661-22.359 164.861-48.639 51.2-26.285 95.575-59.906 133.12-100.865 37.55-40.961 67.07-87.896 88.58-140.801 21.5-52.906 31.91-109.74 31.23-170.498-0.685-63.488-13.315-122.881-37.89-178.176-24.575-55.297-57.855-103.426-99.84-144.385-41.98-40.961-90.795-73.215-146.431-96.768-55.64-23.553-115.2-34.988-178.69-34.307-63.487 0.686-122.88 13.143-178.178 37.379-55.295 24.234-103.593 57.342-144.896 99.328-41.303 41.984-73.728 90.965-97.28 146.945C55.805 379.562 44.37 439.295 45.052 502.785c1.365 60.076 13.143 116.057 35.328 167.936 22.188 51.881 50.69 97.281 85.505 136.191C177.493 819.881 184.32 833.367 186.368 847.361z' fill='%232f6bff' stroke='%23ffffff' stroke-width='68' stroke-linejoin='round' paint-order='stroke fill'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+    }
+    .node-comment-pin {
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1024 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M186.368 847.361c2.047 13.996-3.755 24.746-17.408 32.256-24.575 14.334-56.32 24.574-95.232 30.719-6.143 1.365 8.192 7.682 43.007 18.945 34.818 11.266 88.405 20.65 160.771 28.16 32.768 2.73 62.123 4.439 88.063 5.121 25.942 0.68 49.665 0.68 71.167 0 21.505-0.686 40.96-1.711 58.37-3.07 17.408-1.371 33.965-3.076 49.665-5.121 58.71-6.148 113.661-22.359 164.861-48.639 51.2-26.285 95.575-59.906 133.12-100.865 37.55-40.961 67.07-87.896 88.58-140.801 21.5-52.906 31.91-109.74 31.23-170.498-0.685-63.488-13.315-122.881-37.89-178.176-24.575-55.297-57.855-103.426-99.84-144.385-41.98-40.961-90.795-73.215-146.431-96.768-55.64-23.553-115.2-34.988-178.69-34.307-63.487 0.686-122.88 13.143-178.178 37.379-55.295 24.234-103.593 57.342-144.896 99.328-41.303 41.984-73.728 90.965-97.28 146.945C55.805 379.562 44.37 439.295 45.052 502.785c1.365 60.076 13.143 116.057 35.328 167.936 22.188 51.881 50.69 97.281 85.505 136.191C177.493 819.881 184.32 833.367 186.368 847.361z' fill='%2300a896' stroke='%23ffffff' stroke-width='68' stroke-linejoin='round' paint-order='stroke fill'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+    }
+    .annotation-pin:hover {
+      transform: translateY(-1px);
+    }
+    .node-comment-outline {
+      position: fixed;
+      z-index: 1998;
+      pointer-events: none;
+      border: 2px solid rgba(22, 119, 255, .72);
+      border-radius: 3px;
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, .9);
+    }
+    .node-comment-outline.selected {
+      z-index: 1999;
+      border-color: #1677ff;
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, .95), 0 0 0 5px rgba(22, 119, 255, .16);
+    }
+    .node-comment-mask {
+      position: fixed;
+      inset: 0;
+      z-index: 1996;
+      background: rgba(15, 23, 42, .08);
+      cursor: default;
+    }
+    .annotation-toolbar {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      z-index: 2105;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 40px;
+      padding: 5px 6px 5px 12px;
+      border: 1px solid #dbe3ef;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .98);
+      color: #1f2937;
+      box-shadow: 0 10px 28px rgba(15, 23, 42, .14);
+      transform: translateX(-50%);
+      backdrop-filter: blur(10px);
+    }
+    .annotation-toolbar.collapsed {
+      min-height: 38px;
+      padding: 0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .annotation-tool-meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding-right: 2px;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .annotation-tool-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #98a2b3;
+      box-shadow: 0 0 0 3px rgba(152, 162, 179, .18);
+    }
+    .annotation-tool-dot.active {
+      background: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, .2);
+    }
+    .annotation-tool-button {
+      height: 30px;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
+      background: #fff;
+      color: #344054;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 10px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background-color .16s ease, border-color .16s ease, color .16s ease;
+    }
+    .annotation-tool-button:hover {
+      border-color: #1677ff;
+      background: #f0f7ff;
+      color: #1677ff;
+    }
+    .annotation-tool-button.primary {
+      border-color: #1677ff;
+      background: #1677ff;
+      color: #fff;
+    }
+    .annotation-tool-button.danger {
+      border-color: #ffccc7;
+      color: #ff4d4f;
+    }
+    .annotation-tool-button.danger:hover {
+      border-color: #ff4d4f;
+      background: #fff1f0;
+      color: #cf1322;
+    }
+    .annotation-tool-button.icon-only {
+      width: 30px;
+      justify-content: center;
+      padding: 0;
+    }
+    .annotation-toolbar.collapsed .annotation-tool-button.icon-only {
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 0;
+      background: #fff;
+      color: #344054;
+    }
+    .annotation-tool-button svg {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+    }
+    .annotation-cursor,
+    .annotation-cursor * {
+      cursor: url("data:image/svg+xml,%3Csvg width='28' height='28' viewBox='0 0 1024 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M186.368 847.361c2.047 13.996-3.755 24.746-17.408 32.256-24.575 14.334-56.32 24.574-95.232 30.719-6.143 1.365 8.192 7.682 43.007 18.945 34.818 11.266 88.405 20.65 160.771 28.16 32.768 2.73 62.123 4.439 88.063 5.121 25.942 0.68 49.665 0.68 71.167 0 21.505-0.686 40.96-1.711 58.37-3.07 17.408-1.371 33.965-3.076 49.665-5.121 58.71-6.148 113.661-22.359 164.861-48.639 51.2-26.285 95.575-59.906 133.12-100.865 37.55-40.961 67.07-87.896 88.58-140.801 21.5-52.906 31.91-109.74 31.23-170.498-0.685-63.488-13.315-122.881-37.89-178.176-24.575-55.297-57.855-103.426-99.84-144.385-41.98-40.961-90.795-73.215-146.431-96.768-55.64-23.553-115.2-34.988-178.69-34.307-63.487 0.686-122.88 13.143-178.178 37.379-55.295 24.234-103.593 57.342-144.896 99.328-41.303 41.984-73.728 90.965-97.28 146.945C55.805 379.562 44.37 439.295 45.052 502.785c1.365 60.076 13.143 116.057 35.328 167.936 22.188 51.881 50.69 97.281 85.505 136.191C177.493 819.881 184.32 833.367 186.368 847.361z' fill='%232f6bff' stroke='%23ffffff' stroke-width='72' stroke-linejoin='round' paint-order='stroke fill'/%3E%3C/svg%3E") 5 5, pointer !important;
+    }
+    .node-comment-popover {
+      position: fixed;
+      z-index: 2000;
+      width: 360px;
+      padding: 8px 10px;
+      border: 1px solid #e8edf3;
+      border-radius: 999px;
+      background: #fff;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, .12);
+      transition: border-radius .16s ease, padding .16s ease, box-shadow .16s ease;
+    }
+    .node-comment-popover.multiline {
+      padding: 10px 12px;
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, .14);
+    }
+    .node-comment-input {
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr) 30px;
+      align-items: center;
+      gap: 8px;
+    }
+    .node-comment-popover.multiline .node-comment-input {
+      grid-template-rows: minmax(40px, auto) 30px;
+      align-items: start;
+      column-gap: 8px;
+      row-gap: 4px;
+    }
+    .node-comment-cancel {
+      grid-column: 1;
+      grid-row: 1;
+      align-self: center;
+      width: 24px;
+      height: 24px;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      color: #667085;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .node-comment-cancel:hover {
+      background: #f2f4f7;
+      color: #101828;
+    }
+    .node-comment-input .ant-input {
+      grid-column: 2;
+      grid-row: 1;
+      width: 100%;
+      border: 0;
+      box-shadow: none !important;
+      padding: 0;
+      font-size: 14px;
+      line-height: 20px;
+      background: transparent;
+      cursor: text !important;
+      resize: none;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #d0d5dd transparent;
+    }
+    .node-comment-popover.multiline .node-comment-cancel {
+      align-self: start;
+    }
+    .node-comment-popover.multiline .node-comment-input .ant-input {
+      grid-column: 2 / 4;
+      padding: 4px 2px;
+    }
+    .node-comment-input .ant-input::-webkit-scrollbar {
+      width: 4px;
+    }
+    .node-comment-input .ant-input::-webkit-scrollbar-thumb {
+      border-radius: 4px;
+      background: #d0d5dd;
+    }
+    .node-comment-input .ant-input::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .node-comment-input .ant-input::-webkit-scrollbar-button {
+      display: none;
+    }
+    .node-comment-submit {
+      grid-column: 3;
+      grid-row: 1;
+      align-self: center;
+      justify-self: end;
+      width: 28px;
+      height: 28px;
+      border: 0;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f2f4f7;
+      color: #475467;
+      cursor: default;
+      transition: all .16s ease;
+    }
+    .node-comment-popover.multiline .node-comment-submit {
+      grid-row: 2;
+      align-self: end;
+    }
+    .node-comment-submit:disabled {
+      opacity: .55;
+      cursor: not-allowed !important;
+    }
+    button.node-comment-submit.ready {
+      background-color: #272636 !important;
+      color: #fff;
+      cursor: pointer !important;
+    }
+    button.node-comment-submit.ready:hover {
+      background-color: #111827 !important;
+      transform: translateY(-1px);
+    }
+    .node-comment-submit svg {
+      width: 15px;
+      height: 15px;
+      display: block;
+      stroke: currentColor;
+    }
+    .node-comment-pin {
+      position: fixed;
+      z-index: 999;
+      width: 30px;
+      height: 30px;
+      border: 0;
+      background-color: transparent;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1;
+      text-align: center;
+      text-shadow: 0 1px 2px rgba(15, 23, 42, .45);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .node-comment-pin.draft {
+      opacity: .9;
+      filter: saturate(.9);
+    }
+    .annotation-detail-view {
+      display: grid;
+      gap: 14px;
+    }
+    .annotation-detail-title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .annotation-detail-title .annotation-editable {
+      font-size: 20px;
+      font-weight: 600;
+      text-align: center;
+    }
+    .annotation-detail-title .ant-input {
+      font-size: 20px;
+      font-weight: 600;
+      text-align: center;
+    }
+    .annotation-detail-index {
+      min-width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #1677ff;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .annotation-editable {
+      position: relative;
+      min-height: 32px;
+      padding: 6px 38px 6px 8px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      line-height: 1.7;
+      cursor: default;
+      white-space: pre-wrap;
+    }
+    .annotation-editable:hover {
+      border-color: #d0d5dd;
+      background: #f8fafc;
+    }
+    .requirement-preview {
+      min-height: 220px;
+      padding: 12px 42px 12px 12px;
+      color: #344054;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      cursor: default;
+    }
+    .annotation-editable.muted {
+      color: #667085;
+    }
+    .annotation-edit-action {
+      position: absolute;
+      top: 5px;
+      right: 6px;
+      width: 26px;
+      height: 26px;
+      border: 0;
+      border-radius: 6px;
+      background: #eef4ff;
+      color: #1677ff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      cursor: pointer;
+      transition: opacity .16s ease, background-color .16s ease;
+    }
+    .annotation-editable:hover .annotation-edit-action,
+    .annotation-edit-action:focus-visible {
+      opacity: 1;
+    }
+    .annotation-edit-action:hover {
+      background: #dbeafe;
+    }
+    .annotation-edit-action svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+    }
+    .annotation-modal-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .annotation-modal-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    @media (max-width: 960px) {
+      .tree-layout { grid-template-columns: 1fr; }
+      .preset-grid { grid-template-columns: 1fr; }
+      .snowy-sider { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script id="snowy-annotation-state" type="application/json">{}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/dayjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/advancedFormat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/customParseFormat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/localeData.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/quarterOfYear.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/weekday.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/weekOfYear.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/weekYear.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/antd.min.js"></script>
+  <script>
+    const { createApp, ref, reactive, computed, h, nextTick, onMounted, onBeforeUnmount } = Vue;
+    const prototypeMeta = {
+      templateVersion: 'snowy-admin-prototype-v2',
+      systemName: '示例管理系统',
+      logoText: '示',
+      logoImage: ''
+    };
+
+    const demoImages = [
+      'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="184" height="92"><defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#1677ff"/><stop offset="1" stop-color="#69b1ff"/></linearGradient></defs><rect width="184" height="92" rx="8" fill="url(#g)"/><circle cx="142" cy="34" r="20" fill="rgba(255,255,255,.35)"/><path d="M20 64l30-28 24 22 18-15 36 31H20z" fill="rgba(255,255,255,.8)"/></svg>'),
+      'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="184" height="92"><rect width="184" height="92" rx="8" fill="#12b76a"/><rect x="18" y="18" width="86" height="12" rx="6" fill="rgba(255,255,255,.75)"/><rect x="18" y="42" width="132" height="8" rx="4" fill="rgba(255,255,255,.45)"/><rect x="18" y="58" width="104" height="8" rx="4" fill="rgba(255,255,255,.45)"/></svg>'),
+      ''
+    ];
+
+    const seedRows = [
+      { id: 1, title: '校园资讯首页 Banner', cover: demoImages[0], category: '首页 Banner', position: '后台首页', sort: 10, status: true, audit: '已发布', createdAt: '2026-07-08 09:30', summary: '展示校园资讯和重点通知。', attachmentType: 'pdf', attachmentName: '首页Banner投放说明.pdf', attachmentSize: '1.2 MB' },
+      { id: 2, title: '暑期校园开放通知', cover: '', category: '通知公告', position: '学校专区', sort: 20, status: false, audit: '已下架', createdAt: '2026-07-07 16:12', summary: '假期开放安排和入校说明。', attachmentType: 'doc', attachmentName: '暑期开放通知正文.docx', attachmentSize: '860 KB' },
+      { id: 3, title: '专业介绍更新', cover: demoImages[1], category: '专业介绍', position: '后台首页', sort: 30, status: true, audit: '待审核', createdAt: '2026-07-06 11:05', summary: '专业介绍内容更新入口。', attachmentType: 'xls', attachmentName: '专业介绍字段清单.xlsx', attachmentSize: '420 KB' },
+      { id: 4, title: '招生咨询入口', cover: demoImages[0], category: '招生服务', position: '学校专区', sort: 40, status: true, audit: '已发布', createdAt: '2026-07-05 14:20', summary: '招生咨询和访客预约入口。', attachmentType: '', attachmentName: '', attachmentSize: '' }
+    ];
+    const userAvatar = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="80" height="80" rx="40" fill="#1677ff"/><circle cx="40" cy="31" r="14" fill="white" opacity=".9"/><path d="M18 68c4-15 39-15 44 0" fill="white" opacity=".9"/></svg>');
+    const componentRows = [
+      { id: 'u1', avatar: userAvatar, account: 'admin', name: '系统管理员', gender: '男', phone: '13800000001', org: '信息中心', role: '管理员', status: true, progress: 92, engine: '本地存储', fileType: 'pdf', fileName: '校园专区方案.pdf', size: '2.4 MB', remark: '拥有完整管理权限，可维护菜单、角色与内容。' },
+      { id: 'u2', avatar: '', account: 'operator', name: '运营人员', gender: '女', phone: '13800000002', org: '招生办公室', role: '运营人员', status: true, progress: 68, engine: '对象存储', fileType: 'xls', fileName: '访客预约导入模板.xlsx', size: '520 KB', remark: '负责内容发布、招生咨询和访客预约审核。' },
+      { id: 'u3', avatar: userAvatar, account: 'auditor', name: '审核人员', gender: '男', phone: '13800000003', org: '教务处', role: '审核人员', status: false, progress: 35, engine: '本地存储', fileType: 'doc', fileName: '通知公告审核记录.docx', size: '890 KB', remark: '负责公告审核、数据复核和发布状态确认。' }
+    ];
+
+    const app = createApp({
+      setup() {
+        const collapsed = ref(false);
+        const currentPage = ref('banner');
+        const activeTab = ref('首页 Banner');
+        const selectedKeys = ref(['banner']);
+        const openKeys = ref(['business', 'content', 'student', 'system']);
+        const tableSize = ref('middle');
+        const selectedRowKeys = ref([]);
+        const rows = ref(seedRows.map(item => ({ ...item })));
+        const query = reactive({ keyword: '', category: undefined, status: undefined, dateRange: [] });
+        const advanced = ref(false);
+        const drawerOpen = ref(false);
+        const drawerMode = ref('add');
+        const formState = reactive({ id: null, title: '', category: '首页 Banner', position: '后台首页', sort: 10, status: true, audit: '待审核', cover: demoImages[0], summary: '', uploadFiles: [{ uid: 'init', name: '示例封面.png', status: 'done', url: demoImages[0] }] });
+        const detailRecord = ref(null);
+        const importOpen = ref(false);
+        const columnOpen = ref(false);
+        const previewOpen = ref(false);
+        const previewImage = ref('');
+        const previewTitle = ref('');
+        const menuDrawerOpen = ref(false);
+        const menuForm = reactive({ parent: '内容管理', name: '首页 Banner', path: '/content/banner', permissionName: '首页 Banner 管理', visible: true, sort: 20 });
+        const activeResource = ref('首页 Banner');
+        const checkedColumns = ref(['title', 'cover', 'category', 'position', 'sort', 'audit', 'status', 'attachment', 'action']);
+        const pagination = reactive({ current: 1, pageSize: 10 });
+        const annotationStorageKey = 'snowy-admin-prototype:annotations:' + (window.location.pathname || document.title);
+        const embeddedAnnotationState = (() => {
+          try {
+            const node = document.getElementById('snowy-annotation-state');
+            return node && node.textContent.trim() ? JSON.parse(node.textContent) : {};
+          } catch (error) {
+            return {};
+          }
+        })();
+        const localAnnotationState = (() => {
+          try {
+            const value = window.localStorage.getItem(annotationStorageKey);
+            return value ? JSON.parse(value) : {};
+          } catch (error) {
+            return {};
+          }
+        })();
+        const annotationStateTime = state => {
+          const value = Date.parse(state && state.savedAt ? state.savedAt : '');
+          return Number.isFinite(value) ? value : 0;
+        };
+        const persistedAnnotationState = annotationStateTime(localAnnotationState) >= annotationStateTime(embeddedAnnotationState)
+          && annotationStateTime(localAnnotationState) > 0
+          ? localAnnotationState
+          : embeddedAnnotationState;
+        const annotationEnabled = ref(false);
+        const annotationToolbarCollapsed = ref(false);
+        const annotationEditorOpen = ref(false);
+        const annotationEditorMode = ref('add');
+        const annotationEditingField = ref('');
+        const annotationForm = reactive({ id: '', index: 1, title: '', summary: '', detail: '' });
+        const annotationFormSnapshot = ref('');
+        const requirementDrawerOpen = ref(false);
+        const requirementDraft = ref('');
+        const requirementSnapshot = ref('');
+        const requirementEditing = ref(false);
+        const nodeCommentOpen = ref(false);
+        const nodeCommentText = ref('');
+        const nodeCommentTarget = ref('');
+        const nodeCommentEditingId = ref('');
+        const nodeCommentInputRef = ref(null);
+        const nodeCommentStyle = reactive({ left: '0px', top: '0px' });
+        const nodeCommentAnchor = reactive({ left: 0, top: 0 });
+        let selectedNodeEl = null;
+        let draftNodePinEl = null;
+        let hoverOutlineEl = null;
+        let selectedOutlineEl = null;
+        let hoverNodeEl = null;
+        let overlayFrame = 0;
+
+        const baseAnnotationGroups = {
+          banner: [
+            { id: 'banner-date-range', index: 1, title: '示例：创建时间范围限制', summary: '示例规则：日期范围最多只能选择 7 天。', detail: '这是 Demo 中用于展示标注形态的示例规则。真实项目必须从当前需求文档或页面蓝图提取日期范围限制；如果需求没有写 7 天，不得沿用本示例。' },
+            { id: 'banner-publish-status', index: 2, title: '示例：发布状态枚举', summary: '示例规则：发布状态包含已发布、待审核、已下架。', detail: '这是 Demo 中用于展示状态枚举标注的示例。真实项目必须以需求文档中的状态为准，例如需求写了注册状态、绑卡状态或审批状态，就应标注那些真实枚举。' },
+            { id: 'banner-enable-status', index: 3, title: '示例：是否显示开关含义', summary: '示例规则：是否显示只控制前台展示，不代表审核是否通过。', detail: '这是 Demo 中用于展示“状态容易混淆”时如何标注。真实项目应根据需求说明区分业务状态、流程状态和显示控制，不能默认套用本示例解释。' },
+            { id: 'banner-cover-image', index: 4, title: '示例：封面图展示规则', summary: '示例规则：封面图展示真实图片缩略图，无图显示占位。', detail: '这是 Demo 中用于展示图片字段标注的示例。真实项目应根据需求中的图片、附件、头像、证件照、图标等字段分别标注展示规则和上传限制。' },
+            { id: 'banner-batch-delete', index: 5, title: '示例：批量删除风险', summary: '示例规则：批量删除必须先选择数据，并二次确认。', detail: '这是 Demo 中用于展示高风险操作标注的示例。真实项目只有在需求包含删除、批量操作、作废、撤销等风险动作时才标注，并按真实业务规则写清影响范围。' },
+            { id: 'banner-drawer-cover', index: 6, title: '示例：表单封面图要求', summary: '示例规则：新增和编辑支持选择、预览、移除；详情只读。', detail: '这是 Demo 中用于展示表单字段标注的示例。真实项目应按需求中的新增、编辑、详情字段逐项标注，尤其是必填、只读、脱敏、校验和权限差异。' }
+          ],
+          menuResource: [
+            { id: 'menu-tree', index: 1, title: '菜单层级必须完整', summary: '内容管理下包含首页 Banner、通知公告等二级/三级菜单。', detail: '需求中出现“模块/菜单/管理”层级时，原型必须落成左侧菜单结构，不能只在页面标题里体现。菜单节点需要能追溯到需求章节和具体页面。' },
+            { id: 'menu-detail', index: 2, title: '路由和权限必须明确', summary: '菜单资源必须展示路由地址、权限名称、可见角色和操作范围。', detail: '每个后管页面都要明确路由路径和权限标识，例如 /content/banner 与首页 Banner 管理权限。没有权限标识的页面不能进入开发。' },
+            { id: 'menu-actions', index: 3, title: '删除菜单属于高风险操作', summary: '删除菜单前必须确认是否影响角色授权和已有按钮权限。', detail: '删除菜单会影响入口可见性、按钮权限和角色授权，应二次确认，并提示可能影响已分配角色。普通内容删除和菜单删除不能使用同一套轻提示。' }
+          ],
+          components: [
+            { id: 'component-upload', index: 1, title: '图片上传校验', summary: '图片上传建议限制 JPG/PNG，单图不超过 2MB。', detail: '图片字段要提供选择、预览、移除能力。上传失败时应保留原图，不应清空表单；重新选择图片后页面内预览必须立即更新。' },
+            { id: 'component-status', index: 2, title: '状态组件选择', summary: '业务状态用标签，是否显示用开关，流程中状态用徽标。', detail: '不同状态含义要用不同组件表达：审核状态用标签，显示控制用开关，异步任务或运行状态用徽标，避免所有状态都画成同一种颜色标签。' },
+            { id: 'component-table', index: 3, title: '表格字段展示形态', summary: '头像、文件、进度、长文本不能都用普通文本展示。', detail: '头像用 Avatar；文件用类型图标、文件名、大小和来源；进度用进度条；长文本默认省略并提供悬浮完整内容；更多操作放入下拉菜单。' }
+          ]
+        };
+        const annotationGroups = reactive(JSON.parse(JSON.stringify(baseAnnotationGroups)));
+        if (persistedAnnotationState.annotationGroups) {
+          Object.entries(persistedAnnotationState.annotationGroups).forEach(([key, value]) => {
+            if (Array.isArray(value)) annotationGroups[key] = value;
+          });
+        }
+        const savedNodeComments = reactive(Array.isArray(persistedAnnotationState.nodeComments) ? persistedAnnotationState.nodeComments : []);
+        const basePageRequirements = {
+          banner: '本页面用于管理首页 Banner 内容。支持按标题、栏目、发布状态、是否显示和创建时间筛选；列表展示封面图、栏目、发布位置、排序、发布状态、是否显示、附件和创建时间；支持新增、编辑、详情、审核、删除、批量删除、导入、导出、图片上传预览及附件管理。',
+          menuResource: '本页面用于维护后管菜单资源。左侧展示业务菜单层级，右侧展示当前菜单的路由地址、权限名称、可见角色和操作范围；支持新增、编辑、角色授权、删除菜单，并对影响已有权限分配的操作进行确认。',
+          components: '本页面集中展示 Snowy 后管常用组件及数据语义，包括图片上传、状态标签、开关、徽标、确认操作、文件类型、进度、头像、长文本省略和表格更多操作，用于约束业务原型选择符合字段含义的展示形式。'
+        };
+        const pageRequirements = reactive({
+          ...basePageRequirements,
+          ...(persistedAnnotationState.pageRequirements || {})
+        });
+
+        const menuItems = [
+          { key: 'business', label: '业务运营', children: [
+            { key: 'content', label: '内容管理', children: [
+              { key: 'banner', label: '首页 Banner' },
+              { key: 'notice', label: '通知公告', children: [
+                { key: 'noticeList', label: '公告列表' },
+                { key: 'noticeAudit', label: '发布审核' }
+              ] }
+            ] },
+            { key: 'student', label: '师生管理', children: [
+              { key: 'students', label: '学生管理' },
+              { key: 'teachers', label: '教职工管理' },
+              { key: 'historyStudents', label: '历史学生管理' }
+            ] }
+          ] },
+          { key: 'system', label: '系统能力', children: [
+            { key: 'resources', label: '资源权限', children: [
+              { key: 'menuResource', label: '菜单资源' },
+              { key: 'operationPermission', label: '操作权限' },
+              { key: 'roleGrant', label: '角色授权' },
+              { key: 'components', label: '组件预设' }
+            ] }
+          ] }
+        ];
+
+        const baseColumns = [
+          { title: '标题', dataIndex: 'title', key: 'title', width: 190 },
+          { title: '封面图', dataIndex: 'cover', key: 'cover', width: 116 },
+          { title: '栏目', dataIndex: 'category', key: 'category', width: 110 },
+          { title: '发布位置', dataIndex: 'position', key: 'position', width: 110 },
+          { title: '排序', dataIndex: 'sort', key: 'sort', width: 70, sorter: (a, b) => a.sort - b.sort },
+          { title: '发布状态', dataIndex: 'audit', key: 'audit', width: 100 },
+          { title: '是否显示', dataIndex: 'status', key: 'status', width: 96 },
+          { title: '附件', dataIndex: 'attachmentName', key: 'attachment', width: 210 },
+          { title: '创建时间', dataIndex: 'createdAt', key: 'createdAt', width: 172 },
+          { title: '操作', key: 'action', fixed: 'right', width: 170 }
+        ];
+        const columns = computed(() => baseColumns.filter(col => checkedColumns.value.includes(col.key)));
+        const componentColumns = [
+          { title: '头像', dataIndex: 'avatar', key: 'avatar', width: 78, align: 'center' },
+          { title: '账号', dataIndex: 'account', key: 'account', width: 110 },
+          { title: '姓名', dataIndex: 'name', key: 'name', width: 110 },
+          { title: '性别', dataIndex: 'gender', key: 'gender', width: 90 },
+          { title: '机构', dataIndex: 'org', key: 'org', width: 130 },
+          { title: '角色', dataIndex: 'role', key: 'role', width: 120 },
+          { title: '状态', dataIndex: 'status', key: 'status', width: 120 },
+          { title: '完成度', dataIndex: 'progress', key: 'progress', width: 150 },
+          { title: '文件', dataIndex: 'fileName', key: 'fileName', width: 230 },
+          { title: '备注', dataIndex: 'remark', key: 'remark', width: 260 },
+          { title: '操作', key: 'action', fixed: 'right', width: 170 }
+        ];
+
+        const filteredRows = computed(() => {
+          let result = rows.value.slice();
+          if (query.keyword) result = result.filter(row => row.title.includes(query.keyword.trim()));
+          if (query.category) result = result.filter(row => row.category === query.category);
+          if (query.status !== undefined) result = result.filter(row => row.status === query.status);
+          if (query.dateRange && query.dateRange.length === 2) {
+            const start = dayjs(query.dateRange[0]).startOf('day');
+            const end = dayjs(query.dateRange[1]).endOf('day');
+            result = result.filter(row => dayjs(row.createdAt).isAfter(start) && dayjs(row.createdAt).isBefore(end));
+          }
+          return result;
+        });
+
+        const pageTitle = computed(() => currentPage.value === 'menuResource' ? '菜单资源' : activeTab.value);
+        const currentAnnotationKey = computed(() => currentPage.value === 'menuResource' ? 'menuResource' : currentPage.value === 'components' ? 'components' : 'banner');
+        const currentAnnotations = computed(() => annotationGroups[currentAnnotationKey.value] || annotationGroups.banner);
+        const requirementDrawerTitle = computed(() => pageTitle.value + ' - 整体需求说明');
+        const requirementDirty = computed(() => requirementDraft.value.trim() !== requirementSnapshot.value);
+        const nodeCommentMultiline = computed(() => /\r?\n/.test(nodeCommentText.value) || Array.from(nodeCommentText.value).length > 24);
+        const snapshotAnnotationForm = () => JSON.stringify({
+          id: annotationForm.id,
+          index: Number(annotationForm.index) || 0,
+          title: String(annotationForm.title || ''),
+          summary: String(annotationForm.summary || ''),
+          detail: String(annotationForm.detail || '')
+        });
+        const annotationDirty = computed(() => snapshotAnnotationForm() !== annotationFormSnapshot.value);
+        const normalizeAnnotationTitle = title => {
+          const value = String(title || '').trim();
+          return /^\d+\s*[：:]\s*注释$/.test(value) ? '注释' : value;
+        };
+        const annotationComparable = note => JSON.stringify({
+          id: note && note.id ? note.id : '',
+          index: Number(note && note.index) || 0,
+          title: String(note && note.title || ''),
+          summary: String(note && note.summary || ''),
+          detail: String(note && note.detail || '')
+        });
+        const findBaseAnnotation = (pageKey, noteId) => {
+          const group = baseAnnotationGroups[pageKey] || [];
+          return group.find(item => item.id === noteId) || null;
+        };
+        const hasAnnotation = noteId => currentAnnotations.value.some(item => item.id === noteId);
+        const annotationDeleteLabel = computed(() => {
+          if (annotationEditorMode.value !== 'edit') return '';
+          const base = findBaseAnnotation(currentAnnotationKey.value, annotationForm.id);
+          if (base && annotationComparable(base) !== snapshotAnnotationForm()) return '恢复原始标注';
+          return '删除标注';
+        });
+        const rowSelection = computed(() => ({
+          selectedRowKeys: selectedRowKeys.value,
+          onChange: keys => selectedRowKeys.value = keys
+        }));
+
+        const showMessage = (type, text) => antd.message[type](text);
+        const setPage = ({ key }) => {
+          selectedKeys.value = [key];
+          const names = {
+            banner: '首页 Banner',
+            noticeList: '公告列表',
+            noticeAudit: '发布审核',
+            students: '学生管理',
+            teachers: '教职工管理',
+            historyStudents: '历史学生管理',
+            menuResource: '菜单资源',
+            operationPermission: '操作权限',
+            roleGrant: '角色授权',
+            components: '组件预设'
+          };
+          activeTab.value = names[key] || '首页 Banner';
+          currentPage.value = key === 'menuResource' ? 'menuResource' : key === 'components' ? 'components' : 'banner';
+          nextTick(restoreNodeCommentPinsForCurrentPage);
+          showMessage('success', '已切换到' + activeTab.value);
+        };
+        const onOpenChange = keys => openKeys.value = keys;
+        const search = () => {
+          if (query.dateRange && query.dateRange.length === 2) {
+            const start = dayjs(query.dateRange[0]).startOf('day');
+            const end = dayjs(query.dateRange[1]).endOf('day');
+            if (end.diff(start, 'day') > 7) {
+              showMessage('warning', '查询时间范围不能超过 7 天');
+              return;
+            }
+          }
+          pagination.current = 1;
+          showMessage('success', '查询完成');
+        };
+        const reset = () => {
+          query.keyword = '';
+          query.category = undefined;
+          query.status = undefined;
+          query.dateRange = [];
+          pagination.current = 1;
+          showMessage('success', '查询条件已重置');
+        };
+        const refresh = () => showMessage('success', '列表已刷新');
+        const exportData = () => showMessage('success', '导出任务已创建');
+        const batchDelete = () => {
+          if (!selectedRowKeys.value.length) {
+            showMessage('warning', '请先选择需要删除的数据');
+            return;
+          }
+          antd.Modal.confirm({
+            title: '删除确认',
+            content: '确定要删除选中的数据吗？删除后列表将自动刷新。',
+            okText: '确定',
+            cancelText: '取消',
+            onOk() {
+              rows.value = rows.value.filter(row => !selectedRowKeys.value.includes(row.id));
+              selectedRowKeys.value = [];
+              showMessage('success', '删除成功');
+            }
+          });
+        };
+        const removeRow = record => {
+          antd.Modal.confirm({
+            title: '删除确认',
+            content: '确定要删除“' + record.title + '”吗？',
+            okText: '确定',
+            cancelText: '取消',
+            onOk() {
+              rows.value = rows.value.filter(row => row.id !== record.id);
+              selectedRowKeys.value = selectedRowKeys.value.filter(id => id !== record.id);
+              showMessage('success', '删除成功');
+            }
+          });
+        };
+        const openAdd = () => {
+          drawerMode.value = 'add';
+          Object.assign(formState, { id: null, title: '', category: '首页 Banner', position: '后台首页', sort: 10, status: true, audit: '待审核', cover: demoImages[0], summary: '', uploadFiles: demoImages[0] ? [{ uid: 'demo-1', name: '示例封面.png', status: 'done', url: demoImages[0] }] : [] });
+          drawerOpen.value = true;
+        };
+        const openEdit = record => {
+          drawerMode.value = 'edit';
+          Object.assign(formState, { ...record, uploadFiles: record.cover ? [{ uid: String(record.id), name: record.title + '.png', status: 'done', url: record.cover }] : [] });
+          drawerOpen.value = true;
+        };
+        const openDetail = record => {
+          detailRecord.value = { ...record };
+          drawerMode.value = 'detail';
+          Object.assign(formState, { ...record, uploadFiles: record.cover ? [{ uid: String(record.id), name: record.title + '.png', status: 'done', url: record.cover }] : [] });
+          drawerOpen.value = true;
+        };
+        const saveForm = () => {
+          if (!formState.title.trim()) {
+            showMessage('warning', '请输入标题');
+            return;
+          }
+          if (drawerMode.value === 'edit') {
+            rows.value = rows.value.map(row => row.id === formState.id ? { ...row, ...formState } : row);
+          } else {
+            rows.value.unshift({ ...formState, id: Date.now(), createdAt: dayjs().format('YYYY-MM-DD HH:mm'), audit: '待审核' });
+          }
+          drawerOpen.value = false;
+          showMessage('success', '保存成功，列表已刷新');
+        };
+        const auditRow = record => {
+          record.audit = '已发布';
+          record.status = true;
+          showMessage('success', '审核通过');
+        };
+        const toggleStatus = (record, value) => {
+          record.status = value;
+          record.audit = value ? '已发布' : '已下架';
+          showMessage('success', value ? '已启用' : '已停用');
+        };
+        const useExampleCover = () => {
+          formState.cover = formState.cover === demoImages[0] ? demoImages[1] : demoImages[0];
+          formState.uploadFiles = formState.cover ? [{ uid: 'example', name: '示例封面.png', status: 'done', url: formState.cover }] : [];
+          showMessage('success', '封面图已更新');
+        };
+        const beforeCoverUpload = file => {
+          if (!file.type || !file.type.startsWith('image/')) {
+            showMessage('warning', '请选择图片文件');
+            return false;
+          }
+          const reader = new FileReader();
+          reader.onload = event => {
+            const dataUrl = event.target.result;
+            formState.cover = dataUrl;
+            formState.uploadFiles = [{ uid: file.uid || String(Date.now()), name: file.name, status: 'done', url: dataUrl }];
+            showMessage('success', '图片已选择');
+          };
+          reader.readAsDataURL(file);
+          return false;
+        };
+        const removeCover = () => {
+          formState.cover = '';
+          formState.uploadFiles = [];
+          showMessage('success', '封面图已移除');
+          return true;
+        };
+        const previewCover = file => {
+          previewImage.value = file.url || formState.cover;
+          previewTitle.value = file.name || '图片预览';
+          previewOpen.value = true;
+        };
+        const previewCurrentCover = () => {
+          if (!formState.cover) {
+            showMessage('warning', '暂无图片可预览');
+            return;
+          }
+          previewImage.value = formState.cover;
+          previewTitle.value = formState.title || '图片预览';
+          previewOpen.value = true;
+        };
+        const saveImport = () => {
+          importOpen.value = false;
+          showMessage('success', '导入完成，列表已刷新');
+        };
+        const saveMenu = () => {
+          menuDrawerOpen.value = false;
+          showMessage('success', '菜单已保存');
+        };
+        const setResource = name => {
+          activeResource.value = name;
+          showMessage('success', '已选择' + name);
+        };
+        const changePage = page => {
+          pagination.current = page.current;
+          pagination.pageSize = page.pageSize;
+        };
+        const topAction = text => showMessage('success', text + '已完成');
+        const ensureCommentOutline = selected => {
+          const current = selected ? selectedOutlineEl : hoverOutlineEl;
+          if (current) return current;
+          const outline = document.createElement('div');
+          outline.className = 'node-comment-outline' + (selected ? ' selected' : '');
+          document.body.appendChild(outline);
+          if (selected) selectedOutlineEl = outline;
+          else hoverOutlineEl = outline;
+          return outline;
+        };
+        const positionCommentOutline = (outline, target) => {
+          if (!outline || !target) return;
+          const rect = getVisibleCommentRect(target);
+          if (!rect) {
+            outline.style.display = 'none';
+            return;
+          }
+          outline.style.display = 'block';
+          outline.style.left = (rect.left - 2) + 'px';
+          outline.style.top = (rect.top - 2) + 'px';
+          outline.style.width = Math.max(4, rect.width + 4) + 'px';
+          outline.style.height = Math.max(4, rect.height + 4) + 'px';
+        };
+        const getVisibleCommentRect = target => {
+          if (!target || !target.isConnected) return null;
+          const source = target.getBoundingClientRect();
+          let left = Math.max(0, source.left);
+          let top = Math.max(0, source.top);
+          let right = Math.min(window.innerWidth, source.right);
+          let bottom = Math.min(window.innerHeight, source.bottom);
+          let parent = target.parentElement;
+          while (parent && parent !== document.body) {
+            const style = window.getComputedStyle(parent);
+            const overflow = style.overflow + style.overflowX + style.overflowY;
+            if (/(auto|scroll|hidden|clip)/.test(overflow)) {
+              const parentRect = parent.getBoundingClientRect();
+              left = Math.max(left, parentRect.left);
+              top = Math.max(top, parentRect.top);
+              right = Math.min(right, parentRect.right);
+              bottom = Math.min(bottom, parentRect.bottom);
+            }
+            parent = parent.parentElement;
+          }
+          const width = right - left;
+          const height = bottom - top;
+          if (width <= 1 || height <= 1) return null;
+          return { left, top, right, bottom, width, height, source };
+        };
+        const positionNodeCommentPopover = point => {
+          const width = 360;
+          const height = 48;
+          const sourceLeft = point && Number.isFinite(point.left) ? point.left : 12;
+          const sourceTop = point && Number.isFinite(point.top) ? point.top : 12;
+          const left = Math.min(sourceLeft + 12, window.innerWidth - width - 12);
+          const top = Math.min(sourceTop + 12, window.innerHeight - height - 12);
+          nodeCommentStyle.left = Math.max(12, left) + 'px';
+          nodeCommentStyle.top = Math.max(12, top) + 'px';
+        };
+        const positionNodeCommentPin = (pin, target) => {
+          if (!pin || !target) return;
+          if (!target.isConnected) {
+            pin.style.display = 'none';
+            return;
+          }
+          const rect = getVisibleCommentRect(target);
+          if (!rect) {
+            pin.style.display = 'none';
+            return;
+          }
+          const pinSize = 30;
+          const inset = 4;
+          const minLeft = rect.left + inset;
+          const maxLeft = rect.right - pinSize - inset;
+          const minTop = rect.top + inset;
+          const maxTop = rect.bottom - pinSize - inset;
+          pin.style.display = 'inline-flex';
+          pin.style.left = (maxLeft >= minLeft ? maxLeft : rect.left + Math.max(0, (rect.width - pinSize) / 2)) + 'px';
+          pin.style.top = (maxTop >= minTop ? minTop : rect.top + Math.max(0, (rect.height - pinSize) / 2)) + 'px';
+        };
+        const updateCommentOverlays = () => {
+          if (hoverNodeEl && !nodeCommentOpen.value) {
+            positionCommentOutline(ensureCommentOutline(false), hoverNodeEl);
+          }
+          if (selectedNodeEl) {
+            positionCommentOutline(ensureCommentOutline(true), selectedNodeEl);
+            if (nodeCommentOpen.value) positionNodeCommentPopover(nodeCommentAnchor);
+          }
+          document.querySelectorAll('.node-comment-pin').forEach(pin => {
+            positionNodeCommentPin(pin, pin.__commentTarget);
+          });
+        };
+        const scheduleCommentOverlayUpdate = () => {
+          if (overlayFrame) return;
+          overlayFrame = requestAnimationFrame(() => {
+            overlayFrame = 0;
+            updateCommentOverlays();
+          });
+        };
+        const clearHoverNode = () => {
+          if (hoverOutlineEl) hoverOutlineEl.remove();
+          hoverOutlineEl = null;
+          hoverNodeEl = null;
+        };
+        const clearSelectedOutline = () => {
+          if (selectedOutlineEl) selectedOutlineEl.remove();
+          selectedOutlineEl = null;
+        };
+        const clearNodeSelection = () => {
+          selectedNodeEl = null;
+          clearSelectedOutline();
+          if (draftNodePinEl) draftNodePinEl.remove();
+          draftNodePinEl = null;
+          nodeCommentOpen.value = false;
+          nodeCommentText.value = '';
+          nodeCommentTarget.value = '';
+          nodeCommentEditingId.value = '';
+        };
+        const toggleAnnotationMode = () => {
+          annotationEnabled.value = !annotationEnabled.value;
+          if (!annotationEnabled.value) {
+            clearHoverNode();
+            clearNodeSelection();
+          }
+        };
+        const handleAnnotationKeydown = event => {
+          if (event.key === 'Escape' && nodeCommentOpen.value) clearNodeSelection();
+        };
+        const findCommentableNode = event => {
+          const ignore = event.target.closest('.annotation-pin,.node-comment-pin,.node-comment-popover,.ant-modal,.ant-message,.ant-dropdown,.ant-picker-dropdown');
+          if (ignore) return null;
+          return event.target.closest('label,.ant-form-item-label,.ant-input,.ant-select-selector,.ant-picker,th,td,button,a,.ant-tag,.ant-switch,.cover,.file-thumb,.resource-node,h1,.page-title') || event.target;
+        };
+        const getNodeTitle = node => {
+          const raw = (node.innerText || node.getAttribute('placeholder') || node.getAttribute('title') || node.getAttribute('aria-label') || node.tagName || '').trim();
+          return raw.replace(/\s+/g, ' ').slice(0, 28) || node.tagName.toLowerCase();
+        };
+        const findNodeCommentNote = noteId => {
+          if (!noteId) return null;
+          for (const group of Object.values(annotationGroups)) {
+            const note = group.find(item => item.id === noteId);
+            if (note) return note;
+          }
+          return null;
+        };
+        const cssEscape = value => (window.CSS && CSS.escape ? CSS.escape(value) : String(value).replace(/["\\#.:,[\]>+~*]/g, '\\$&'));
+        const getNodeSelector = node => {
+          if (!node || !node.isConnected) return '';
+          const parts = [];
+          let current = node;
+          while (current && current.nodeType === 1 && current.id !== 'app') {
+            let selector = current.tagName.toLowerCase();
+            if (current.id) {
+              selector += '#' + cssEscape(current.id);
+              parts.unshift(selector);
+              break;
+            }
+            const siblings = Array.from(current.parentElement ? current.parentElement.children : []).filter(item => item.tagName === current.tagName);
+            if (siblings.length > 1) selector += ':nth-of-type(' + (siblings.indexOf(current) + 1) + ')';
+            parts.unshift(selector);
+            current = current.parentElement;
+          }
+          return '#app ' + parts.join(' > ');
+        };
+        const clearNodeCommentPins = () => {
+          document.querySelectorAll('.node-comment-pin').forEach(pin => pin.remove());
+        };
+        const restoreNodeCommentPinsForCurrentPage = () => {
+          clearNodeCommentPins();
+          savedNodeComments
+            .filter(item => item.pageKey === currentAnnotationKey.value)
+            .forEach(item => {
+              const target = document.querySelector(item.selector);
+              const note = findNodeCommentNote(item.noteId);
+              if (!target || !note) return;
+              target.__commentNoteId = item.noteId;
+              const pin = createNodeCommentPin(target, note.index, item.noteId);
+              if (pin) pin.__commentNoteId = item.noteId;
+            });
+        };
+        const cloneAnnotationGroups = () => JSON.parse(JSON.stringify(annotationGroups));
+        const buildAnnotationState = () => ({
+          version: 1,
+          savedAt: new Date().toISOString(),
+          annotationGroups: cloneAnnotationGroups(),
+          nodeComments: JSON.parse(JSON.stringify(savedNodeComments)),
+          pageRequirements: JSON.parse(JSON.stringify(pageRequirements))
+        });
+        const persistAnnotationState = () => {
+          try {
+            window.localStorage.setItem(annotationStorageKey, JSON.stringify(buildAnnotationState()));
+            return true;
+          } catch (error) {
+            showMessage('warning', '浏览器未允许本地保存，请使用“另存为”保存标注');
+            return false;
+          }
+        };
+        const openRequirementDrawer = () => {
+          requirementDraft.value = pageRequirements[currentAnnotationKey.value] || '';
+          requirementSnapshot.value = requirementDraft.value;
+          requirementEditing.value = false;
+          requirementDrawerOpen.value = true;
+        };
+        const cancelRequirementEdit = () => {
+          requirementDraft.value = requirementSnapshot.value;
+          requirementEditing.value = false;
+        };
+        const savePageRequirement = () => {
+          const value = requirementDraft.value.trim();
+          if (!value) {
+            showMessage('warning', '请输入当前页面的整体需求描述');
+            return;
+          }
+          pageRequirements[currentAnnotationKey.value] = value;
+          persistAnnotationState();
+          requirementDraft.value = value;
+          requirementSnapshot.value = value;
+          requirementEditing.value = false;
+          showMessage('success', '页面需求说明已保存');
+        };
+        const saveAsAnnotatedHtml = () => {
+          clearNodeSelection();
+          const state = buildAnnotationState();
+          const doc = new DOMParser().parseFromString('<!DOCTYPE html>\n' + document.documentElement.outerHTML, 'text/html');
+          doc.querySelectorAll('.node-comment-pin,.node-comment-outline,.node-comment-mask,.node-comment-popover').forEach(node => node.remove());
+          const appNode = doc.getElementById('app');
+          if (appNode) appNode.innerHTML = '';
+          let stateNode = doc.getElementById('snowy-annotation-state');
+          if (!stateNode) {
+            stateNode = doc.createElement('script');
+            stateNode.id = 'snowy-annotation-state';
+            stateNode.type = 'application/json';
+            doc.body.insertBefore(stateNode, doc.body.firstChild);
+          }
+          stateNode.textContent = JSON.stringify(state).replace(/</g, '\\u003c');
+          const html = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+          const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = 'snowy-admin-prototype-annotated-' + dayjs().format('YYYYMMDD-HHmmss') + '.html';
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+          showMessage('success', '已生成包含标注的 HTML 文件');
+        };
+        const hoverNodeForComment = event => {
+          if (!annotationEnabled.value) return;
+          if (nodeCommentOpen.value) {
+            clearHoverNode();
+            return;
+          }
+          const target = findCommentableNode(event);
+          if (!target || !target.classList || target === selectedNodeEl) {
+            clearHoverNode();
+            return;
+          }
+          hoverNodeEl = target;
+          positionCommentOutline(ensureCommentOutline(false), target);
+        };
+        const selectNodeForComment = event => {
+          if (!annotationEnabled.value) return;
+          if (nodeCommentOpen.value) return;
+          const target = findCommentableNode(event);
+          if (!target || !target.classList) return;
+          event.preventDefault();
+          event.stopPropagation();
+          clearHoverNode();
+          selectedNodeEl = target;
+          positionCommentOutline(ensureCommentOutline(true), selectedNodeEl);
+          nodeCommentAnchor.left = event.clientX;
+          nodeCommentAnchor.top = event.clientY;
+          positionNodeCommentPopover(nodeCommentAnchor);
+          nodeCommentTarget.value = getNodeTitle(selectedNodeEl);
+          const existingNote = findNodeCommentNote(selectedNodeEl.__commentNoteId);
+          nodeCommentEditingId.value = existingNote ? existingNote.id : '';
+          nodeCommentText.value = existingNote ? existingNote.summary : '';
+          nodeCommentOpen.value = true;
+          if (draftNodePinEl) draftNodePinEl.remove();
+          draftNodePinEl = null;
+          nextTick(() => {
+            if (nodeCommentInputRef.value && nodeCommentInputRef.value.focus) nodeCommentInputRef.value.focus();
+          });
+        };
+        const createNodeCommentPin = (target, index, noteId, draft = false) => {
+          if (!target) return null;
+          const pin = document.createElement('button');
+          pin.type = 'button';
+          pin.className = 'node-comment-pin' + (draft ? ' draft' : '');
+          pin.textContent = String(index);
+          pin.__commentTarget = target;
+          positionNodeCommentPin(pin, target);
+          if (!draft) {
+            pin.addEventListener('click', event => {
+              event.stopPropagation();
+              showAnnotation(noteId);
+            });
+          }
+          document.body.appendChild(pin);
+          positionNodeCommentPin(pin, target);
+          return pin;
+        };
+        const saveNodeComment = () => {
+          const text = nodeCommentText.value.trim();
+          if (!text) {
+            showMessage('warning', '请输入注释内容');
+            return;
+          }
+          const editingNote = findNodeCommentNote(nodeCommentEditingId.value);
+          if (editingNote) {
+            editingNote.summary = text;
+            editingNote.detail = editingNote.detail || '';
+            persistAnnotationState();
+            clearNodeSelection();
+            showMessage('success', '注释已更新');
+            return;
+          }
+          const key = currentAnnotationKey.value;
+          const group = annotationGroups[key] || annotationGroups.banner;
+          const maxIndex = group.reduce((max, item) => Math.max(max, Number(item.index) || 0), 0);
+          const noteId = key + '-node-comment-' + Date.now();
+          const nextIndex = maxIndex + 1;
+          group.push({
+            id: noteId,
+            index: nextIndex,
+            title: '注释',
+            summary: text,
+            detail: ''
+          });
+          group.sort((a, b) => Number(a.index) - Number(b.index));
+          const targetEl = selectedNodeEl;
+          if (draftNodePinEl) {
+            draftNodePinEl.remove();
+            draftNodePinEl = null;
+          }
+          if (targetEl) targetEl.__commentNoteId = noteId;
+          const selector = getNodeSelector(targetEl);
+          if (selector) {
+            const existing = savedNodeComments.find(item => item.selector === selector && item.pageKey === key);
+            const payload = { noteId, pageKey: key, selector, targetTitle: nodeCommentTarget.value };
+            if (existing) Object.assign(existing, payload);
+            else savedNodeComments.push(payload);
+          }
+          const pin = createNodeCommentPin(targetEl, nextIndex, noteId);
+          if (pin) pin.__commentNoteId = noteId;
+          persistAnnotationState();
+          clearNodeSelection();
+          showMessage('success', '注释已添加');
+        };
+        const openAnnotationAdd = () => {
+          const maxIndex = currentAnnotations.value.reduce((max, item) => Math.max(max, Number(item.index) || 0), 0);
+          Object.assign(annotationForm, { id: '', index: maxIndex + 1, title: '', summary: '', detail: '' });
+          annotationFormSnapshot.value = snapshotAnnotationForm();
+          annotationEditorMode.value = 'add';
+          annotationEditingField.value = '';
+          annotationEditorOpen.value = true;
+        };
+        const openAnnotationEdit = note => {
+          Object.assign(annotationForm, {
+            id: note.id,
+            index: note.index,
+            title: normalizeAnnotationTitle(note.title),
+            summary: note.summary,
+            detail: note.detail
+          });
+          annotationFormSnapshot.value = snapshotAnnotationForm();
+          annotationEditorMode.value = 'edit';
+          annotationEditingField.value = '';
+          annotationEditorOpen.value = true;
+        };
+        const saveAnnotation = () => {
+          if (!String(annotationForm.title).trim()) {
+            showMessage('warning', '请输入标注标题');
+            return;
+          }
+          if (!String(annotationForm.summary).trim()) {
+            showMessage('warning', '请输入标注摘要');
+            return;
+          }
+          const key = currentAnnotationKey.value;
+          const group = annotationGroups[key] || annotationGroups.banner;
+          const payload = {
+            id: annotationForm.id || key + '-custom-' + Date.now(),
+            index: Number(annotationForm.index) || group.length + 1,
+            title: annotationForm.title.trim(),
+            summary: annotationForm.summary.trim(),
+            detail: String(annotationForm.detail || '').trim()
+          };
+          if (annotationEditorMode.value === 'edit') {
+            const target = group.find(item => item.id === annotationForm.id);
+            if (target) Object.assign(target, payload);
+          } else {
+            group.push(payload);
+          }
+          group.sort((a, b) => Number(a.index) - Number(b.index));
+          persistAnnotationState();
+          annotationFormSnapshot.value = snapshotAnnotationForm();
+          annotationEditorOpen.value = false;
+          showMessage('success', annotationEditorMode.value === 'edit' ? '标注已更新' : '标注已新增');
+        };
+        const removeNodeCommentState = noteId => {
+          for (let index = savedNodeComments.length - 1; index >= 0; index -= 1) {
+            const item = savedNodeComments[index];
+            if (item.noteId !== noteId) continue;
+            const target = document.querySelector(item.selector);
+            if (target && target.__commentNoteId === noteId) delete target.__commentNoteId;
+            savedNodeComments.splice(index, 1);
+          }
+          document.querySelectorAll('.node-comment-pin').forEach(pin => {
+            if (pin.__commentNoteId === noteId) pin.remove();
+          });
+        };
+        const deleteAnnotation = () => {
+          const key = currentAnnotationKey.value;
+          const group = annotationGroups[key] || annotationGroups.banner;
+          const targetIndex = group.findIndex(item => item.id === annotationForm.id);
+          if (targetIndex < 0) return;
+          const target = group[targetIndex];
+          const base = findBaseAnnotation(key, target.id);
+          const restoresBase = !!base && annotationComparable(base) !== annotationComparable(target);
+          antd.Modal.confirm({
+            title: restoresBase ? '恢复原始标注' : '删除标注',
+            content: restoresBase ? '将删除用户修改的内容，并恢复自动生成的原始标注。' : '确定删除这条标注吗？',
+            zIndex: 2400,
+            okText: restoresBase ? '恢复' : '删除',
+            okButtonProps: { danger: true },
+            cancelText: '取消',
+            onOk: () => {
+              if (restoresBase) {
+                Object.assign(target, JSON.parse(JSON.stringify(base)));
+              } else {
+                group.splice(targetIndex, 1);
+                removeNodeCommentState(target.id);
+              }
+              persistAnnotationState();
+              annotationEditorOpen.value = false;
+              nextTick(restoreNodeCommentPinsForCurrentPage);
+              showMessage('success', restoresBase ? '已恢复原始标注' : '标注已删除');
+            }
+          });
+        };
+        const deleteAllAnnotations = () => {
+          const key = currentAnnotationKey.value;
+          antd.Modal.confirm({
+            title: '全部删除',
+            content: '将删除当前页面全部用户标注和修改，并恢复自动生成标注的原始内容。',
+            zIndex: 2400,
+            okText: '全部删除',
+            okButtonProps: { danger: true },
+            cancelText: '取消',
+            onOk: () => {
+              const noteIds = savedNodeComments
+                .filter(item => item.pageKey === key)
+                .map(item => item.noteId);
+              noteIds.forEach(removeNodeCommentState);
+              annotationGroups[key] = JSON.parse(JSON.stringify(baseAnnotationGroups[key] || []));
+              persistAnnotationState();
+              annotationEditorOpen.value = false;
+              nextTick(restoreNodeCommentPinsForCurrentPage);
+              showMessage('success', '当前页面标注已恢复为初始状态');
+            }
+          });
+        };
+        const showAnnotation = id => {
+          const note = currentAnnotations.value.find(item => item.id === id);
+          if (!note) return;
+          openAnnotationEdit(note);
+        };
+        const confirmAction = text => {
+          antd.Modal.confirm({
+            title: '操作确认',
+            content: '确定执行“' + text + '”吗？',
+            okText: '确定',
+            cancelText: '取消',
+            onOk: () => showMessage('success', text + '已完成')
+          });
+        };
+        onMounted(() => {
+          window.addEventListener('scroll', scheduleCommentOverlayUpdate, true);
+          window.addEventListener('resize', scheduleCommentOverlayUpdate);
+          window.addEventListener('keydown', handleAnnotationKeydown);
+          nextTick(restoreNodeCommentPinsForCurrentPage);
+        });
+        onBeforeUnmount(() => {
+          window.removeEventListener('scroll', scheduleCommentOverlayUpdate, true);
+          window.removeEventListener('resize', scheduleCommentOverlayUpdate);
+          window.removeEventListener('keydown', handleAnnotationKeydown);
+          if (overlayFrame) cancelAnimationFrame(overlayFrame);
+        });
+
+        return {
+          prototypeMeta,
+          collapsed, currentPage, activeTab, selectedKeys, openKeys, tableSize, selectedRowKeys,
+          rows, query, advanced, drawerOpen, drawerMode, formState, detailRecord, importOpen,
+          columnOpen, previewOpen, previewImage, previewTitle, menuDrawerOpen, menuForm, activeResource, checkedColumns, pagination,
+          annotationEnabled, annotationToolbarCollapsed, annotationEditorOpen, annotationEditorMode, annotationForm, currentAnnotations,
+          annotationEditingField, annotationDirty, annotationDeleteLabel,
+          requirementDrawerOpen, requirementDraft, requirementDrawerTitle, requirementEditing, requirementDirty,
+          nodeCommentOpen, nodeCommentText, nodeCommentTarget, nodeCommentEditingId, nodeCommentInputRef, nodeCommentStyle, nodeCommentMultiline,
+          menuItems, columns, componentColumns, componentRows, filteredRows, pageTitle, rowSelection,
+          setPage, onOpenChange, search, reset, refresh, exportData, batchDelete, removeRow,
+          openAdd, openEdit, openDetail, saveForm, auditRow, toggleStatus, useExampleCover,
+          beforeCoverUpload, removeCover, previewCover, previewCurrentCover,
+          saveImport, saveMenu, setResource, changePage, topAction, hoverNodeForComment, clearHoverNode, selectNodeForComment, clearNodeSelection, saveNodeComment,
+          toggleAnnotationMode, saveAsAnnotatedHtml,
+          openRequirementDrawer, cancelRequirementEdit, savePageRequirement,
+          openAnnotationAdd, openAnnotationEdit, saveAnnotation, deleteAnnotation, deleteAllAnnotations, showAnnotation, hasAnnotation, normalizeAnnotationTitle, confirmAction,
+        };
+      },
+      template: `
+        <a-layout class="app-shell" :class="{ 'annotation-cursor': annotationEnabled && !nodeCommentOpen }">
+          <div class="annotation-toolbar" :class="{ collapsed: annotationToolbarCollapsed }">
+            <button class="annotation-tool-button icon-only" type="button" :title="annotationToolbarCollapsed ? '展开标注工具栏' : '隐藏标注工具栏'" @click="annotationToolbarCollapsed = !annotationToolbarCollapsed">
+              <svg v-if="annotationToolbarCollapsed" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M8 6h8M6 12h12M9 18h6" stroke-width="2" stroke-linecap="round" />
+              </svg>
+              <svg v-else viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M7 14l5-5 5 5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
+            <template v-if="!annotationToolbarCollapsed">
+              <span class="annotation-tool-meta">
+                <span class="annotation-tool-dot" :class="{ active: annotationEnabled }"></span>
+                标注模式
+              </span>
+              <button class="annotation-tool-button" :class="{ primary: annotationEnabled }" type="button" @click="toggleAnnotationMode">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M5 7.5A2.5 2.5 0 0 1 7.5 5h9A2.5 2.5 0 0 1 19 7.5v5A2.5 2.5 0 0 1 16.5 15H12l-4 4v-4h-.5A2.5 2.5 0 0 1 5 12.5v-5Z" stroke-width="1.8" stroke-linejoin="round" />
+                  <path d="M8.5 9h7M8.5 11.5H13" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+                {{ annotationEnabled ? '关闭' : '开启' }}
+              </button>
+              <button class="annotation-tool-button" type="button" title="查看和编辑当前页面整体需求" @click="openRequirementDrawer">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M6 3.5h8l4 4V20H6V3.5Z" stroke-width="1.8" stroke-linejoin="round" />
+                  <path d="M14 3.5V8h4M9 12h6M9 15.5h6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                页面需求
+              </button>
+              <button class="annotation-tool-button" type="button" title="另存为包含当前标注的 HTML" @click="saveAsAnnotatedHtml">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M6 4h9l3 3v13H6V4Z" stroke-width="1.8" stroke-linejoin="round" />
+                  <path d="M9 4v5h6V4M9 16h6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                另存为
+              </button>
+              <button class="annotation-tool-button danger" type="button" title="删除当前页面全部用户标注和修改" @click="deleteAllAnnotations">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                全部删除
+              </button>
+            </template>
+          </div>
+          <a-layout-sider class="snowy-sider" :width="232" :collapsed="collapsed" collapsible :trigger="null">
+            <div class="brand">
+              <div class="brand-mark">
+                <img v-if="prototypeMeta.logoImage" :src="prototypeMeta.logoImage" alt="Logo" style="width:100%;height:100%;object-fit:cover;border-radius:8px" />
+                <span v-else>{{ prototypeMeta.logoText }}</span>
+              </div>
+              <span v-show="!collapsed">{{ prototypeMeta.systemName }}</span>
+            </div>
+            <a-menu
+              mode="inline"
+              theme="dark"
+              :items="menuItems"
+              :selected-keys="selectedKeys"
+              :open-keys="openKeys"
+              @click="setPage"
+              @openChange="onOpenChange"
+            />
+          </a-layout-sider>
+          <a-layout>
+            <header class="snowy-header">
+              <div class="header-left">
+                <span class="icon-action" title="折叠菜单" @click="collapsed = !collapsed">
+                  <span class="mini-icon">{{ collapsed ? '☰' : '≡' }}</span>
+                </span>
+                <a-breadcrumb>
+                  <a-breadcrumb-item>首页</a-breadcrumb-item>
+                  <a-breadcrumb-item>业务运营</a-breadcrumb-item>
+                  <a-breadcrumb-item>{{ pageTitle }}</a-breadcrumb-item>
+                </a-breadcrumb>
+              </div>
+              <div class="header-right">
+                <span class="icon-action" title="刷新" @click="topAction('刷新')"><span class="mini-icon">↻</span></span>
+                <span class="icon-action" title="全屏" @click="topAction('全屏')"><span class="mini-icon">⛶</span></span>
+                <span class="icon-action" title="通知" @click="topAction('通知')"><span class="mini-icon">●</span></span>
+                <a-avatar style="background:#1677ff">管</a-avatar>
+                <span>管理员</span>
+              </div>
+            </header>
+            <div class="tabs-row">
+              <a-tag color="blue">首页</a-tag>
+              <a-tag color="processing">{{ activeTab }}</a-tag>
+            </div>
+            <a-layout-content class="content" @mousemove.capture="hoverNodeForComment" @mouseleave="clearHoverNode" @click.capture="selectNodeForComment">
+              <section v-if="currentPage === 'banner'">
+                <div class="query-card">
+                  <h1 class="page-title">{{ pageTitle }}</h1>
+                  <a-form layout="vertical">
+                    <a-row :gutter="12">
+                      <a-col :xs="24" :md="6">
+                        <a-form-item label="标题">
+                          <a-input v-model:value="query.keyword" placeholder="请输入标题关键词" allow-clear @pressEnter="search" />
+                        </a-form-item>
+                      </a-col>
+                      <a-col :xs="24" :md="6">
+                        <a-form-item label="栏目">
+                          <a-select v-model:value="query.category" placeholder="全部栏目" allow-clear>
+                            <a-select-option value="首页 Banner">首页 Banner</a-select-option>
+                            <a-select-option value="通知公告">通知公告</a-select-option>
+                            <a-select-option value="专业介绍">专业介绍</a-select-option>
+                            <a-select-option value="招生服务">招生服务</a-select-option>
+                          </a-select>
+                        </a-form-item>
+                      </a-col>
+                      <a-col :xs="24" :md="6">
+                        <a-form-item label="是否显示">
+                          <a-select v-model:value="query.status" placeholder="全部" allow-clear>
+                            <a-select-option :value="true">显示</a-select-option>
+                            <a-select-option :value="false">隐藏</a-select-option>
+                          </a-select>
+                        </a-form-item>
+                      </a-col>
+                      <a-col :xs="24" :md="6" class="annotation-host">
+                        <button v-if="hasAnnotation('banner-date-range')" class="annotation-pin" type="button" @click.stop="showAnnotation('banner-date-range')">1</button>
+                        <a-form-item label="创建时间">
+                          <a-range-picker v-model:value="query.dateRange" style="width:100%" />
+                        </a-form-item>
+                      </a-col>
+                      <a-col v-if="advanced" :xs="24" :md="6">
+                        <a-form-item label="发布位置">
+                          <a-select placeholder="全部位置" allow-clear>
+                            <a-select-option value="后台首页">后台首页</a-select-option>
+                            <a-select-option value="学校专区">学校专区</a-select-option>
+                          </a-select>
+                        </a-form-item>
+                      </a-col>
+                    </a-row>
+                    <a-space>
+                      <a-button type="primary" @click="search"><span class="mini-icon">⌕</span>查询</a-button>
+                      <a-button @click="reset">重置</a-button>
+                      <a-button type="link" @click="advanced = !advanced">{{ advanced ? '收起' : '展开' }}</a-button>
+                    </a-space>
+                  </a-form>
+                </div>
+                <div class="table-card">
+                  <div class="toolbar">
+                    <div class="toolbar-left">
+                      <a-button type="primary" @click="openAdd"><span class="mini-icon">＋</span>新增内容</a-button>
+                      <span class="annotation-host">
+                        <button v-if="hasAnnotation('banner-batch-delete')" class="annotation-pin" type="button" @click.stop="showAnnotation('banner-batch-delete')">5</button>
+                        <a-button danger @click="batchDelete"><span class="mini-icon">×</span>批量删除</a-button>
+                      </span>
+                      <a-button @click="importOpen = true"><span class="mini-icon">⇧</span>导入</a-button>
+                      <a-button @click="exportData"><span class="mini-icon">⇩</span>导出</a-button>
+                    </div>
+                    <div class="toolbar-right">
+                      <a-tooltip title="刷新"><a-button shape="circle" @click="refresh"><span class="mini-icon">↻</span></a-button></a-tooltip>
+                      <a-tooltip title="表格密度"><a-button shape="circle" @click="tableSize = tableSize === 'middle' ? 'small' : 'middle'"><span class="mini-icon">↕</span></a-button></a-tooltip>
+                      <a-tooltip title="列设置"><a-button shape="circle" @click="columnOpen = true"><span class="mini-icon">☷</span></a-button></a-tooltip>
+                    </div>
+                  </div>
+                  <a-table
+                    row-key="id"
+                    :columns="columns"
+                    :data-source="filteredRows"
+                    :row-selection="rowSelection"
+                    :size="tableSize"
+                    :pagination="{ current: pagination.current, pageSize: pagination.pageSize, total: filteredRows.length, showSizeChanger: true, showTotal: total => '共 ' + total + ' 条' }"
+                    :scroll="{ x: 1200 }"
+                    @change="changePage"
+                  >
+                    <template #bodyCell="{ column, record }">
+                      <template v-if="column.key === 'cover'">
+                        <span class="annotation-host" style="display:inline-block">
+                          <button v-if="rows.length && record.id === rows[0].id && hasAnnotation('banner-cover-image')" class="annotation-pin" type="button" @click.stop="showAnnotation('banner-cover-image')">4</button>
+                          <img v-if="record.cover" class="cover" :src="record.cover" alt="封面图" />
+                          <div v-else class="cover-empty">无图</div>
+                        </span>
+                      </template>
+                      <template v-else-if="column.key === 'position'">
+                        <a-tag :color="record.position === '后台首页' ? 'green' : 'blue'">{{ record.position }}</a-tag>
+                      </template>
+                      <template v-else-if="column.key === 'audit'">
+                        <span class="annotation-host" style="display:inline-block">
+                          <button v-if="rows.length && record.id === rows[0].id && hasAnnotation('banner-publish-status')" class="annotation-pin" type="button" @click.stop="showAnnotation('banner-publish-status')">2</button>
+                          <a-tag :color="record.audit === '待审核' ? 'orange' : record.audit === '已发布' ? 'success' : 'default'">{{ record.audit }}</a-tag>
+                        </span>
+                      </template>
+                      <template v-else-if="column.key === 'status'">
+                        <span class="annotation-host" style="display:inline-block">
+                          <button v-if="rows.length && record.id === rows[0].id && hasAnnotation('banner-enable-status')" class="annotation-pin" type="button" @click.stop="showAnnotation('banner-enable-status')">3</button>
+                          <a-switch :checked="record.status" @change="value => toggleStatus(record, value)" />
+                        </span>
+                      </template>
+                      <template v-else-if="column.key === 'attachment'">
+                        <a-space v-if="record.attachmentName">
+                          <span :class="'file-thumb ' + record.attachmentType">{{ String(record.attachmentType || 'file').toUpperCase() }}</span>
+                          <span>
+                            <a-tooltip :title="record.attachmentName"><span class="text-ellipsis">{{ record.attachmentName }}</span></a-tooltip>
+                            <div class="muted">{{ record.attachmentSize }}</div>
+                          </span>
+                        </a-space>
+                        <span v-else class="muted">无附件</span>
+                      </template>
+                      <template v-else-if="column.key === 'action'">
+                        <a-space>
+                          <a @click="openDetail(record)">详情</a>
+                          <a @click="openEdit(record)">编辑</a>
+                          <a v-if="record.audit === '待审核'" @click="auditRow(record)">审核</a>
+                          <a-typography-link type="danger" @click="removeRow(record)">删除</a-typography-link>
+                        </a-space>
+                      </template>
+                    </template>
+                  </a-table>
+                </div>
+              </section>
+
+              <section v-else-if="currentPage === 'menuResource'" class="tree-layout">
+                <div class="tree-card annotation-host">
+                  <button v-if="hasAnnotation('menu-tree')" class="annotation-pin" type="button" @click.stop="showAnnotation('menu-tree')">1</button>
+                  <a-space style="margin-bottom:12px">
+                    <a-button type="primary" size="small" @click="menuDrawerOpen = true"><span class="mini-icon">＋</span>新增</a-button>
+                    <a-button size="small" @click="refresh"><span class="mini-icon">↻</span>刷新</a-button>
+                  </a-space>
+                  <div class="resource-node" :class="{active: activeResource === '内容管理'}" @click="setResource('内容管理')">内容管理 <span>3</span></div>
+                  <div class="resource-node" :class="{active: activeResource === '首页 Banner'}" @click="setResource('首页 Banner')">　首页 Banner <span>6</span></div>
+                  <div class="resource-node" :class="{active: activeResource === '通知公告'}" @click="setResource('通知公告')">　通知公告 <span>4</span></div>
+                  <div class="resource-node" :class="{active: activeResource === '师生管理'}" @click="setResource('师生管理')">师生管理 <span>9</span></div>
+                </div>
+                <div class="table-card annotation-host">
+                  <button v-if="hasAnnotation('menu-detail')" class="annotation-pin" type="button" style="right:36px" @click.stop="showAnnotation('menu-detail')">2</button>
+                  <h1 class="page-title">菜单资源</h1>
+                  <a-descriptions bordered size="small" :column="2">
+                    <a-descriptions-item label="当前菜单">{{ activeResource }}</a-descriptions-item>
+                    <a-descriptions-item label="可见角色">管理员、运营人员</a-descriptions-item>
+                    <a-descriptions-item label="路由地址">/content/banner</a-descriptions-item>
+                    <a-descriptions-item label="操作范围">查询、新增、编辑、删除、导入、导出</a-descriptions-item>
+                  </a-descriptions>
+                  <a-divider />
+                  <a-space class="annotation-host">
+                    <button v-if="hasAnnotation('menu-actions')" class="annotation-pin" type="button" @click.stop="showAnnotation('menu-actions')">3</button>
+                    <a-button type="primary" @click="menuDrawerOpen = true">编辑菜单</a-button>
+                    <a-button @click="topAction('授权')">角色授权</a-button>
+                    <a-button danger @click="removeRow({ id: -1, title: activeResource })">删除菜单</a-button>
+                  </a-space>
+                </div>
+              </section>
+              <section v-else>
+                <div class="preset-grid">
+                  <div class="preset-card annotation-host">
+                    <button v-if="hasAnnotation('component-upload')" class="annotation-pin" type="button" @click.stop="showAnnotation('component-upload')">1</button>
+                    <h3>上传组件</h3>
+                    <div class="preset-row">
+                      <img v-if="formState.cover" class="upload-preview" :src="formState.cover" alt="上传预览" />
+                      <div v-else class="cover-empty" style="width:102px;height:102px">无图</div>
+                      <a-upload :show-upload-list="false" :before-upload="beforeCoverUpload" accept="image/*">
+                        <a-button size="small">选择图片</a-button>
+                      </a-upload>
+                      <a-button size="small" @click="previewCurrentCover">预览</a-button>
+                      <a-button size="small" @click="removeCover">移除</a-button>
+                    </div>
+                  </div>
+                  <div class="preset-card annotation-host">
+                    <button v-if="hasAnnotation('component-status')" class="annotation-pin" type="button" @click.stop="showAnnotation('component-status')">2</button>
+                    <h3>状态与标签</h3>
+                    <div class="preset-row">
+                      <a-tag color="success">启用</a-tag>
+                      <a-tag color="orange">待审核</a-tag>
+                      <a-tag color="default">已停用</a-tag>
+                      <a-badge status="processing" text="运行中" />
+                    </div>
+                  </div>
+                  <div class="preset-card">
+                    <h3>用户与进度</h3>
+                    <div class="preset-row">
+                      <a-avatar :src="componentRows[0].avatar">管</a-avatar>
+                      <span>系统管理员</span>
+                      <a-progress :percent="92" size="small" style="width:120px" />
+                    </div>
+                  </div>
+                  <div class="preset-card">
+                    <h3>树形选择</h3>
+                    <a-tree-select style="width:100%" value="首页 Banner" :tree-data="[{ title: '内容管理', value: '内容管理', children: [{ title: '首页 Banner', value: '首页 Banner' }, { title: '通知公告', value: '通知公告' }] }]" />
+                  </div>
+                  <div class="preset-card">
+                    <h3>确认操作</h3>
+                    <a-space>
+                      <a-button danger @click="confirmAction('删除数据')">删除</a-button>
+                      <a-button @click="confirmAction('重置密码')">重置密码</a-button>
+                    </a-space>
+                  </div>
+                  <div class="preset-card">
+                    <h3>文件类型</h3>
+                    <div class="preset-row">
+                      <span class="file-thumb pdf">PDF</span>
+                      <span class="file-thumb xls">XLS</span>
+                      <span class="file-thumb doc">DOC</span>
+                      <a-button size="small" @click="topAction('文件预览')">预览</a-button>
+                    </div>
+                  </div>
+                </div>
+                <div class="table-card annotation-host">
+                  <button v-if="hasAnnotation('component-table')" class="annotation-pin" type="button" @click.stop="showAnnotation('component-table')">3</button>
+                  <div class="toolbar">
+                    <div class="toolbar-left">
+                      <a-button type="primary" @click="topAction('新增用户')"><span class="mini-icon">＋</span>新增用户</a-button>
+                      <a-button @click="topAction('导入用户')"><span class="mini-icon">⇧</span>导入</a-button>
+                      <a-button @click="topAction('导出用户')"><span class="mini-icon">⇩</span>导出</a-button>
+                    </div>
+                    <div class="toolbar-right">
+                      <a-tooltip title="刷新"><a-button shape="circle" @click="refresh"><span class="mini-icon">↻</span></a-button></a-tooltip>
+                    </div>
+                  </div>
+                  <a-table
+                    row-key="id"
+                    :columns="componentColumns"
+                    :data-source="componentRows"
+                    :pagination="false"
+                    :scroll="{ x: 1500 }"
+                    bordered
+                  >
+                    <template #bodyCell="{ column, record }">
+                      <template v-if="column.key === 'avatar'">
+                        <a-avatar v-if="record.avatar" :src="record.avatar" />
+                        <a-avatar v-else>{{ record.name.slice(0, 1) }}</a-avatar>
+                      </template>
+                      <template v-else-if="column.key === 'gender'">
+                        <a-tag :color="record.gender === '男' ? 'blue' : 'magenta'">{{ record.gender }}</a-tag>
+                      </template>
+                      <template v-else-if="column.key === 'role'">
+                        <a-tag color="processing">{{ record.role }}</a-tag>
+                      </template>
+                      <template v-else-if="column.key === 'status'">
+                        <a-switch :checked="record.status" @change="value => { record.status = value; topAction(value ? '启用用户' : '停用用户') }" />
+                      </template>
+                      <template v-else-if="column.key === 'progress'">
+                        <a-progress :percent="record.progress" size="small" />
+                      </template>
+                      <template v-else-if="column.key === 'fileName'">
+                        <a-space>
+                          <span :class="'file-thumb ' + record.fileType">{{ record.fileType.toUpperCase() }}</span>
+                          <span>
+                            <a-tooltip :title="record.fileName"><span class="text-ellipsis">{{ record.fileName }}</span></a-tooltip>
+                            <div class="muted">{{ record.size }} · {{ record.engine }}</div>
+                          </span>
+                        </a-space>
+                      </template>
+                      <template v-else-if="column.key === 'remark'">
+                        <a-tooltip :title="record.remark"><span class="text-ellipsis">{{ record.remark }}</span></a-tooltip>
+                      </template>
+                      <template v-else-if="column.key === 'action'">
+                        <a-space>
+                          <a @click="topAction('查看详情')">详情</a>
+                          <a @click="topAction('编辑资料')">编辑</a>
+                          <a-dropdown>
+                            <a @click.prevent>更多</a>
+                            <template #overlay>
+                              <a-menu>
+                                <a-menu-item @click="confirmAction('重置密码')">重置密码</a-menu-item>
+                                <a-menu-item @click="topAction('角色授权')">角色授权</a-menu-item>
+                                <a-menu-item @click="topAction('导出信息')">导出信息</a-menu-item>
+                              </a-menu>
+                            </template>
+                          </a-dropdown>
+                        </a-space>
+                      </template>
+                    </template>
+                  </a-table>
+                </div>
+              </section>
+              <div v-if="nodeCommentOpen" class="node-comment-mask" role="button" aria-label="关闭评论弹窗" @click="clearNodeSelection"></div>
+              <div v-if="nodeCommentOpen" class="node-comment-popover" :class="{ multiline: nodeCommentMultiline }" :style="nodeCommentStyle" @click.stop>
+                <div class="node-comment-input">
+                  <button class="node-comment-cancel" type="button" title="取消评论" @click="clearNodeSelection">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M7 7l10 10M17 7 7 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                  </button>
+                  <a-textarea
+                    ref="nodeCommentInputRef"
+                    v-model:value="nodeCommentText"
+                    :auto-size="{ minRows: 1, maxRows: 4 }"
+                    :placeholder="nodeCommentEditingId ? '修改评论...' : '添加评论...'"
+                  />
+                  <button
+                    type="button"
+                    class="node-comment-submit"
+                    :class="{ ready: nodeCommentText.trim() }"
+                    :disabled="!nodeCommentText.trim()"
+                    :style="nodeCommentText.trim() ? { backgroundColor: '#272636', color: '#fff' } : { backgroundColor: '#f2f4f7', color: '#475467' }"
+                    :title="nodeCommentText.trim() ? (nodeCommentEditingId ? '保存修改' : '添加注释') : '请输入注释内容'"
+                    @click="saveNodeComment"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M12 19V5" stroke-width="2.4" stroke-linecap="round" />
+                      <path d="M6.5 10.5 12 5l5.5 5.5" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </a-layout-content>
+          </a-layout>
+
+          <a-drawer :title="requirementDrawerTitle" :z-index="2200" width="520" v-model:open="requirementDrawerOpen">
+            <a-textarea
+              v-if="requirementEditing"
+              v-model:value="requirementDraft"
+              :auto-size="{ minRows: 12, maxRows: 24 }"
+              placeholder="请输入当前页面的整体需求描述"
+              autofocus
+            />
+            <div v-else class="annotation-editable requirement-preview">
+              {{ requirementDraft || '暂无整体需求描述' }}
+              <button class="annotation-edit-action" type="button" title="编辑整体需求描述" @click.stop="requirementEditing = true">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M12 20h9" stroke-width="1.8" stroke-linecap="round" />
+                  <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z" stroke-width="1.8" stroke-linejoin="round" />
+                </svg>
+              </button>
+            </div>
+            <template #footer>
+              <div style="display:flex;justify-content:flex-end;gap:8px">
+                <a-button v-if="requirementEditing" @click="cancelRequirementEdit">取消</a-button>
+                <a-button v-else @click="requirementDrawerOpen = false">关闭</a-button>
+                <a-button v-if="requirementDirty" type="primary" :disabled="!requirementDraft.trim()" @click="savePageRequirement">保存</a-button>
+              </div>
+            </template>
+          </a-drawer>
+
+          <a-drawer :title="drawerMode === 'detail' ? '内容详情' : drawerMode === 'edit' ? '编辑内容' : '新增内容'" width="560" v-model:open="drawerOpen">
+            <div class="annotation-host" style="height:0">
+              <button v-if="hasAnnotation('banner-drawer-cover')" class="annotation-pin" type="button" style="top:-18px;right:0" @click.stop="showAnnotation('banner-drawer-cover')">6</button>
+            </div>
+            <a-form layout="vertical">
+              <a-form-item label="标题" required>
+                <a-input v-model:value="formState.title" :disabled="drawerMode === 'detail'" placeholder="请输入标题" />
+              </a-form-item>
+              <a-row :gutter="12">
+                <a-col :span="12">
+                  <a-form-item label="栏目">
+                    <a-select v-model:value="formState.category" :disabled="drawerMode === 'detail'">
+                      <a-select-option value="首页 Banner">首页 Banner</a-select-option>
+                      <a-select-option value="通知公告">通知公告</a-select-option>
+                      <a-select-option value="专业介绍">专业介绍</a-select-option>
+                      <a-select-option value="招生服务">招生服务</a-select-option>
+                    </a-select>
+                  </a-form-item>
+                </a-col>
+                <a-col :span="12">
+                  <a-form-item label="发布位置">
+                    <a-select v-model:value="formState.position" :disabled="drawerMode === 'detail'">
+                      <a-select-option value="后台首页">后台首页</a-select-option>
+                      <a-select-option value="学校专区">学校专区</a-select-option>
+                    </a-select>
+                  </a-form-item>
+                </a-col>
+              </a-row>
+              <a-row :gutter="12">
+                <a-col :span="12"><a-form-item label="排序"><a-input-number v-model:value="formState.sort" :disabled="drawerMode === 'detail'" style="width:100%" /></a-form-item></a-col>
+                <a-col :span="12"><a-form-item label="状态"><a-switch v-model:checked="formState.status" :disabled="drawerMode === 'detail'" /></a-form-item></a-col>
+              </a-row>
+              <a-form-item label="封面图">
+                <a-upload
+                  list-type="picture-card"
+                  :file-list="formState.uploadFiles"
+                  :before-upload="beforeCoverUpload"
+                  @preview="previewCover"
+                  @remove="removeCover"
+                  accept="image/*"
+                  :disabled="drawerMode === 'detail'"
+                >
+                  <div v-if="drawerMode !== 'detail' && formState.uploadFiles.length < 1">
+                    <div style="font-size:20px">＋</div>
+                    <div>选择图片</div>
+                  </div>
+                </a-upload>
+              </a-form-item>
+              <a-form-item label="内容摘要">
+                <a-textarea v-model:value="formState.summary" :disabled="drawerMode === 'detail'" :rows="4" placeholder="请输入内容摘要" />
+              </a-form-item>
+            </a-form>
+            <template #footer>
+              <a-space>
+                <a-button @click="drawerOpen = false">取消</a-button>
+                <a-button v-if="drawerMode !== 'detail'" type="primary" @click="saveForm">保存</a-button>
+              </a-space>
+            </template>
+          </a-drawer>
+
+          <a-drawer title="菜单表单" width="520" v-model:open="menuDrawerOpen">
+            <a-form layout="vertical">
+              <a-form-item label="上级菜单"><a-select v-model:value="menuForm.parent"><a-select-option value="内容管理">内容管理</a-select-option><a-select-option value="系统能力">系统能力</a-select-option></a-select></a-form-item>
+              <a-form-item label="显示名称"><a-input v-model:value="menuForm.name" /></a-form-item>
+              <a-form-item label="路由地址"><a-input v-model:value="menuForm.path" /></a-form-item>
+              <a-form-item label="权限名称"><a-input v-model:value="menuForm.permissionName" /></a-form-item>
+              <a-form-item label="是否可见"><a-switch v-model:checked="menuForm.visible" /></a-form-item>
+              <a-form-item label="排序"><a-input-number v-model:value="menuForm.sort" style="width:100%" /></a-form-item>
+            </a-form>
+            <template #footer>
+              <a-space><a-button @click="menuDrawerOpen = false">取消</a-button><a-button type="primary" @click="saveMenu">保存</a-button></a-space>
+            </template>
+          </a-drawer>
+
+          <a-modal title="导入数据" v-model:open="importOpen" ok-text="开始导入" cancel-text="取消" @ok="saveImport">
+            <a-alert type="info" show-icon message="请选择 Excel 文件，导入后展示成功和失败明细。" style="margin-bottom:12px" />
+            <a-upload-dragger :before-upload="() => false" accept=".xlsx,.xls">
+              <p class="ant-upload-drag-icon"><span class="mini-icon" style="font-size:28px">⇧</span></p>
+              <p class="ant-upload-text">点击或拖拽文件到此区域</p>
+            </a-upload-dragger>
+          </a-modal>
+
+          <a-modal title="列设置" v-model:open="columnOpen" ok-text="确定" cancel-text="取消" @ok="columnOpen = false">
+            <a-checkbox-group v-model:value="checkedColumns" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">
+              <a-checkbox value="title">标题</a-checkbox>
+              <a-checkbox value="cover">封面图</a-checkbox>
+              <a-checkbox value="category">栏目</a-checkbox>
+              <a-checkbox value="position">发布位置</a-checkbox>
+              <a-checkbox value="sort">排序</a-checkbox>
+              <a-checkbox value="audit">发布状态</a-checkbox>
+              <a-checkbox value="status">是否显示</a-checkbox>
+              <a-checkbox value="attachment">附件</a-checkbox>
+              <a-checkbox value="createdAt">创建时间</a-checkbox>
+              <a-checkbox value="action">操作</a-checkbox>
+            </a-checkbox-group>
+          </a-modal>
+          <a-modal
+            :title="annotationEditorMode === 'add' ? '新增标注' : '注释 ' + annotationForm.index"
+            v-model:open="annotationEditorOpen"
+            :z-index="2300"
+            ok-text="保存"
+            cancel-text="取消"
+            @ok="saveAnnotation"
+          >
+            <template #footer>
+              <div class="annotation-modal-footer">
+                <a-button
+                  v-if="annotationEditorMode === 'edit'"
+                  danger
+                  :title="annotationDeleteLabel"
+                  :aria-label="annotationDeleteLabel"
+                  @click="deleteAnnotation"
+                >
+                  删除
+                </a-button>
+                <span v-else></span>
+                <div class="annotation-modal-actions">
+                  <a-button @click="annotationEditorOpen = false">取消</a-button>
+                  <a-button v-if="annotationDirty" type="primary" @click="saveAnnotation">保存</a-button>
+                </div>
+              </div>
+            </template>
+            <a-form v-if="annotationEditorMode === 'add'" layout="vertical">
+              <a-form-item label="序号">
+                <a-input-number v-model:value="annotationForm.index" :min="1" style="width:100%" />
+              </a-form-item>
+              <a-form-item label="标题" required>
+                <a-input v-model:value="annotationForm.title" placeholder="请输入具体需求点标题" />
+              </a-form-item>
+              <a-form-item label="内容" required>
+                <a-textarea v-model:value="annotationForm.summary" :auto-size="{ minRows: 2, maxRows: 8 }" placeholder="请输入评论内容或具体规则" />
+              </a-form-item>
+              <a-form-item label="详细说明">
+                <a-textarea v-model:value="annotationForm.detail" :rows="4" placeholder="请输入详细说明、来源或待确认点" />
+              </a-form-item>
+            </a-form>
+            <div v-else class="annotation-detail-view">
+              <div class="annotation-detail-title">
+                <div style="flex:1">
+                  <a-input
+                    v-if="annotationEditingField === 'title'"
+                    v-model:value="annotationForm.title"
+                    @blur="annotationEditingField = ''"
+                    @pressEnter="annotationEditingField = ''"
+                    autofocus
+                  />
+                  <div v-else class="annotation-editable">
+                    <strong>{{ annotationForm.title || '注释' }}</strong>
+                    <button class="annotation-edit-action" type="button" title="编辑标题" @click.stop="annotationEditingField = 'title'">
+                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M12 20h9" stroke-width="1.8" stroke-linecap="round" />
+                        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z" stroke-width="1.8" stroke-linejoin="round" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <a-textarea
+                  v-if="annotationEditingField === 'summary'"
+                  v-model:value="annotationForm.summary"
+                  :auto-size="{ minRows: 2, maxRows: 8 }"
+                  @blur="annotationEditingField = ''"
+                  autofocus
+                />
+                <div v-else class="annotation-editable">
+                  {{ annotationForm.summary || '点击填写内容' }}
+                  <button class="annotation-edit-action" type="button" title="编辑内容" @click.stop="annotationEditingField = 'summary'">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M12 20h9" stroke-width="1.8" stroke-linecap="round" />
+                      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z" stroke-width="1.8" stroke-linejoin="round" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div v-if="annotationForm.detail || annotationEditingField === 'detail'">
+                <a-textarea
+                  v-if="annotationEditingField === 'detail'"
+                  v-model:value="annotationForm.detail"
+                  :rows="4"
+                  @blur="annotationEditingField = ''"
+                  autofocus
+                />
+                <div v-else class="annotation-editable muted">
+                  {{ annotationForm.detail }}
+                  <button class="annotation-edit-action" type="button" title="编辑详细说明" @click.stop="annotationEditingField = 'detail'">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M12 20h9" stroke-width="1.8" stroke-linecap="round" />
+                      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z" stroke-width="1.8" stroke-linejoin="round" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </a-modal>
+          <a-modal :title="previewTitle" v-model:open="previewOpen" :footer="null">
+            <img v-if="previewImage" :src="previewImage" style="width:100%;border-radius:4px" alt="图片预览" />
+          </a-modal>
+        </a-layout>
+      `
+    });
+
+    app.use(antd);
+    app.mount('#app');
+  </script>
+</body>
+</html>
