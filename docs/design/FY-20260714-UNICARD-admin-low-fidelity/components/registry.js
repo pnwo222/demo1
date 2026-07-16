@@ -24,5 +24,8 @@
     app.component('snowy-unicard-governance-pages', components.SnowyUnicardGovernancePages);
     app.component('snowy-unicard-role-grant-page', components.SnowyUnicardRoleGrantPage);
     app.component('snowy-unicard-audit-page', components.SnowyUnicardAuditPage);
+    app.component('snowy-unicard-page-outlet', components.SnowyUnicardPageOutlet);
+    app.component('snowy-unicard-shell', components.SnowyUnicardShell);
+    app.component('snowy-unicard-business-drawers', components.SnowyUnicardBusinessDrawers);
   };
 })(window);

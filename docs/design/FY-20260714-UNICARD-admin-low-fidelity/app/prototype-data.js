@@ -1,9 +1,10 @@
 (function (global) {
     const prototypeMeta = {
       templateVersion: 'snowy-admin-prototype-v2',
-      systemName: '示例管理系统',
-      logoText: '示',
-      logoImage: ''
+      systemName: '宁波市高校一卡通专区',
+      logoText: '一卡通',
+      logoImage: '',
+      runtimeBasis: '原始 Demo 组件预设'
     };
 
     const demoImages = [

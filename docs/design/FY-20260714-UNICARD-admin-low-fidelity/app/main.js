@@ -8,7 +8,7 @@
     template: `
       <a-layout class="app-shell" :class="{ 'annotation-cursor': annotationEnabled && !nodeCommentOpen }">
         <snowy-annotation-toolbar></snowy-annotation-toolbar>
-        <snowy-shell></snowy-shell>
+        <snowy-unicard-shell></snowy-unicard-shell>
         <snowy-requirement-drawer></snowy-requirement-drawer>
         <snowy-content-form-drawer></snowy-content-form-drawer>
         <snowy-menu-form-drawer></snowy-menu-form-drawer>
@@ -16,6 +16,7 @@
         <snowy-column-settings-modal></snowy-column-settings-modal>
         <snowy-annotation-editor-modal></snowy-annotation-editor-modal>
         <snowy-image-preview-modal></snowy-image-preview-modal>
+        <snowy-unicard-business-drawers></snowy-unicard-business-drawers>
       </a-layout>
     `
   });

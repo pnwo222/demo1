@@ -4,10 +4,11 @@
 
   global.createSnowyPrototypeContext = function createSnowyPrototypeContext() {
         const collapsed = ref(false);
-        const currentPage = ref('banner');
-        const activeTab = ref('首页 Banner');
-        const selectedKeys = ref(['banner']);
-        const openKeys = ref(['business', 'content', 'student', 'system']);
+        const businessPages = Object.freeze([...global.UnicardSchoolPages, ...global.UnicardPlatformPages]);
+        const currentPage = ref('ADM-S-001');
+        const activeTab = ref('业务首页');
+        const selectedKeys = ref(['ADM-S-001']);
+        const openKeys = ref(['school-root', 'school-people', 'school-content', 'school-query', 'platform-root', 'platform-org', 'platform-auth', 'platform-log']);
         const tableSize = ref('middle');
         const selectedRowKeys = ref([]);
         const rows = ref(seedRows.map(item => ({ ...item })));
@@ -27,6 +28,36 @@
         const activeResource = ref('首页 Banner');
         const checkedColumns = ref(['title', 'cover', 'category', 'position', 'sort', 'audit', 'status', 'attachment', 'action']);
         const pagination = reactive({ current: 1, pageSize: 10 });
+        const currentRole = ref('学校管理员');
+        const availableRoleOptions = ['学校管理员', '内容运营人员', '审核人员', '平台管理员', '安全审计人员', '设备运维人员'].map(value => ({ label: value, value }));
+        const businessQuery = reactive({});
+        const businessPagination = reactive({ current: 1, pageSize: 10, showSizeChanger: true, showTotal: total => `共 ${total} 条` });
+        const businessRowsByPage = reactive(Object.fromEntries(businessPages.map(page => {
+          const rowsForPage = Array.from({ length: 15 }, (_, index) => {
+            const record = { ...page.sampleRows[0], _key: `${page.id}-${index + 1}` };
+            page.tableFields.forEach(field => {
+              if (field.shape.includes('状态') || field.shape.includes('告警')) record[field.key] = page.states[index % page.states.length]?.name || '正常';
+              if (field.shape.includes('图片')) record[field.key] = demoImages[index % 2];
+              if (field.shape.includes('数字')) record[field.key] = (index + 1) * 10;
+            });
+            return record;
+          });
+          return [page.id, rowsForPage];
+        })));
+        const businessDrawerOpen = ref(false);
+        const businessDrawerMode = ref('add');
+        const businessForm = reactive({});
+        const businessDetailRecord = reactive({});
+        const businessUploadFiles = ref([]);
+        const businessPreviewOpen = ref(false);
+        const businessPreviewImage = ref(demoImages[0]);
+        const roleGrantOpen = ref(false);
+        const roleGrantCheckedKeys = ref(['ADM-S-001', 'ADM-S-003']);
+        const roleGrantOrgKeys = ref(['school-ningbo-textile']);
+        const roleGrantScope = ref('org');
+        const roleGrantBefore = ref('业务首页、学生管理；本组织数据');
+        const roleGrantAfter = ref('业务首页、学生管理、内容管理；本组织及下级数据');
+        const governanceTreeSelection = ref(['school-ningbo-textile']);
         const annotationStorageKey = 'snowy-admin-prototype:annotations:' + (window.location.pathname || document.title);
         const embeddedAnnotationState = (() => {
           try {
@@ -97,6 +128,14 @@
             { id: 'component-table', index: 3, title: '表格字段展示形态', summary: '头像、文件、进度、长文本不能都用普通文本展示。', detail: '头像用 Avatar；文件用类型图标、文件名、大小和来源；进度用进度条；长文本默认省略并提供悬浮完整内容；更多操作放入下拉菜单。' }
           ]
         };
+        const generatedAnnotationGroups = Object.fromEntries(businessPages.map(page => [
+          page.id,
+          global.UnicardPageAnnotations
+            .filter(item => item.pageId === page.id)
+            .map((item, index) => ({ id: item.id, index: index + 1, title: item.title, summary: item.summary, detail: `节点：${item.nodeKey}；来源：${item.source}` }))
+        ]));
+        Object.keys(baseAnnotationGroups).forEach(key => delete baseAnnotationGroups[key]);
+        Object.assign(baseAnnotationGroups, generatedAnnotationGroups);
         const annotationGroups = reactive(JSON.parse(JSON.stringify(baseAnnotationGroups)));
         if (persistedAnnotationState.annotationGroups) {
           Object.entries(persistedAnnotationState.annotationGroups).forEach(([key, value]) => {
@@ -109,33 +148,29 @@
           menuResource: '本页面用于维护后管菜单资源。左侧展示业务菜单层级，右侧展示当前菜单的路由地址、权限名称、可见角色和操作范围；支持新增、编辑、角色授权、删除菜单，并对影响已有权限分配的操作进行确认。',
           components: '本页面集中展示 Snowy 后管常用组件及数据语义，包括图片上传、状态标签、开关、徽标、确认操作、文件类型、进度、头像、长文本省略和表格更多操作，用于约束业务原型选择符合字段含义的展示形式。'
         };
+        Object.keys(basePageRequirements).forEach(key => delete basePageRequirements[key]);
+        Object.assign(basePageRequirements, Object.fromEntries(businessPages.map(page => [page.id, global.UnicardPageRequirements[page.id].summary])));
         const pageRequirements = reactive({
           ...basePageRequirements,
           ...(persistedAnnotationState.pageRequirements || {})
         });
 
+        const leaf = id => ({ key: id, label: businessPages.find(page => page.id === id).title });
         const menuItems = [
-          { key: 'business', label: '业务运营', children: [
-            { key: 'content', label: '内容管理', children: [
-              { key: 'banner', label: '首页 Banner' },
-              { key: 'notice', label: '通知公告', children: [
-                { key: 'noticeList', label: '公告列表' },
-                { key: 'noticeAudit', label: '发布审核' }
-              ] }
-            ] },
-            { key: 'student', label: '师生管理', children: [
-              { key: 'students', label: '学生管理' },
-              { key: 'teachers', label: '教职工管理' },
-              { key: 'historyStudents', label: '历史学生管理' }
-            ] }
+          { key: 'school-root', label: '学校端', children: [
+            leaf('ADM-S-001'),
+            { key: 'school-people', label: '师生管理', children: ['ADM-S-002', 'ADM-S-003', 'ADM-S-004', 'ADM-S-005'].map(leaf) },
+            { key: 'school-content', label: '内容管理', children: ['ADM-S-006', 'ADM-S-007', 'ADM-S-008', 'ADM-S-009', 'ADM-S-010', 'ADM-S-011'].map(leaf) },
+            leaf('ADM-S-012'), leaf('ADM-S-013'),
+            { key: 'school-query', label: '信息查询', children: ['ADM-S-014', 'ADM-S-015', 'ADM-S-016', 'ADM-S-017', 'ADM-S-018'].map(leaf) },
+            leaf('ADM-S-019'), leaf('ADM-S-020')
           ] },
-          { key: 'system', label: '系统能力', children: [
-            { key: 'resources', label: '资源权限', children: [
-              { key: 'menuResource', label: '菜单资源' },
-              { key: 'operationPermission', label: '操作权限' },
-              { key: 'roleGrant', label: '角色授权' },
-              { key: 'components', label: '组件预设' }
-            ] }
+          { key: 'platform-root', label: '平台端', children: [
+            leaf('ADM-P-001'),
+            { key: 'platform-org', label: '组织架构', children: ['ADM-P-002', 'ADM-P-003'].map(leaf) },
+            { key: 'platform-auth', label: '权限管理', children: ['ADM-P-004', 'ADM-P-005', 'ADM-P-006'].map(leaf) },
+            { key: 'platform-log', label: '日志管理', children: ['ADM-P-007', 'ADM-P-008', 'ADM-P-009'].map(leaf) },
+            leaf('ADM-P-010'), leaf('ADM-P-011'), leaf('ADM-P-012'), leaf('ADM-P-013')
           ] }
         ];
 
@@ -166,6 +201,47 @@
           { title: '操作', key: 'action', fixed: 'right', width: 170 }
         ];
 
+        const activeBusinessPage = computed(() => businessPages.find(page => page.id === currentPage.value) || businessPages[0]);
+        const allowedBusinessActions = computed(() => activeBusinessPage.value.actions.filter(action => action.roles.includes(currentRole.value) || currentRole.value === '平台管理员'));
+        const primaryBusinessActions = computed(() => allowedBusinessActions.value.filter(action => !['查询', '重置', '查看详情', '查看学生详情', '查看教职工详情', '查看历史学生详情', '查看申领详情', '查看访客详情', '查看通行详情', '查看消费详情', '查看借阅详情', '查看用户详情', '查看设备详情', '查看访问日志详情', '查看操作日志详情', '查看外部调用日志详情', '查看对接状态详情', '查看审核数据详情', '查看监控详情', '编辑', '删除', '提交审核', '审核', '发布', '发布至 APP', '设置首页推荐', '同步 APP 端', '分配角色', '菜单授权', '数据授权', '调整层级', '排序调整'].includes(action.name)));
+        const rowBusinessActions = computed(() => allowedBusinessActions.value.filter(action => !['查询', '重置', '新增', '报表导出', '清单导出', '导出访客记录'].includes(action.name)));
+        const businessRows = computed(() => {
+          const source = businessRowsByPage[activeBusinessPage.value.id] || [];
+          const filters = Object.entries(businessQuery).filter(([, value]) => value !== undefined && value !== null && value !== '' && (!Array.isArray(value) || value.length));
+          if (!filters.length) return source;
+          return source.filter(record => filters.every(([key, value]) => String(record[key] || '').includes(Array.isArray(value) ? '' : String(value))));
+        });
+        const businessColumns = computed(() => [
+          ...activeBusinessPage.value.tableFields.slice(0, 8).map(field => ({ title: field.label, dataIndex: field.key, key: field.key, width: field.sensitive ? 170 : 150, ellipsis: true })),
+          { title: '操作', key: '__actions', fixed: 'right', width: 190 }
+        ]);
+        const businessField = key => activeBusinessPage.value.tableFields.find(field => field.key === key) || { key, label: key, shape: '文本', sensitive: false };
+        const businessImage = computed(() => demoImages[0]);
+        const businessDrawerTitle = computed(() => businessDrawerMode.value === 'detail' ? `${activeBusinessPage.value.title.replace('管理', '')}详情` : `${businessDrawerMode.value === 'edit' ? '编辑' : '新增'}${activeBusinessPage.value.title.replace('管理', '')}`);
+        const permissionGuideRows = computed(() => {
+          const school = activeBusinessPage.value.id.startsWith('ADM-S-');
+          return businessPages.filter(page => page.id.startsWith(school ? 'ADM-S-' : 'ADM-P-')).map(page => ({
+            _key: page.id,
+            菜单名称: page.title,
+            路由路径: page.route,
+            权限标识: page.permission,
+            入口位置: page.menuPath,
+            可见角色: page.roles.join('、'),
+            数据范围: school ? '本学校及授权组织' : '全局或授权组织',
+            按钮权限: page.actions.map(action => action.name).join('、')
+          }));
+        });
+        const governanceTreeData = [
+          { key: 'platform', title: '宁波市高校一卡通', children: [
+            { key: 'school-ningbo-textile', title: '宁波纺织学院', children: [{ key: 'org-it', title: '信息中心' }, { key: 'org-student', title: '学生工作部' }] },
+            { key: 'school-demo', title: '示范高校', children: [{ key: 'org-library', title: '图书馆' }] }
+          ] }
+        ];
+        const roleGrantTreeData = menuItems.map(group => ({ key: `grant-${group.key}`, title: group.label, children: group.children.map(item => ({ key: item.key, title: item.label, children: item.children?.map(child => ({ key: child.key, title: child.label })) })) }));
+        const businessSelectOptions = field => activeBusinessPage.value.states.slice(0, 6).map(state => ({ label: state.name, value: state.name }));
+        const businessMetricValue = index => [12860, 4382, 96, 17, 8, 3][index] || 0;
+        const businessStatusColor = value => /失败|异常|离线|报警|驳回|停用/.test(String(value)) ? 'red' : /待|中/.test(String(value)) ? 'orange' : 'green';
+
         const filteredRows = computed(() => {
           let result = rows.value.slice();
           if (query.keyword) result = result.filter(row => row.title.includes(query.keyword.trim()));
@@ -179,9 +255,9 @@
           return result;
         });
 
-        const pageTitle = computed(() => currentPage.value === 'menuResource' ? '菜单资源' : activeTab.value);
-        const currentAnnotationKey = computed(() => currentPage.value === 'menuResource' ? 'menuResource' : currentPage.value === 'components' ? 'components' : 'banner');
-        const currentAnnotations = computed(() => annotationGroups[currentAnnotationKey.value] || annotationGroups.banner);
+        const pageTitle = computed(() => activeBusinessPage.value.title);
+        const currentAnnotationKey = computed(() => currentPage.value);
+        const currentAnnotations = computed(() => annotationGroups[currentAnnotationKey.value] || []);
         const requirementDrawerTitle = computed(() => pageTitle.value + ' - 整体需求说明');
         const requirementDirty = computed(() => requirementDraft.value.trim() !== requirementSnapshot.value);
         const nodeCommentMultiline = computed(() => /\r?\n/.test(nodeCommentText.value) || Array.from(nodeCommentText.value).length > 24);
@@ -221,22 +297,82 @@
         }));
 
         const showMessage = (type, text) => antd.message[type](text);
-        const setPage = ({ key }) => {
-          selectedKeys.value = [key];
-          const names = {
-            banner: '首页 Banner',
-            noticeList: '公告列表',
-            noticeAudit: '发布审核',
-            students: '学生管理',
-            teachers: '教职工管理',
-            historyStudents: '历史学生管理',
-            menuResource: '菜单资源',
-            operationPermission: '操作权限',
-            roleGrant: '角色授权',
-            components: '组件预设'
+        const resetBusinessQuery = () => {
+          Object.keys(businessQuery).forEach(key => delete businessQuery[key]);
+          businessPagination.current = 1;
+          showMessage('success', '查询条件已重置');
+        };
+        const searchBusinessRows = () => {
+          businessPagination.current = 1;
+          showMessage('success', '查询完成');
+        };
+        const refreshBusinessRows = () => showMessage('success', '数据已刷新');
+        const changeBusinessPage = pageInfo => { businessPagination.current = pageInfo.current; businessPagination.pageSize = pageInfo.pageSize; };
+        const openBusinessColumnSettings = () => showMessage('success', '列设置已应用');
+        const openBusinessDetail = record => {
+          businessDrawerMode.value = 'detail';
+          Object.keys(businessDetailRecord).forEach(key => delete businessDetailRecord[key]);
+          Object.assign(businessDetailRecord, record || businessRows.value[0] || {});
+          businessDrawerOpen.value = true;
+        };
+        const openBusinessForm = (mode, record) => {
+          businessDrawerMode.value = mode;
+          Object.keys(businessForm).forEach(key => delete businessForm[key]);
+          activeBusinessPage.value.formFields.forEach(field => { businessForm[field.key] = record?.[field.key] ?? (field.shape.includes('开关') ? true : ''); });
+          businessUploadFiles.value = [];
+          businessDrawerOpen.value = true;
+        };
+        const runBusinessAction = (name, record) => {
+          if (name === '查询') return searchBusinessRows();
+          if (name === '重置') return resetBusinessQuery();
+          if (name === '新增') return openBusinessForm('add');
+          if (name === '编辑' || name === '配置显示字段') return openBusinessForm('edit', record || businessRows.value[0]);
+          if (/查看.*详情|查看详情|查看关联菜单与权限/.test(name)) return openBusinessDetail(record);
+          if (name === '菜单授权' || name === '数据授权' || name === '分配角色') return openRoleGrant(record);
+          const action = activeBusinessPage.value.actions.find(item => item.name === name);
+          if (action?.kind === 'danger' || action?.kind === 'controlled' || /审核|发布|同步|导出|删除|调整/.test(name)) {
+            antd.Modal.confirm({ title: '操作确认', content: `确定执行“${name}”吗？该操作将记录审计日志。`, okText: '确定', cancelText: '取消', onOk: () => showMessage('success', `${name}已完成`) });
+            return;
+          }
+          showMessage('success', `${name}已完成`);
+        };
+        const saveBusinessForm = () => {
+          const required = activeBusinessPage.value.formFields.find(field => ['图片标题', '应用名称', '公告标题', '文章标题', '活动标题', '学校名称', '用户账号', '角色名称', '菜单名称'].includes(field.label));
+          if (required && !String(businessForm[required.key] || '').trim()) return showMessage('warning', `请输入${required.label}`);
+          if (businessDrawerMode.value === 'add') businessRowsByPage[activeBusinessPage.value.id].unshift({ ...businessForm, _key: `${activeBusinessPage.value.id}-${Date.now()}` });
+          else Object.assign(businessRowsByPage[activeBusinessPage.value.id][0], businessForm);
+          businessDrawerOpen.value = false;
+          showMessage('success', '保存成功，列表已刷新');
+        };
+        const beforeBusinessUpload = file => {
+          if (!file.type?.startsWith('image/')) { showMessage('warning', '请选择图片文件'); return false; }
+          const reader = new FileReader();
+          reader.onload = event => {
+            businessPreviewImage.value = event.target.result;
+            businessUploadFiles.value = [{ uid: file.uid || String(Date.now()), name: file.name, status: 'done', url: event.target.result }];
+            showMessage('success', '图片已选择');
           };
-          activeTab.value = names[key] || '首页 Banner';
-          currentPage.value = key === 'menuResource' ? 'menuResource' : key === 'components' ? 'components' : 'banner';
+          reader.readAsDataURL(file);
+          return false;
+        };
+        const removeBusinessUpload = () => { businessUploadFiles.value = []; businessPreviewImage.value = demoImages[0]; showMessage('success', '图片已移除'); return true; };
+        const previewBusinessUpload = file => { businessPreviewImage.value = file.url || demoImages[0]; businessPreviewOpen.value = true; };
+        const previewBusinessImage = () => { businessPreviewImage.value = businessUploadFiles.value[0]?.url || demoImages[0]; businessPreviewOpen.value = true; };
+        const navigateBusinessGroup = index => {
+          const targets = activeBusinessPage.value.id === 'ADM-S-002' ? ['ADM-S-003', 'ADM-S-004', 'ADM-S-005'] : ['ADM-S-015', 'ADM-S-016', 'ADM-S-017', 'ADM-S-018'];
+          setPage({ key: targets[index] || targets[0] });
+        };
+        const selectGovernanceTree = keys => { governanceTreeSelection.value = keys; showMessage('success', '组织范围已切换'); };
+        const openRoleGrant = () => { roleGrantOpen.value = true; };
+        const saveRoleGrant = () => { roleGrantOpen.value = false; showMessage('success', '授权已保存并记录变更审计'); };
+        const setPage = ({ key }) => {
+          const target = businessPages.find(page => page.id === key);
+          if (!target) return;
+          selectedKeys.value = [key];
+          activeTab.value = target.title;
+          currentPage.value = key;
+          currentRole.value = target.roles[0];
+          resetBusinessQuery();
           nextTick(restoreNodeCommentPinsForCurrentPage);
           showMessage('success', '已切换到' + activeTab.value);
         };
@@ -888,6 +1024,15 @@
           requirementDrawerOpen, requirementDraft, requirementDrawerTitle, requirementEditing, requirementDirty,
           nodeCommentOpen, nodeCommentText, nodeCommentTarget, nodeCommentEditingId, nodeCommentInputRef, nodeCommentStyle, nodeCommentMultiline,
           menuItems, columns, componentColumns, componentRows, filteredRows, pageTitle, rowSelection,
+          businessPages, activeBusinessPage, businessQuery, businessRows, businessColumns, businessPagination, businessImage,
+          allowedBusinessActions, primaryBusinessActions, rowBusinessActions, permissionGuideRows,
+          currentRole, availableRoleOptions, businessDrawerOpen, businessDrawerMode, businessDrawerTitle, businessForm, businessDetailRecord,
+          businessUploadFiles, businessPreviewOpen, businessPreviewImage, governanceTreeData, governanceTreeSelection,
+          roleGrantOpen, roleGrantCheckedKeys, roleGrantOrgKeys, roleGrantScope, roleGrantBefore, roleGrantAfter, roleGrantTreeData,
+          businessField, businessSelectOptions, businessMetricValue, businessStatusColor,
+          resetBusinessQuery, searchBusinessRows, refreshBusinessRows, changeBusinessPage, openBusinessColumnSettings, openBusinessDetail, runBusinessAction,
+          saveBusinessForm, beforeBusinessUpload, removeBusinessUpload, previewBusinessUpload, previewBusinessImage,
+          navigateBusinessGroup, selectGovernanceTree, openRoleGrant, saveRoleGrant,
           setPage, onOpenChange, search, reset, refresh, exportData, batchDelete, removeRow,
           openAdd, openEdit, openDetail, saveForm, auditRow, toggleStatus, useExampleCover,
           beforeCoverUpload, removeCover, previewCover, previewCurrentCover,

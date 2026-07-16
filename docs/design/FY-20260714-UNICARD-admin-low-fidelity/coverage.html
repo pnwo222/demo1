@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>原型需求覆盖矩阵</title>
+  <link rel="stylesheet" href="styles/snowy-prototype.css" />
+  <style>
+    body{margin:0;padding:28px;background:#f2f3f5;color:#1d2129;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif}.coverage-wrap{max-width:1500px;margin:auto}.coverage-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px}.coverage-head h1{margin:0 0 6px}.coverage-summary{display:flex;gap:10px}.badge{padding:6px 12px;border-radius:16px;background:#e8ffea;color:#00b42a}.badge.skip{background:#fff7e8;color:#f77234}.coverage-card{overflow:auto;border-radius:8px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.06)}table{width:100%;border-collapse:collapse;min-width:1200px}th,td{padding:12px 14px;border-bottom:1px solid #f0f0f0;text-align:left;vertical-align:top;font-size:13px}th{position:sticky;top:0;background:#fafafa;color:#4e5969}.status{font-weight:600;color:#00b42a}.status.skip{color:#f77234}code{color:#165dff}.reason{color:#86909c}</style>
+</head>
+<body>
+  <main class="coverage-wrap">
+    <div class="coverage-head"><div><h1>原型需求覆盖矩阵</h1><div>需求蓝图保留 49 页；本次多文件原型覆盖学校端 20 页、平台端 13 页。</div></div><div class="coverage-summary"><span class="badge">已覆盖 33</span><span class="badge skip">不适用 16</span></div></div>
+    <div class="coverage-card"><table><thead><tr><th>需求编号</th><th>状态</th><th>路由</th><th>组件</th><th>字段证据</th><th>操作证据</th><th>状态/权限</th><th>说明</th></tr></thead><tbody id="coverage-body"></tbody></table></div>
+  </main>
+  <script src="app/modules/school-pages.js"></script>
+  <script src="app/modules/platform-pages.js"></script>
+  <script src="app/modules/coverage-data.js"></script>
+  <script>
+    const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+    document.getElementById('coverage-body').innerHTML=window.UnicardCoverageData.map(row=>`<tr><td><strong>${escapeHtml(row.id)}</strong></td><td class="status ${row.status==='不适用'?'skip':''}">${escapeHtml(row.status)}</td><td><code>${escapeHtml(row.route||'—')}</code></td><td>${escapeHtml(row.componentKey||'—')}</td><td>${escapeHtml((row.fields||[]).join('、')||'—')}</td><td>${escapeHtml((row.actions||[]).join('、')||'—')}</td><td>${escapeHtml([...(row.states||[]),...(row.permissions||[])].join('、')||'—')}</td><td class="reason">${escapeHtml(row.reason||row.evidence)}</td></tr>`).join('');
+  </script>
+</body>
+</html>

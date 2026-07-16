@@ -12,5 +12,8 @@
 | `SnowyUnicardGovernancePages` | 参考 `sys/org`、`sys/user`、`sys/resource/menu` | 组织树、用户、模块、菜单 CRUD 与引用校验 |
 | `SnowyUnicardRoleGrantPage` | 参考 `sys/role` 的资源树和数据范围 | 越权、自我提权、变更前后值与确认 |
 | `SnowyUnicardAuditPage` | 参考 Snowy 只读日志页面 | 审核对接数据只读、状态与详情 |
+| `SnowyUnicardPageOutlet` | 明确组件键分发，不读取字段名推断页面 | 8 个允许的业务组件键与未知键错误态 |
+| `SnowyUnicardShell` | 等价复用原始 `SnowyShell` 的侧栏、顶部栏、页签和内容区 | 33 页菜单、角色切换、页面切换 |
+| `SnowyUnicardBusinessDrawers` | 按逐页契约展示内容/治理表单和只读详情；复用 Ant Drawer/Upload | 页面字段、上传预览移除、保存与关闭 |
 
 静态验证使用 `tests/verify-unicard-model.mjs`；浏览器交互验证使用 `tests/runtime-check-unicard.mjs`。
