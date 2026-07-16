@@ -10,7 +10,7 @@
 | 需求名称 | 纺院标书软件需求完成 |
 | 来源文档 | `docs/requirements/纺院需求.md`、`docs/tenders/纺院标书技术部分.docx` |
 | 创建时间 | 2026-07-14 +08:00 |
-| 当前阶段 | Product 原型重画规格审阅 |
+| 当前阶段 | Product 原型重画计划审阅 |
 | 总状态 | 需确认 |
 | 本机环境状态 | `developer_confirmed_ready` |
 | 原始开发分支 | `p6` |
@@ -34,7 +34,8 @@
 | 开发模式决策 | 已完成 | 高风险严格模式 | 用户选择 1 | 2026-07-15 |
 | PRD/原型决策 | 已完成 | 生成 PRD 和完整后管低保真原型；跳过 H5 设计 | 用户选择 1 并补充 H5 暂不考虑 | 2026-07-15 |
 | Product 产物 | 已完成 | PRD Markdown/HTML、后管页面蓝图、后管低保真原型 | 规格已确认；蓝图、静态和运行时校验均为 PASS | 2026-07-15 |
-| Product 原型重画规格 | 需确认 | `docs/superpowers/specs/2026-07-16-fyy-admin-prototype-redesign.md` | 用户已确认架构、33 页范围、兼容入口和标注迁移策略；等待规格文件审阅 | 2026-07-16 |
+| Product 原型重画规格 | 已完成 | `docs/superpowers/specs/2026-07-16-fyy-admin-prototype-redesign.md` | 用户选择 1，确认规格并进入实施计划 | 2026-07-16 |
+| Product 原型重画计划 | 需确认 | `docs/superpowers/plans/2026-07-16-fyy-admin-prototype-redesign.md` | 计划已生成，等待开发者选择执行方式 | 2026-07-16 |
 | UI/Figma 决策 | 需确认 | - | 等待开发者选择生成 UI/Figma 或跳过 UI 并复用 Snowy 现有 UI | 2026-07-15 |
 | Design 产物 | 未开始 | - | - | - |
 | 技术设计 | 未开始 | - | - | - |
@@ -50,10 +51,10 @@
 ## 当前可选项
 
 ```text
-节点: Product 原型重画规格审阅
-推荐选项: 确认规格并编写实施计划
-其他选项: 调整规格；暂停
-推荐原因: 开发者已要求按原始 Demo 金标和多文件组件体系重画后管原型
+节点: Product 原型重画计划审阅
+推荐选项: 当前会话内联执行
+其他选项: 调整计划；暂停
+推荐原因: Product 大规模原型规则要求单一 Owner 汇总入口和注册表，不使用 subagent-driven-development
 记录时间: 2026-07-16
 ```
 
@@ -67,6 +68,7 @@
 H5: 继续需求保留、设计延期
 标注迁移: 保留页面需求，自动标注按蓝图重建，不迁移旧手工评论
 规格: docs/superpowers/specs/2026-07-16-fyy-admin-prototype-redesign.md
+计划: docs/superpowers/plans/2026-07-16-fyy-admin-prototype-redesign.md
 状态: 需确认
 记录时间: 2026-07-16
 ```
