@@ -1,0 +1,109 @@
+{
+  "version": "snowy-runtime-components-v1",
+  "goldenFile": "golden/original-demo.html",
+  "goldenSha256": "8543e869e1deeb9a4aac98e007f0edaacb0666e6160ccb98bb62fcf5f6ba2fa7",
+  "entry": "index.html",
+  "entrySha256": "8773a6bf4cd844436f014f20ee2cceb109cd1ab060ed0519580ad2604738985a",
+  "styles": [
+    {
+      "file": "styles/snowy-prototype.css",
+      "sha256": "f0527ebbe59e58dc2859798fe8aa67abfcb1b72c191704aa58b985eb4b3b92af"
+    }
+  ],
+  "app": [
+    {
+      "file": "app/prototype-data.js",
+      "sha256": "91243569687d1ec6a6e05216db92a43df623e6fcb9b2f1c633c7f6aac570c9f5"
+    },
+    {
+      "file": "app/prototype-state.js",
+      "sha256": "3b73b0912eb7f892951554bd5b48c51b93d1756f5b15fa3f6c4caa4d7bca850d"
+    },
+    {
+      "file": "app/main.js",
+      "sha256": "c7f82043799568fddf32950953a01109f7c0a900a066f70db4711d95780c87c9"
+    }
+  ],
+  "components": [
+    {
+      "name": "SnowyAnnotationToolbar",
+      "file": "annotation-toolbar.js",
+      "sha256": "023dbc64d69287c24a257829384a8800c24bc8bca76003ecce400fa3fcfa39cb"
+    },
+    {
+      "name": "SnowyShell",
+      "file": "snowy-shell.js",
+      "sha256": "c48f74a2b16fecbb480fcbdfcb0421f540ed1aac71772a3c1a8f2417f6f93ba5"
+    },
+    {
+      "name": "SnowyBannerQueryForm",
+      "file": "banner-query-form.js",
+      "sha256": "03aea25456c0adb2492bfbe57841049b883fe74eb69ff38276a177ef33a6aab6"
+    },
+    {
+      "name": "SnowyBannerDataTable",
+      "file": "banner-data-table.js",
+      "sha256": "928b37acf7a3a23b8753466e0fc22955eeef93c71fc222d541dc57a6f4427575"
+    },
+    {
+      "name": "SnowyBannerPage",
+      "file": "banner-page.js",
+      "sha256": "73c990ee8efbb46b374364e6309a75dd968c492b28d8b5492fac18bfab8f0fbf"
+    },
+    {
+      "name": "SnowyMenuResourcePage",
+      "file": "menu-resource-page.js",
+      "sha256": "a8b9b34b850465b6d2c6dab8dbfab56afb3f09ff531e8308496ec4f97d177521"
+    },
+    {
+      "name": "SnowyComponentPresetPage",
+      "file": "component-preset-page.js",
+      "sha256": "5bcb278b66a90187ed63d208713e1b293f9354a3a6965e68fc10c0957fe1448c"
+    },
+    {
+      "name": "SnowyNodeCommentComposer",
+      "file": "node-comment-composer.js",
+      "sha256": "ec67523f115e6d7083b2c15ab8436cdc5e481052edd384068876055a1cd8de78"
+    },
+    {
+      "name": "SnowyRequirementDrawer",
+      "file": "requirement-drawer.js",
+      "sha256": "72a2ffd750ade8bd70e2ad49c1e5061fa53a03cfc235ba2fc713f0ed6587f5b2"
+    },
+    {
+      "name": "SnowyContentFormDrawer",
+      "file": "content-form-drawer.js",
+      "sha256": "6d5c1cb4eb632e393d797c021e247037f8385a55c6647fb3efa77daf3d1a7b35"
+    },
+    {
+      "name": "SnowyMenuFormDrawer",
+      "file": "menu-form-drawer.js",
+      "sha256": "39b34ad2cb4794f9737e8fe2e309b5db770045902973e262b41086d23eff956b"
+    },
+    {
+      "name": "SnowyImportModal",
+      "file": "import-modal.js",
+      "sha256": "32a9f5e4cdf09bf69e9f4634a37f040b8ba35d8eba513f5567f1ea352726c54d"
+    },
+    {
+      "name": "SnowyColumnSettingsModal",
+      "file": "column-settings-modal.js",
+      "sha256": "3423ca140f0a651bbcf5a85e22ed3e75eb338c93ae48a6da13fe23cbc867dcb0"
+    },
+    {
+      "name": "SnowyAnnotationEditorModal",
+      "file": "annotation-editor-modal.js",
+      "sha256": "16c639bf1b7b63e1f11ca6fe8c49f512c094942c931baaa1086a7538904f3447"
+    },
+    {
+      "name": "SnowyImagePreviewModal",
+      "file": "image-preview-modal.js",
+      "sha256": "6a4a4557ab5b30f2f2133a44633dbbcccb017ffd20efb3485ad4c81488c24541"
+    },
+    {
+      "name": "registry",
+      "file": "registry.js",
+      "sha256": "6474beef03943e830e7362fc61160ba5706ebada10b3f697cf4f0c7851b73ac1"
+    }
+  ]
+}
