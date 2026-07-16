@@ -16,5 +16,10 @@
     app.component('snowy-column-settings-modal', components.SnowyColumnSettingsModal);
     app.component('snowy-annotation-editor-modal', components.SnowyAnnotationEditorModal);
     app.component('snowy-image-preview-modal', components.SnowyImagePreviewModal);
+    app.component('snowy-unicard-dashboard-pages', components.SnowyUnicardDashboardPages);
+    app.component('snowy-unicard-content-pages', components.SnowyUnicardContentPages);
+    app.component('snowy-unicard-readonly-pages', components.SnowyUnicardReadonlyPages);
+    app.component('snowy-unicard-log-monitor-pages', components.SnowyUnicardLogMonitorPages);
+    app.component('snowy-unicard-permission-guide-pages', components.SnowyUnicardPermissionGuidePages);
   };
 })(window);

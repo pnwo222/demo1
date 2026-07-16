@@ -47,4 +47,22 @@ assert.equal(Object.keys(context.window.UnicardPageRequirements).length, 33);
 assert.ok(context.window.UnicardPageAnnotations.length >= 33);
 assert.ok(context.window.UnicardPageAnnotations.every(item => item.nodeKey.includes(`${item.pageId}:`)));
 
+const schoolComponentFiles = [
+  'components/business/unicard-dashboard-pages.js',
+  'components/business/unicard-content-pages.js',
+  'components/business/unicard-readonly-pages.js',
+  'components/business/unicard-log-monitor-pages.js',
+  'components/business/unicard-permission-guide-pages.js',
+  'styles/unicard-business.css',
+];
+for (const file of schoolComponentFiles) {
+  assert.ok(existsSync(resolve(root, file)), `missing school business component: ${file}`);
+}
+const registrySource = readFileSync(resolve(root, 'components/registry.js'), 'utf8');
+for (const name of ['SnowyUnicardDashboardPages', 'SnowyUnicardContentPages', 'SnowyUnicardReadonlyPages', 'SnowyUnicardLogMonitorPages', 'SnowyUnicardPermissionGuidePages']) {
+  assert.ok(registrySource.includes(name), `school component not registered: ${name}`);
+}
+const schoolKeys = new Set(context.window.UnicardSchoolPages.map(page => page.componentKey));
+assert.deepEqual([...schoolKeys].sort(), ['content', 'dashboard', 'logMonitor', 'permissionGuide', 'readonly']);
+
 console.log('PASS 33 unicard admin page contracts and 49 coverage rows');

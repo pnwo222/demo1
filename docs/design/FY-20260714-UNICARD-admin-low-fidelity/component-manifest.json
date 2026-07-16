@@ -3,11 +3,15 @@
   "goldenFile": "golden/original-demo.html",
   "goldenSha256": "8543e869e1deeb9a4aac98e007f0edaacb0666e6160ccb98bb62fcf5f6ba2fa7",
   "entry": "index.html",
-  "entrySha256": "2da0b442a05121aaebc8f6ae7273ce51e44432f90799b3fbc077a5efa6d904dc",
+  "entrySha256": "7a505332c07ae70fef01068525033b10d2ef91eeb386ddfe30d37cb41cf46bd4",
   "styles": [
     {
       "file": "styles/snowy-prototype.css",
       "sha256": "f0527ebbe59e58dc2859798fe8aa67abfcb1b72c191704aa58b985eb4b3b92af"
+    },
+    {
+      "file": "styles/unicard-business.css",
+      "sha256": "272e5a9e615c8de9779574ea1678824c6d5e846e1c530cb8c8a22ed841e0efef"
     }
   ],
   "app": [
@@ -121,9 +125,34 @@
       "sha256": "6a4a4557ab5b30f2f2133a44633dbbcccb017ffd20efb3485ad4c81488c24541"
     },
     {
+      "name": "SnowyUnicardDashboardPages",
+      "file": "business/unicard-dashboard-pages.js",
+      "sha256": "44640935128751217a7f362eb4f16258eabcbb947811f86cbb36ad6f4f573362"
+    },
+    {
+      "name": "SnowyUnicardContentPages",
+      "file": "business/unicard-content-pages.js",
+      "sha256": "0c9e8ccc57e9ae1d359fc286f7aa760b26bd2886373eba023160e7e435f617e7"
+    },
+    {
+      "name": "SnowyUnicardReadonlyPages",
+      "file": "business/unicard-readonly-pages.js",
+      "sha256": "cb1def5ffec674474f2d76997d8cd40f3c9c92bce4374fd14791351912dfbc5f"
+    },
+    {
+      "name": "SnowyUnicardLogMonitorPages",
+      "file": "business/unicard-log-monitor-pages.js",
+      "sha256": "f30b553e50050e90585685bd189ac46414bb3824af3696337ecba151c130ae14"
+    },
+    {
+      "name": "SnowyUnicardPermissionGuidePages",
+      "file": "business/unicard-permission-guide-pages.js",
+      "sha256": "4384bbfa57f7d4ec3516da4a7edc234e3ac0c268a31b91435450c7257304d292"
+    },
+    {
       "name": "registry",
       "file": "registry.js",
-      "sha256": "6474beef03943e830e7362fc61160ba5706ebada10b3f697cf4f0c7851b73ac1"
+      "sha256": "741ad9c714a2f568f37176ea89bbf6a9862d97618ebb8cc4a1efd9c773d3c84f"
     }
   ]
 }
