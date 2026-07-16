@@ -2,8 +2,12 @@
 
 ## 模板门禁
 
-- 使用 `assets/prototype-demo-framework/index.html` 复制生成。
-- 保留 Demo 版本标识、`prototypeMeta`、Vue、Ant Design Vue、`.snowy-sider`、`.snowy-header`、`.tabs-row`、查询卡片、工具栏、`a-table`、`a-drawer`、`a-modal`、顶部标注工具栏、节点标注、本地持久化、页面需求抽屉和另存为。
+- 已读取完整原始 Demo 金标、组件清单和组件说明。
+- 已按页面类型复用原始查询、表格、上传、抽屉、弹窗、组件预设和标注组件，没有使用精简渲染器重画。
+- 输出保留 `snowy-runtime-components-v1` 组件清单、组件源码哈希、Vue、Ant Design Vue、Snowy 壳、查询、表格、抽屉、弹窗、标注、本地持久化、页面需求和另存为。
+- Demo 入口通过普通脚本实际引用全部运行时 Vue 组件；业务原型没有删除或改变原始基础能力。
+- `index.html` 不内嵌完整 CSS、根模板或业务运行时，不使用 ES Module 或 `fetch`，可直接双击打开。
+- 缺失组件已从 Snowy 真实页面、最接近的 Demo 组件或 Ant Design Vue 官方组件中复用、组合或扩展，并登记到注册表、入口、清单和组件说明。
 - 系统标题、Logo 简称、浏览器标题来自需求或标记待确认。
 - 图片上传和组件预设按需求复用；未涉及的组件不得作为无关业务菜单或页面保留。
 

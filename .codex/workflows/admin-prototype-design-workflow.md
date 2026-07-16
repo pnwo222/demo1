@@ -12,11 +12,15 @@
 .codex/skills/snowy-admin-prototype-designer/assets/prototype-demo-framework/index.html
 ```
 
-该 Demo 由 `.codex/skills/snowy-admin-prototype-designer` 提供。后管原型生成、审查或重做时必须先使用该 skill，并读取其蓝图模板和验收清单。该 Demo 使用 CDN 引入 Vue、Ant Design Vue 和 dayjs，展示 Snowy 后管布局壳、标准 CRUD、左树 + 表格、菜单资源树、抽屉表单、详情抽屉、删除确认、导入弹窗、权限态、空态、异常态、节点标注、页面需求说明和另存为。实际业务后管原型必须先复制该 Demo 的 `index.html` 作为模板，再替换系统标题、Logo、菜单、字段、数据和流程；不得从空白 HTML、通用后台模板或纯静态页面重新绘制。框架参考清单和原型需求覆盖矩阵是交付材料，不应伪装成业务菜单或业务页面。
+该 Demo 的原始金标位于 `assets/prototype-demo-framework/golden/original-demo.html`。当前 `index.html` 是轻量入口，通过普通本地脚本实际引用 `components/` 下的运行时 Vue 组件，并可直接双击打开。实际业务原型必须复制完整组件目录，按需求复用 Snowy 壳、查询、表格、上传、抽屉、弹窗、组件预设和标注组件；不得把组件重新内嵌回单文件，也不得使用精简通用渲染器。
 
 Demo 中的标注只用于展示“编号气泡、节点选择、详情弹窗、编辑和持久化”的交互形式，不是固定业务规则。实际业务原型的标注内容必须来自当前需求文档、标书原文、PRD、最小需求说明或已校验的页面蓝图；不得复制 Demo 的日期范围、状态枚举、上传限制、删除规则等示例内容。标注只标重要或需要特别说明的具体需求点，例如字段校验、枚举值、状态含义、权限差异、敏感数据脱敏、风险操作、异常处理和业务规则；不得用“筛选区”“表格区”“操作区”等泛泛说明替代具体需求。页面底部不得生成 `annotation-card` 或需求说明列表；当前页面整体需求从顶部工具栏的“页面需求”入口打开右侧抽屉查看和编辑。
 
-硬性模板门禁：后管原型 HTML 必须保留 Demo 版本标识、`prototypeMeta`、Vue + Ant Design Vue CDN、`.snowy-sider`、`.snowy-header`、`.tabs-row`、查询卡片、工具栏、`a-table`、`a-drawer`、`a-modal`、顶部标注工具栏、节点标注与本地持久化、页面需求抽屉和“另存为”能力。图片上传和组件预设是可复用能力：需求涉及对应字段时必须复用，需求不涉及时不得把“组件预设”作为业务菜单或页面保留。缺少必需关键结构时，视为未按 Demo 生成，必须重做，不得进入 UI 设计、技术设计或开发。
+硬性组件包门禁：运行时 CSS、状态、入口和 Vue 组件及其哈希记录在 `component-manifest.json`。已有组件必须通过 `<script src>` 引入复用，不得重写或缩水。缺少组件时，可参考 Snowy 真实页面、最接近的 Demo 组件或 Ant Design Vue 官方组件进行选择和组合；仍无法满足时才新增独立组件，同步登记注册表、入口、说明和验证用例，并运行 `refresh-component-manifest.mjs <原型目录>` 刷新清单。
+
+硬性组件门禁：查询区复用 `banner-query-form`，标准表格复用 `banner-data-table`，树形权限页复用 `menu-resource-page`，字段展示参考 `component-preset-page`，新增/编辑/详情、菜单、导入、列设置、标注和页面需求分别复用对应抽屉或弹窗组件。每个页面字段仍必须独立完整，禁止万能字段集和精简通用页面。
+
+硬性标注绑定门禁：自动标注必须绑定到其说明的具体字段、表头、按钮、状态、图片、抽屉字段或交互节点，不得把当前页面全部标注统一绑定到 `query-card`、页面根节点或其他共享容器。标注内容可按需求变化，标注基础设施的样式和行为不得变化。
 
 硬性设计规则门禁：后管原型不仅要使用 Demo 模板，还必须符合 Demo 的原型设计规则。至少包括：菜单层级来自需求；系统标题、Logo 和简称来自需求或标记待确认；查询区、工具栏、表格、分页、操作列、抽屉/弹窗按 Demo 结构组织；字段按语义展示为图片、头像、文件、标签、开关、徽标、进度、长文本省略、树形选择、更多操作等合适形态；业务状态和启停操作按 Snowy 习惯拆分为标签列和开关列；上传字段可选择本地文件/图片并支持回显、预览和移除；所有可点击元素必须有对应交互；页面不得出现开发实现提示或无关教学说明。任一规则不满足时，视为原型不合格，必须重做。
 
@@ -212,9 +216,9 @@ python .codex/skills/snowy-admin-prototype-designer/scripts/validate_admin_bluep
 
 如某页面有用户强调的必需字段，必须通过 `--must-contain` 追加校验。蓝图校验出现 `FAIL` 时不得生成 HTML；出现会导致字段遗漏、万能 CRUD 或虚假覆盖的 `WARN` 时也必须先修正。
 
-## 阶段 5：绘制 Snowy 后管布局壳拟真原型
+## 阶段 5：使用原始组件生成拟真原型
 
-后管 HTML 原型必须先搭建 Snowy 管理端壳：
+先执行 `node .codex/skills/snowy-admin-prototype-designer/assets/prototype-demo-framework/build-prototype.mjs docs/design/<需求ID>-admin-low-fidelity` 复制完整多文件组件目录，再按页面蓝图修改业务数据和页面组件。生成过程必须读取 `components/README.md` 和 `component-manifest.json`。构建结果必须满足：
 
 - 左侧菜单栏，包含一级/二级/三级菜单和当前选中态。
 - 顶部栏，包含面包屑、标签页或页签、用户区/操作区的框架占位。
@@ -224,6 +228,10 @@ python .codex/skills/snowy-admin-prototype-designer/scripts/validate_admin_bluep
 - 表格单元格必须按字段类型展示真实内容，图片字段必须展示缩略图或空图占位，不得用“已上传/未上传”等文字替代。
 - 上传字段必须可点击选择本地文件或图片，并在原型中回显、预览和移除，图片上传优先参考 Snowy 的卡片式图片上传形态。
 - 颜色、间距、按钮、标签、表格密度应参考框架，而不是重新设计一套风格。
+- 每个页面按蓝图分别实现查询、表格、详情、创建、编辑、工具栏、行操作、示例数据、页面需求和具体节点标注。
+- 已存在的布局、表单、表格、上传、抽屉、弹窗和标注交互通过组件脚本直接引入使用。
+- 业务修改不得删除原始组件能力或改变全局视觉基础。
+- 缺少组件时从 Snowy 真实页面、最接近的 Demo 组件或 Ant Design Vue 官方组件中复用或组合；仍不足时新增并登记，禁止另起一套后台样式或精简渲染引擎。
 
 禁止：
 
@@ -281,11 +289,12 @@ python .codex/skills/snowy-admin-prototype-designer/scripts/validate_admin_bluep
 - 蓝图已通过 `validate_admin_blueprint.py`；没有 `等状态`、`多条件筛选`、`同新增`、范围覆盖行或无来源字段。
 - 蓝图字段均可追溯到需求、标书、PRD 或最小需求说明；待确认字段已标记，未用 Demo 字段冒充业务字段。
 - 后管 HTML 原型包含 Snowy 后管布局壳，且标题、Logo、系统名已按具体需求替换或标记待确认。
-- 后管 HTML 原型是从 `.codex/skills/snowy-admin-prototype-designer/assets/prototype-demo-framework/index.html` 复制后改造，不是从空白 HTML 重新编写。
-- 后管 HTML 原型保留 Demo 的关键结构和交付工具：Demo 版本标识、`prototypeMeta`、Ant Design Vue CDN、侧栏、顶部栏、页签、查询区、工具栏、表格、分页、抽屉、弹窗、顶部标注工具栏、节点标注、本地持久化、页面需求抽屉和另存为；组件预设只作为实现参考，不作为无关业务页面保留。
+- 已通过 `build-prototype.mjs` 创建多文件原型目录，并按 `component-manifest.json` 引入或扩展组件；没有从空白 HTML、精简 Schema 渲染器或其他后台模板重新绘制。
+- 入口保留 `snowy-runtime-components-v1` 对应的 Vue、Ant Design Vue、Snowy 壳、查询、工具栏、表格、分页、抽屉、弹窗、标注、本地持久化、页面需求和另存为能力。
 - 后管 HTML 原型符合 Demo 原型设计规则：菜单按需求、字段按语义展示、状态标签和启停开关按 Snowy 习惯拆分、上传可选择并预览/移除、所有可点击元素有交互、无开发提示和无关说明。
 - 后管 HTML 原型逐页实现蓝图，不存在多个业务页面共用同一个万能表单、万能抽屉或万能字段集的情况。
 - 已运行 `.codex/skills/snowy-admin-prototype-designer/scripts/validate_admin_prototype.py`，并按原始需求传入必含字段；无 `FAIL`。
+- `validate_admin_prototype.py` 已确认入口引用、组件加载顺序和运行时文件 SHA-256 有效；业务页面全部字段和操作均复用对应预设组件或已登记扩展，且不存在平行标注或旧万能渲染器。
 - 已用 `.codex/skills/snowy-admin-prototype-designer/scripts/runtime_check_admin_prototype.mjs` 或 Codex browser/node_repl 打开 HTML 做运行时校验；无 `pageerror`、console `error`、空白页和核心点击报错。
 - 已验证顶部标注工具栏默认关闭标注模式；已有标注始终可见；开启标注后可选择节点、新增/编辑/删除标注；刷新后标注保留；“全部删除”符合自动标注基线恢复规则。
 - 已验证“页面需求”按当前页面分别展示，默认预览，点击编辑图标后才进入 textarea，内容变化后才显示保存，取消恢复原文，保存后本地持久化。
@@ -301,10 +310,19 @@ python .codex/skills/snowy-admin-prototype-designer/scripts/validate_admin_bluep
 
 任一项不满足，状态为 `阻塞`，不得进入下一阶段。
 
+## 大规模原型提速规则
+
+- Product 阶段生成 PRD、蓝图和原型时，不使用面向代码开发的 `subagent-driven-development`、worktree 开发流程，也不为每个中间文件单独启动一轮独立审查。
+- 同一次 Product 运行只读取、归一化需求集合一次。需求来源未变化时复用已确认的需求基线、PRD 和蓝图，仅重生成发生变化的页面及覆盖矩阵行。
+- 超过 10 个独立后管页面时，按业务模块批量生成页面蓝图、数据和独立页面组件；共享入口和注册表由一个 Owner 汇总，禁止多个 Agent 并发编辑同一文件。
+- HTML 生成前做一次需求/蓝图质量审查，静态与运行时校验后做一次最终原型审查。只有出现明确 `FAIL`、P0 或 P1 时才增加修复和复审，不因无害 WARN 重跑全量链路。
+- 提速不得降低覆盖要求；字段、操作、状态、权限、异常、节点绑定和逐页覆盖矩阵仍必须完整。
+
 ## 推荐文件命名
 
 ```text
-docs/design/<需求ID>-admin-low-fidelity.html
+docs/design/<需求ID>-admin-low-fidelity/index.html
+docs/design/<需求ID>-admin-page-blueprint.md
 docs/design/<需求ID>-admin-coverage.html
 ```
 

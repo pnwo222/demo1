@@ -47,8 +47,9 @@ flowchart TD
     L2 --> L2A["蓝图必须包含原始需求摘录、原子需求清单、字段来源、操作来源和逐项覆盖矩阵<br/>运行 validate_admin_blueprint.py"]
     L2A --> L2B{"蓝图校验通过"}
     L2B -- 否 --> L2
-    L2B -- 是 --> L3["复制 skill 内置 Demo 模板<br/>按蓝图生成 Snowy 后管拟真原型<br/>输出框架参考清单、菜单映射、CRUD 形式和覆盖矩阵"]
-    L3 --> L4["保留最新版 Demo 交付工具<br/>标注、页面需求、持久化、另存为<br/>移除无关组件预设业务页面"]
+    L2B -- 是 --> L2C["复用未变化的已确认产物<br/>超过 10 页按模块生成独立页面组件<br/>共享入口和注册表由单一 Owner 汇总"]
+    L2C --> L3["复制完整运行时组件目录<br/>按蓝图引入查询、表格、抽屉、弹窗和标注组件<br/>缺少时参考 Snowy、Demo 或 Ant Design Vue"]
+    L3 --> L4["生成多文件 Snowy 后管拟真原型<br/>保留原始 Demo 内容密度、样式和标注能力<br/>入口只引用组件，禁止重新内嵌完整实现"]
     L4 --> L4A{"静态校验、运行时交互校验和覆盖矩阵是否通过"}
     L4A -- 否 --> L2
     L4A -- 是 --> L1
@@ -165,7 +166,9 @@ flowchart TB
 - 开发环境检测必须用列表展示 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务，并用 `✅`、`⚠️`、`❌` 标明结果；`检测：` 后必须换行，每个检测项独占一行。
 - 开发环境检测结果写入 `docs/workflow/local-environment-status.md`，该文件被 `.gitignore` 忽略，不提交到 Git；`docs/workflow/status.md` 保持可提交。
 - PRD 和低保真 HTML 原型未确认，不进入 UI 设计。
-- 涉及后管、后台、管理端或运营端且未跳过原型时，必须使用 `.codex/skills/snowy-admin-prototype-designer` 并套用 `.codex/workflows/admin-prototype-design-workflow.md`，先输出“需求到原型页面蓝图”。蓝图必须逐个独立页面列出原始需求摘录、原子需求清单、同步字段、展示字段、筛选字段、查询字段、表格字段、详情字段、新增字段、编辑字段、状态字段、敏感字段、操作按钮、状态/异常、权限差异、字段展示形态和点击交互；每个字段、按钮、状态和权限必须标记来源：`需求明确`、`框架惯例`、`待确认` 或 `不适用`；蓝图必须通过 `validate_admin_blueprint.py`。禁止用 `等状态`、`多条件筛选`、`同新增` 或 `ADM-S-001~020` 范围行压缩需求。蓝图通过后再从 skill 内置 Demo 模板复制生成后管原型，同时符合 Demo 原型设计规则，保留顶部标注工具栏、节点标注、本地持久化、页面需求抽屉和另存为能力；组件预设仅按需求复用，不得作为无关业务页面保留。必须通过静态校验、运行时交互校验和覆盖矩阵验收；未按模板生成、未符合设计规则、存在万能 CRUD 或未通过门禁不得进入 UI 设计、技术设计或开发。
+- 涉及后管且未跳过原型时，必须使用 `.codex/skills/snowy-admin-prototype-designer` 并套用 `.codex/workflows/admin-prototype-design-workflow.md`，先输出严格页面蓝图。蓝图通过后必须读取原始 Demo 金标和 `components/` 组件清单，复用原始 Snowy 壳、查询、表格、上传、抽屉、弹窗、组件预设和完整标注能力。禁止精简 Schema 渲染器、平行标注、万能字段集或覆盖基础 CSS。必须通过组件哈希、静态、运行时、截图和覆盖矩阵验收。
+- Product 阶段不使用代码开发型 `subagent-driven-development` 或 worktree 流程。超过 10 个页面时按模块生成独立蓝图/业务配置，由一个 Owner 汇总共享 HTML；需求来源未变化时复用已确认产物。默认只做一次生成前需求/蓝图审查和一次最终原型审查，只有明确 `FAIL`、P0 或 P1 才增加修复复审。
+- 后管原型必须从完整原始 Demo 的运行时组件目录生成，`index.html` 通过本地脚本实际引入组件。业务页面按字段语义复用预设表单、表格、上传、状态、开关、附件、头像、进度、长文本和动作组件；缺少组件时可参考 Snowy 真实框架、最接近的 Demo 组件或 Ant Design Vue 官方组件进行选择和组合，仍不满足时再新增并登记。每页字段独立完整，禁止原生文件输入、字段名猜测和万能业务字段集。
 - Figma UI 未确认，不进入技术设计。
 - 技术设计、数据模型、migration 和回滚策略未确认，不进入开发。
 - 开发环境检测必须检测可用 MySQL CLI；PATH 找不到 `mysql` 时自动搜索常见安装目录中的 `mysql.exe` 并用绝对路径验证。PATH 和搜索都找不到时记录全局状态 `blocked_missing_mysql_cli`，不进入 PRD/UI/技术设计或开发阶段。
