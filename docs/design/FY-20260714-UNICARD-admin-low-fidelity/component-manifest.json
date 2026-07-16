@@ -3,7 +3,7 @@
   "goldenFile": "golden/original-demo.html",
   "goldenSha256": "8543e869e1deeb9a4aac98e007f0edaacb0666e6160ccb98bb62fcf5f6ba2fa7",
   "entry": "index.html",
-  "entrySha256": "7a505332c07ae70fef01068525033b10d2ef91eeb386ddfe30d37cb41cf46bd4",
+  "entrySha256": "f86c63902d1cbb5c294e55d5e2da439fd979bbac0e30cfee307eabde3dc04f56",
   "styles": [
     {
       "file": "styles/snowy-prototype.css",
@@ -150,9 +150,24 @@
       "sha256": "4384bbfa57f7d4ec3516da4a7edc234e3ac0c268a31b91435450c7257304d292"
     },
     {
+      "name": "SnowyUnicardGovernancePages",
+      "file": "business/unicard-governance-pages.js",
+      "sha256": "9854d7d141de5a3358a97ba32cfb07c570c1e479dc90ebaedeb4f91c8d9c8909"
+    },
+    {
+      "name": "SnowyUnicardRoleGrantPage",
+      "file": "business/unicard-role-grant-page.js",
+      "sha256": "fb70e867c4f91b9cff54935e45d41b6496e76f2be6030de655571bba96a5ee9f"
+    },
+    {
+      "name": "SnowyUnicardAuditPage",
+      "file": "business/unicard-audit-page.js",
+      "sha256": "e6c08a5c9c094e52ed3899ca69a633071c54febb562c1765df86ec2b4d3dbbc2"
+    },
+    {
       "name": "registry",
       "file": "registry.js",
-      "sha256": "741ad9c714a2f568f37176ea89bbf6a9862d97618ebb8cc4a1efd9c773d3c84f"
+      "sha256": "db2e52ef8d55e5fb67b7f921398bfe4e68198dd74453630cb05500071cf1d1a8"
     }
   ]
 }

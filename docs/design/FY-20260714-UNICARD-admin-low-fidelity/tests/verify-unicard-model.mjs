@@ -65,4 +65,26 @@ for (const name of ['SnowyUnicardDashboardPages', 'SnowyUnicardContentPages', 'S
 const schoolKeys = new Set(context.window.UnicardSchoolPages.map(page => page.componentKey));
 assert.deepEqual([...schoolKeys].sort(), ['content', 'dashboard', 'logMonitor', 'permissionGuide', 'readonly']);
 
+const platformComponentFiles = [
+  'components/business/unicard-governance-pages.js',
+  'components/business/unicard-role-grant-page.js',
+  'components/business/unicard-audit-page.js',
+];
+for (const file of platformComponentFiles) {
+  assert.ok(existsSync(resolve(root, file)), `missing platform business component: ${file}`);
+}
+for (const name of ['SnowyUnicardGovernancePages', 'SnowyUnicardRoleGrantPage', 'SnowyUnicardAuditPage']) {
+  assert.ok(registrySource.includes(name), `platform component not registered: ${name}`);
+}
+const platformPages = context.window.UnicardPlatformPages;
+assert.deepEqual([...new Set(platformPages.map(page => page.componentKey))].sort(), ['audit', 'dashboard', 'governance', 'logMonitor', 'permissionGuide', 'roleGrant']);
+for (const id of ['ADM-P-007', 'ADM-P-008', 'ADM-P-009', 'ADM-P-010', 'ADM-P-012', 'ADM-P-013']) {
+  const page = platformPages.find(item => item.id === id);
+  assert.equal(page.actions.some(action => ['新增', '编辑', '删除'].includes(action.name)), false, `${id} readonly boundary violated`);
+}
+const rolePage = platformPages.find(page => page.id === 'ADM-P-004');
+assert.equal(rolePage.componentKey, 'roleGrant');
+assert.ok(rolePage.detailFields.some(field => field.label === '变更前权限'));
+assert.ok(rolePage.detailFields.some(field => field.label === '变更后权限'));
+
 console.log('PASS 33 unicard admin page contracts and 49 coverage rows');

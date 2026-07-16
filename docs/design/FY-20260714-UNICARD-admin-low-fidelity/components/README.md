@@ -9,5 +9,8 @@
 | `SnowyUnicardReadonlyPages` | 参考 `sys/user` 同步只读查询；敏感字段脱敏 | 只读动作白名单、详情与受控导出 |
 | `SnowyUnicardLogMonitorPages` | 参考 Snowy 日志页与监控状态卡 | 日志无 CRUD、设备异常状态和详情 |
 | `SnowyUnicardPermissionGuidePages` | 参考 `sys/resource/menu` 与角色数据范围 | 路由、权限标识、角色和按钮权限 |
+| `SnowyUnicardGovernancePages` | 参考 `sys/org`、`sys/user`、`sys/resource/menu` | 组织树、用户、模块、菜单 CRUD 与引用校验 |
+| `SnowyUnicardRoleGrantPage` | 参考 `sys/role` 的资源树和数据范围 | 越权、自我提权、变更前后值与确认 |
+| `SnowyUnicardAuditPage` | 参考 Snowy 只读日志页面 | 审核对接数据只读、状态与详情 |
 
 静态验证使用 `tests/verify-unicard-model.mjs`；浏览器交互验证使用 `tests/runtime-check-unicard.mjs`。
