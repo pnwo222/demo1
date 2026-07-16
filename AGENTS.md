@@ -13,11 +13,13 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 - 所有需要开发者决策的节点，优先使用可点击选择项，而不是只让开发者手动输入。选择项必须覆盖推荐路径、跳过路径和自定义输入路径；如果当前 Codex 客户端不支持选择控件，则在文本中给出编号选项，允许开发者输入编号或自由文本。编号选项必须逐行输出，不得挤在 `下一步` 同一行。
 - 即使跳过 PRD 或 UI，也必须保留最小需求说明、范围、验收标准和风险记录；不得在业务规则、权限、数据或状态不清时直接编码。
 - 当需求涉及后管、后台、管理端或运营端页面时，PRD、低保真原型或最小需求说明必须体现后管菜单设计：菜单层级、菜单名称、路由路径、权限标识、入口位置、可见角色和与现有 Snowy 菜单/权限体系的关系。即使跳过 PRD 或 UI，也必须在最小需求说明中保留该菜单设计。
-- 低保真原型必须参考现有框架的信息架构、布局、导航、表格、表单、弹窗、抽屉、状态和权限交互，不得做成过度简陋的纯线框。后管原型和 H5/移动端原型必须分开输出为不同 HTML 文件；后管参考 Snowy 管理端框架，且必须先复制 `.codex/skills/snowy-admin-prototype-designer/assets/prototype-demo-framework/index.html` 作为模板再替换业务内容；H5 如框架未补充则标记 `H5 框架待补充` 并单独保留移动端信息结构和交互草案。原型必须严格覆盖需求集合中的全部功能模块、页面、菜单、字段、操作、状态、异常和权限场景，并输出原型需求覆盖矩阵；不得只做代表性页面、最小演示或少量跳转卡片。
+- 低保真原型必须参考现有框架的信息架构、布局、导航、表格、表单、弹窗、抽屉、状态和权限交互，不得做成过度简陋的纯线框。后管原型和 H5/移动端原型必须分开输出为不同 HTML 文件；后管必须按蓝图生成显式业务 Schema，并通过 `.codex/skills/snowy-admin-prototype-designer/assets/prototype-demo-framework/build-prototype.mjs` 构建，禁止复制后手改 Demo HTML；H5 如框架未补充则标记 `H5 框架待补充` 并单独保留移动端信息结构和交互草案。原型必须严格覆盖需求集合中的全部功能模块、页面、菜单、字段、操作、状态、异常和权限场景，并输出原型需求覆盖矩阵；不得只做代表性页面、最小演示或少量跳转卡片。
 - 后管原型不仅要使用 `.codex/skills/snowy-admin-prototype-designer/assets/prototype-demo-framework/index.html`，还必须符合该 Demo 的原型设计规则：菜单层级来自需求；字段按语义展示；业务状态和启停操作按 Snowy 习惯拆分；上传可选择并预览/移除；所有可点击元素有交互；不得出现开发提示、教学说明或无关功能。
 - 后管原型生成 HTML 前必须先输出“需求到原型页面蓝图”：逐个独立页面列出需求编号、原始需求摘录、原子需求清单、菜单路径、路由路径、权限标识、页面类型、参考 Snowy 页面、同步字段、展示字段、筛选字段、查询字段、表格字段、详情字段、新增字段、编辑字段、状态字段、敏感字段、操作按钮、状态/异常、权限差异、字段展示形态和点击交互。每个字段、按钮、状态和权限必须标记来源：`需求明确`、`框架惯例`、`待确认` 或 `不适用`。蓝图必须通过 `.codex/skills/snowy-admin-prototype-designer/scripts/validate_admin_blueprint.py`；没有蓝图、蓝图字段不来自需求、蓝图未通过校验、出现 `等状态`/`多条件筛选`/`同新增` 等压缩写法、或多个业务页面共用一套万能查询/表格/表单/抽屉时，原型视为不合格，必须退回 Product 阶段重做。
-- 后管原型生成、审查或重做时必须使用 `.codex/skills/snowy-admin-prototype-designer`。该 skill 内置 Demo 模板、页面蓝图模板、验收清单和原型校验脚本；Product Agent 生成后管原型时优先复制 skill 的 `assets/prototype-demo-framework/index.html`，并按 skill 的蓝图和验收清单执行。
-- 涉及后管、后台、管理端或运营端且未跳过原型时，必须执行 `.codex/workflows/admin-prototype-design-workflow.md`，按 Snowy 后管拟真原型规范设计；未从 `.codex/skills/snowy-admin-prototype-designer/assets/prototype-demo-framework/index.html` 复制模板生成，或未输出框架参考清单、菜单映射、CRUD 形式选择、Snowy 后管布局壳和覆盖矩阵时，不得进入 UI 设计、技术设计或开发。
+- 后管原型生成、审查或重做时必须使用 `.codex/skills/snowy-admin-prototype-designer`。该 skill 内置组件注册表、Demo Schema、页面蓝图模板、构建器、验收清单和校验脚本；Product Agent 必须先生成 `*-admin-prototype-schema.json`，再调用构建器输出单 HTML。
+- `snowy-core.css`、`snowy-components.js`、`annotation.css`、`annotation-runtime.js`、`demo-app.js` 属于受保护组件包基础设施。业务原型只允许通过 Schema 配置页面、字段、动作、数据、需求和标注，不得手改构建产物、覆盖基础样式或另建平行标注/页面引擎。校验器必须逐段比对源码并核验哈希。
+- Schema 的查询字段、表格列、详情字段、新增字段、编辑字段、工具栏和行操作必须逐项显式选择注册组件。缺少组件时，按最接近的核心组件样式新增命名扩展、注册并补测试；禁止使用原生文件输入、字段名猜测或万能字段集绕过组件包。
+- 涉及后管、后台、管理端或运营端且未跳过原型时，必须执行 `.codex/workflows/admin-prototype-design-workflow.md`，按 Snowy 后管拟真原型规范设计；未输出框架参考清单、菜单映射、CRUD 形式、业务 Schema、Snowy 后管构建产物和覆盖矩阵时，不得进入 UI 设计、技术设计或开发。
 - 只有用户明确说“跳过工作流”“直接改代码”“无需 PRD/设计/技术方案”时，才允许跳过整个前置工作流；跳过原因必须在回复中简短记录。
 - 修改项目之前，先阅读本文件、`.codex/workflows/`、相关 `.codex/agents/*.md` 角色说明、`docs/requirements/` 下的全部需求文档，并使用 `.codex/skills/snowy-framework-reader` 读取 `project/` 框架、`project/docs/` 框架说明、开发规范和 `project/docs/patterns/` 框架模式缓存。
 - 首次执行项目工作流前，必须使用 `.codex/skills/snowy-framework-bootstrap` 先执行只读环境自检，并用 `✅`、`⚠️`、`❌` 列出 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务结果，再提示开发者确认当前 Snowy 框架能否在本机正常运行。检测结果必须在 `检测：` 后逐项换行，每个检测项独占一行，禁止用分号、逗号或空格串成一整段。默认不由 Agent 自动执行环境安装、构建、启动或校验脚本，除非用户明确要求；开发环境清单未确认前，不进入 PRD/UI/技术设计或开发阶段。
@@ -109,7 +111,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 - 首次流程已输出 Snowy 框架运行提示，并在 `docs/workflow/local-environment-status.md` 记录开发环境检测清单；环境自检是全局一次，未确认或存在阻塞项时任何需求不得进入后续阶段。
 - PRD 或最小需求说明已确认；如跳过 PRD，已记录跳过原因。
 - 如涉及后管、后台、管理端或运营端页面，后管菜单设计已明确，包括菜单层级、菜单名称、路由路径、权限标识、入口位置和可见角色。
-- 如涉及后管、后台、管理端或运营端页面且未跳过原型，已执行 Snowy 后管拟真原型设计工作流，已从 `.codex/skills/snowy-admin-prototype-designer/assets/prototype-demo-framework/index.html` 复制模板生成后管原型，已符合 Demo 原型设计规则，并输出框架参考清单、菜单映射、CRUD 形式选择和覆盖矩阵。
+- 如涉及后管、后台、管理端或运营端页面且未跳过原型，已执行 Snowy 后管拟真原型设计工作流，已生成显式业务 Schema 并通过组件包构建器生成后管原型，已符合 Demo 原型设计规则，并输出框架参考清单、菜单映射、CRUD 形式选择和覆盖矩阵。
 - 如涉及后管、后台、管理端或运营端页面且未跳过原型，已输出需求到原型页面蓝图并通过 `validate_admin_blueprint.py`；每个独立页面都有原始需求摘录、原子需求清单、同步字段、展示字段、筛选字段、查询字段、表格字段、详情字段、新增字段、编辑字段、状态字段、敏感字段、操作按钮、状态/异常、权限和字段展示形态；每项均来自需求、框架惯例或明确标记待确认；覆盖矩阵能追溯到蓝图和 HTML，且不得使用范围行自称覆盖。
 - 如未跳过 PRD，HTML 版 PRD 已生成并可打开。
 - 如未跳过原型，可交互低保真 HTML 原型已生成并可打开，主路径页面切换、关键按钮和核心状态可点击验证；原型已参考现有框架，后管与 H5/移动端原型分文件输出，并通过原型需求覆盖矩阵证明全部功能点已覆盖或记录未覆盖原因。

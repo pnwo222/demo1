@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "system": {
+    "name": "示例管理系统",
+    "logoText": "示",
+    "title": "Snowy 后管原型组件 Demo"
+  },
+  "pages": [
+    {
+      "id": "banner",
+      "title": "首页 Banner",
+      "menuPath": ["业务运营", "内容管理", "首页 Banner"],
+      "route": "/biz/banner",
+      "permission": "bizBannerView",
+      "pageType": "content-crud",
+      "queryFields": [
+        {"key": "title", "label": "标题", "component": "Input"},
+        {"key": "category", "label": "栏目", "component": "Select", "options": [{"label": "首页 Banner", "value": "首页 Banner"}, {"label": "通知公告", "value": "通知公告"}]},
+        {"key": "audit", "label": "发布状态", "component": "Select", "options": [{"label": "已发布", "value": "已发布"}, {"label": "待审核", "value": "待审核"}, {"label": "已下架", "value": "已下架"}]},
+        {"key": "createdAt", "label": "创建时间", "component": "DateRange"}
+      ],
+      "columns": [
+        {"key": "title", "title": "标题", "component": "Text", "width": 210},
+        {"key": "cover", "title": "封面图", "component": "Image", "width": 120},
+        {"key": "category", "title": "栏目", "component": "Text"},
+        {"key": "position", "title": "发布位置", "component": "StatusTag", "options": [{"label": "后台首页", "value": "后台首页", "color": "green"}, {"label": "学校专区", "value": "学校专区", "color": "blue"}]},
+        {"key": "sort", "title": "排序", "component": "Text", "width": 80},
+        {"key": "audit", "title": "发布状态", "component": "StatusTag", "options": [{"label": "已发布", "value": "已发布", "color": "green"}, {"label": "待审核", "value": "待审核", "color": "orange"}, {"label": "已下架", "value": "已下架", "color": "default"}]},
+        {"key": "visible", "title": "是否显示", "component": "Switch", "width": 100},
+        {"key": "attachment", "title": "附件", "component": "Attachment", "width": 180},
+        {"key": "createdAt", "title": "创建时间", "component": "Text", "width": 170}
+      ],
+      "detailFields": [
+        {"key": "title", "label": "标题", "component": "Text"},
+        {"key": "cover", "label": "封面图", "component": "Image"},
+        {"key": "category", "label": "栏目", "component": "Text"},
+        {"key": "position", "label": "发布位置", "component": "StatusTag"},
+        {"key": "audit", "label": "发布状态", "component": "StatusTag"},
+        {"key": "visible", "label": "是否显示", "component": "Switch"},
+        {"key": "attachment", "label": "附件", "component": "Attachment"},
+        {"key": "summary", "label": "内容摘要", "component": "LongText"}
+      ],
+      "createFields": [
+        {"key": "title", "label": "标题", "component": "Input", "required": true},
+        {"key": "category", "label": "栏目", "component": "Select", "required": true, "options": [{"label": "首页 Banner", "value": "首页 Banner"}, {"label": "通知公告", "value": "通知公告"}]},
+        {"key": "position", "label": "发布位置", "component": "Select", "options": [{"label": "后台首页", "value": "后台首页"}, {"label": "学校专区", "value": "学校专区"}]},
+        {"key": "sort", "label": "排序", "component": "NumberInput"},
+        {"key": "visible", "label": "是否显示", "component": "Switch"},
+        {"key": "cover", "label": "封面图", "component": "ImageUpload", "required": true},
+        {"key": "attachment", "label": "附件", "component": "FileUpload"},
+        {"key": "summary", "label": "内容摘要", "component": "Textarea"}
+      ],
+      "editFields": [
+        {"key": "title", "label": "标题", "component": "Input", "required": true},
+        {"key": "category", "label": "栏目", "component": "Select", "options": [{"label": "首页 Banner", "value": "首页 Banner"}, {"label": "通知公告", "value": "通知公告"}]},
+        {"key": "position", "label": "发布位置", "component": "Select", "options": [{"label": "后台首页", "value": "后台首页"}, {"label": "学校专区", "value": "学校专区"}]},
+        {"key": "sort", "label": "排序", "component": "NumberInput"},
+        {"key": "visible", "label": "是否显示", "component": "Switch"},
+        {"key": "cover", "label": "封面图", "component": "ImageUpload"},
+        {"key": "attachment", "label": "附件", "component": "FileUpload"},
+        {"key": "summary", "label": "内容摘要", "component": "Textarea"}
+      ],
+      "toolbarActions": [
+        {"key": "add", "label": "新增内容", "component": "ButtonAction", "primary": true},
+        {"key": "batchDelete", "label": "批量删除", "component": "DangerAction", "requiresSelection": true},
+        {"key": "import", "label": "导入", "component": "ButtonAction"},
+        {"key": "export", "label": "导出", "component": "ButtonAction"}
+      ],
+      "rowActions": [
+        {"key": "detail", "label": "详情", "component": "LinkAction"},
+        {"key": "edit", "label": "编辑", "component": "LinkAction"},
+        {"key": "delete", "label": "删除", "component": "DangerAction"}
+      ],
+      "annotations": [
+        {"id": "banner-date", "index": 1, "title": "创建时间范围", "summary": "示例：时间范围限制必须来自实际需求。", "detail": "Demo 仅展示标注形式。", "nodeKey": "banner:query:createdAt", "baseline": true},
+        {"id": "banner-delete", "index": 2, "title": "批量删除", "summary": "批量删除必须先选择数据并二次确认。", "detail": "真实项目以需求中的风险规则为准。", "nodeKey": "banner:toolbar:batchDelete", "baseline": true}
+      ],
+      "requirement": "本页面用于管理首页 Banner 内容，支持查询、分页、详情、新增、编辑、删除、批量删除、导入、导出、图片上传和附件管理。",
+      "rows": [
+        {"id": 1, "title": "校园资讯首页 Banner", "cover": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='184' height='92'%3E%3Crect width='184' height='92' rx='8' fill='%231677ff'/%3E%3Cpath d='M20 70l35-32 28 24 20-16 45 34H20z' fill='white' opacity='.8'/%3E%3C/svg%3E", "category": "首页 Banner", "position": "后台首页", "sort": 10, "audit": "已发布", "visible": true, "attachment": "首页投放说明.pdf", "createdAt": "2026-07-08 09:30", "summary": "展示校园资讯和重点通知。"},
+        {"id": 2, "title": "暑期校园开放通知", "cover": "", "category": "通知公告", "position": "学校专区", "sort": 20, "audit": "已下架", "visible": false, "attachment": "开放安排.docx", "createdAt": "2026-07-07 16:12", "summary": "暑期校园开放时间说明。"}
+      ]
+    },
+    {
+      "id": "student",
+      "title": "学生管理",
+      "menuPath": ["业务运营", "师生管理", "学生管理"],
+      "route": "/biz/student",
+      "permission": "bizStudentView",
+      "pageType": "readonly-table",
+      "queryFields": [
+        {"key": "name", "label": "姓名", "component": "Input"},
+        {"key": "idCard", "label": "身份证号", "component": "Input"},
+        {"key": "phone", "label": "手机号", "component": "Input"},
+        {"key": "college", "label": "所属学院", "component": "TreeSelect", "options": [{"title": "信息学院", "value": "信息学院", "children": [{"title": "软件技术", "value": "软件技术"}]}]},
+        {"key": "registerStatus", "label": "专区注册状态", "component": "Select", "options": [{"label": "已注册", "value": "已注册"}, {"label": "未注册", "value": "未注册"}]},
+        {"key": "cardStatus", "label": "社保绑卡状态", "component": "Select", "options": [{"label": "已绑卡", "value": "已绑卡"}, {"label": "未绑卡", "value": "未绑卡"}]}
+      ],
+      "columns": [
+        {"key": "name", "title": "姓名", "component": "Text"},
+        {"key": "idCard", "title": "身份证号", "component": "MaskedText", "width": 180},
+        {"key": "phone", "title": "手机号", "component": "MaskedText"},
+        {"key": "college", "title": "所属学院", "component": "Text"},
+        {"key": "major", "title": "专业", "component": "Text"},
+        {"key": "className", "title": "班级", "component": "Text"},
+        {"key": "studentNo", "title": "学号", "component": "Text"},
+        {"key": "registerStatus", "title": "专区注册状态", "component": "StatusTag"},
+        {"key": "cardStatus", "title": "社保绑卡状态", "component": "StatusTag"},
+        {"key": "provinceCard", "title": "省内持卡状态", "component": "StatusTag"},
+        {"key": "cardVersion", "title": "卡规范版本", "component": "Text"},
+        {"key": "financeActive", "title": "金融账户激活状态", "component": "StatusTag", "width": 170}
+      ],
+      "detailFields": [
+        {"key": "name", "label": "姓名", "component": "Text"}, {"key": "idCard", "label": "身份证号", "component": "MaskedText"},
+        {"key": "phone", "label": "手机号", "component": "MaskedText"}, {"key": "college", "label": "所属学院", "component": "Text"},
+        {"key": "major", "label": "专业", "component": "Text"}, {"key": "className", "label": "班级", "component": "Text"},
+        {"key": "studentNo", "label": "学号", "component": "Text"}, {"key": "registerStatus", "label": "专区注册状态", "component": "StatusTag"},
+        {"key": "cardStatus", "label": "社保绑卡状态", "component": "StatusTag"}, {"key": "provinceCard", "label": "省内持卡状态", "component": "StatusTag"},
+        {"key": "cardVersion", "label": "卡规范版本", "component": "Text"}, {"key": "financeActive", "label": "金融账户激活状态", "component": "StatusTag"}
+      ],
+      "createFields": [], "editFields": [], "toolbarActions": [{"key": "export", "label": "导出", "component": "ButtonAction"}],
+      "rowActions": [{"key": "detail", "label": "详情", "component": "LinkAction"}],
+      "annotations": [{"id": "student-mask", "index": 1, "title": "敏感信息", "summary": "身份证号和手机号默认脱敏展示。", "detail": "查看完整信息必须受权限控制并记录审计。", "nodeKey": "student:query:idCard", "baseline": true}],
+      "requirement": "同步并展示学生基础信息和一卡通、社保卡状态；支持按姓名、身份证号、手机号、学院、专业、班级、学号及各状态筛选学生清单。",
+      "rows": [
+        {"id": 1, "name": "张同学", "idCard": "3302********1234", "phone": "138****0001", "college": "信息学院", "major": "软件技术", "className": "23软件1", "studentNo": "2026001", "registerStatus": "已注册", "cardStatus": "已绑卡", "provinceCard": "省内持卡", "cardVersion": "3.0", "financeActive": "已激活"},
+        {"id": 2, "name": "李同学", "idCard": "3302********3321", "phone": "139****0002", "college": "机电学院", "major": "机电一体化", "className": "23机电2", "studentNo": "2026002", "registerStatus": "未注册", "cardStatus": "未绑卡", "provinceCard": "未持卡", "cardVersion": "2.0", "financeActive": "未激活"}
+      ]
+    }
+  ]
+}

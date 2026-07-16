@@ -43,12 +43,13 @@ async function main() {
   const warnings = [];
   const source = await readFile(filePath, 'utf8');
   const requiredSourceMarkers = [
-    'snowy-admin-prototype-v2',
-    'annotation-toolbar',
-    'const annotationEnabled = ref(false)',
-    'pageRequirements',
-    'requirementDrawerOpen',
-    'saveAsAnnotatedHtml',
+    'snowy-prototype-kit-v1',
+    'snowy-component-manifest',
+    'SNOWY_COMPONENTS_SOURCE_START',
+    'SNOWY_ANNOTATION_COMPONENT_START',
+    'snowy-annotation-toolbar',
+    'createSnowyAnnotationComponent',
+    'saveAsHtml',
     'snowy-annotation-state',
   ];
   for (const marker of requiredSourceMarkers) {
@@ -65,27 +66,27 @@ async function main() {
   await page.goto(pathToFileURL(filePath).href, { waitUntil: 'networkidle', timeout: 60000 });
   await page.waitForTimeout(1500);
 
-  await requireVisible(page.locator('.app-shell'), 'Snowy application shell', errors);
-  await requireVisible(page.locator('.annotation-toolbar'), 'top annotation toolbar', errors);
+  await requireVisible(page.locator('.snowy-app-shell'), 'Snowy application shell', errors);
+  await requireVisible(page.locator('.snowy-annotation-toolbar'), 'top annotation toolbar', errors);
 
-  const annotationToggle = page.locator('.annotation-toolbar').getByText('开启', { exact: true });
+  const annotationToggle = page.locator('.snowy-annotation-toolbar button', { hasText: '开启标注' });
   await requireVisible(annotationToggle, 'annotation mode defaults to off', errors);
 
-  const generatedPins = page.locator('.annotation-pin:visible');
+  const generatedPins = page.locator('.snowy-comment-pin:visible');
   if (await generatedPins.count() === 0) errors.push('Generated annotation bubbles are not visible while annotation mode is off.');
 
-  const requirementButton = page.locator('.annotation-toolbar').getByText('页面需求', { exact: true });
+  const requirementButton = page.locator('.snowy-annotation-toolbar button', { hasText: '页面需求' });
   if (await requireVisible(requirementButton, '页面需求 toolbar action', errors)) {
     await requirementButton.click();
     const requirementDrawer = page.locator('.ant-drawer:visible').filter({ hasText: '整体需求说明' }).last();
     if (await requireVisible(requirementDrawer, '页面需求 drawer', errors)) {
-      const preview = requirementDrawer.locator('.requirement-preview');
+      const preview = requirementDrawer.locator('.snowy-annotation-preview');
       await requireVisible(preview, '页面需求 default preview', errors);
       if (await isVisible(requirementDrawer.locator('textarea'))) {
         errors.push('页面需求 opened directly in edit mode; preview must be the default.');
       }
 
-      const editRequirement = requirementDrawer.getByTitle('编辑整体需求描述');
+      const editRequirement = requirementDrawer.locator('.snowy-inline-edit');
       if (await requireVisible(editRequirement, '页面需求 edit action', errors)) {
         await editRequirement.click();
         const textarea = requirementDrawer.locator('textarea');
@@ -99,21 +100,21 @@ async function main() {
           const saveRequirement = requirementDrawer.getByText('保存', { exact: true });
           if (await requireVisible(saveRequirement, '页面需求 Save after change', errors)) {
             await saveRequirement.click();
-            if (!await isVisible(requirementDrawer.locator('.requirement-preview'))) {
+            if (!await isVisible(requirementDrawer.locator('.snowy-annotation-preview'))) {
               errors.push('页面需求 did not return to preview after Save.');
             }
           }
 
           await page.reload({ waitUntil: 'networkidle' });
           await page.waitForTimeout(800);
-          await page.locator('.annotation-toolbar').getByText('页面需求', { exact: true }).click();
+          await page.locator('.snowy-annotation-toolbar button', { hasText: '页面需求' }).click();
           const reloadedDrawer = page.locator('.ant-drawer:visible').filter({ hasText: '整体需求说明' }).last();
-          const reloadedPreview = reloadedDrawer.locator('.requirement-preview');
+          const reloadedPreview = reloadedDrawer.locator('.snowy-annotation-preview');
           if (!(await reloadedPreview.textContent().catch(() => '')).includes('[运行时校验]')) {
             errors.push('页面需求 edit was not persisted after reload.');
           }
 
-          await reloadedDrawer.getByTitle('编辑整体需求描述').click();
+          await reloadedDrawer.locator('.snowy-inline-edit').click();
           await reloadedDrawer.locator('textarea').fill(originalRequirement);
           const restoreSave = reloadedDrawer.getByText('保存', { exact: true });
           if (await isVisible(restoreSave)) await restoreSave.click();
@@ -124,32 +125,32 @@ async function main() {
     }
   }
 
-  const enableAnnotation = page.locator('.annotation-toolbar').getByText('开启', { exact: true });
+  const enableAnnotation = page.locator('.snowy-annotation-toolbar button', { hasText: '开启标注' });
   if (await requireVisible(enableAnnotation, 'annotation enable action', errors)) {
     await enableAnnotation.click();
-    await requireVisible(page.locator('.annotation-toolbar').getByText('关闭', { exact: true }), 'annotation mode enabled state', errors);
-    const commentTarget = page.locator('.query-card .ant-form-item-label').first();
+    await requireVisible(page.locator('.snowy-annotation-toolbar button', { hasText: '关闭标注' }), 'annotation mode enabled state', errors);
+    const commentTarget = page.locator('.snowy-query-card [data-node-key]').first();
     if (await requireVisible(commentTarget, 'commentable business node', errors)) {
       await commentTarget.hover();
       await commentTarget.click();
-      const commentPopover = page.locator('.node-comment-popover');
+      const commentPopover = page.locator('.snowy-comment-popover');
       if (await requireVisible(commentPopover, 'node comment input', errors)) {
         const commentTextarea = commentPopover.locator('textarea');
         if (await requireVisible(commentTextarea, 'multiline node comment textarea', errors)) {
           await commentTextarea.fill('运行时标注校验\n第二行');
-          await commentPopover.locator('.node-comment-submit').click();
+          await commentPopover.locator('.snowy-comment-send').click();
           await page.waitForTimeout(300);
-          await requireVisible(page.locator('.node-comment-pin').last(), 'saved node comment bubble', errors);
+          await requireVisible(page.locator('.snowy-comment-pin').last(), 'saved node comment bubble', errors);
           await page.reload({ waitUntil: 'networkidle' });
           await page.waitForTimeout(800);
-          await requireVisible(page.locator('.node-comment-pin').last(), 'persisted node comment bubble after reload', errors);
-          await requireVisible(page.locator('.annotation-toolbar').getByText('开启', { exact: true }), 'annotation mode resets to off after reload', errors);
+          await requireVisible(page.locator('.snowy-comment-pin').last(), 'persisted node comment bubble after reload', errors);
+          await requireVisible(page.locator('.snowy-annotation-toolbar button', { hasText: '开启标注' }), 'annotation mode resets to off after reload', errors);
         }
       }
     }
   }
 
-  const saveAsButton = page.locator('.annotation-toolbar').getByText('另存为', { exact: true });
+  const saveAsButton = page.locator('.snowy-annotation-toolbar button', { hasText: '另存为' });
   if (await requireVisible(saveAsButton, '另存为 toolbar action', errors)) {
     const downloadPromise = page.waitForEvent('download', { timeout: 10000 }).catch(error => {
       errors.push(`SAVE AS DOWNLOAD FAILED: ${error.message}`);
@@ -174,10 +175,10 @@ async function main() {
     errors.push('Rendered body text is too short; possible blank page.');
   }
 
-  const menuItems = await page.locator('.ant-menu-item').all();
+  const menuItems = await page.locator('.snowy-menu-item').all();
   const maxMenuClicks = Math.min(menuItems.length, 20);
   for (let index = 0; index < maxMenuClicks; index += 1) {
-    const item = page.locator('.ant-menu-item').nth(index);
+    const item = page.locator('.snowy-menu-item').nth(index);
     if (await item.isVisible().catch(() => false)) {
       await item.click({ timeout: 5000 }).catch(error => {
         errors.push(`MENU CLICK FAILED ${index}: ${error.message}`);

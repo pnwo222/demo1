@@ -13,8 +13,9 @@ Generate Snowy-style admin low-fidelity HTML prototypes from requirements. The s
 
 - Read all relevant `docs/requirements/**` files, PRD, tender decomposition, or minimum requirement notes.
 - Read Snowy framework context through `snowy-framework-reader`, especially `project/docs/patterns/frontend-crud-pattern.md` and matching real pages under `project/snowy-admin-web/src/views/**`.
-- Use the bundled demo template:
-  `assets/prototype-demo-framework/index.html`
+- Read the component-kit Demo at `assets/prototype-demo-framework/index.html`, then use its source of truth under `assets/prototype-demo-framework/src/`.
+- Use `src/demo-schema.json` as the Schema example and `assets/prototype-demo-framework/build-prototype.mjs` as the only HTML generation entry.
+- Read `references/component-catalog.md` before selecting field and action components.
 
 ## Workflow
 
@@ -27,19 +28,27 @@ Generate Snowy-style admin low-fidelity HTML prototypes from requirements. The s
 3. Create and validate the page blueprint before writing HTML.
    Use `references/page-blueprint-template.md`. Every independent page must have its own source requirement excerpt, atomic requirement list, query fields, table fields, detail fields, create fields, edit fields, actions, states, permissions, display semantics, click behavior, and field source notes. Do not compress original requirements into vague phrases.
 
-4. Generate the HTML from the bundled demo template.
-   Copy `assets/prototype-demo-framework/index.html` to `docs/design/<requirement-id>-admin-low-fidelity.html`, then replace title, logo, menus, fields, data, drawers, modals, and interactions according to the blueprint.
+4. Convert the validated blueprint into an explicit prototype Schema.
+   Create `docs/design/<requirement-id>-admin-prototype-schema.json`. Every page must independently declare `queryFields`, `columns`, `detailFields`, `createFields`, `editFields`, `toolbarActions`, `rowActions`, `rows`, `requirement`, and `annotations`. Every field/action item must name a registered `component`; never infer a component from a field name. Add `blueprintTrace` and `coverageMatrix` to generated project Schemas.
 
-5. Generate or embed the coverage matrix.
+5. Build the HTML with the component kit.
+   Run `node assets/prototype-demo-framework/build-prototype.mjs --schema docs/design/<requirement-id>-admin-prototype-schema.json --output docs/design/<requirement-id>-admin-low-fidelity.html`. Do not copy or hand-edit the generated `index.html`/business HTML. The builder embeds the exact Snowy CSS, Ant Design Vue components, annotation runtime, application shell, component manifest, source hashes, and business Schema into one HTML file.
+
+6. Generate or embed the coverage matrix.
    Use `references/prototype-acceptance-checklist.md`. A row marked `已覆盖` must map to the blueprint and to concrete HTML UI or behavior.
 
-6. Run validation.
-   First run `python scripts/validate_admin_blueprint.py <blueprint.md>` and fix any `FAIL`. Then run `python scripts/validate_admin_prototype.py <html-file>` and fix any `FAIL`. Treat `WARN` as review items; do not proceed if warnings indicate vague requirements, generic CRUD, missing blueprint, or fake coverage. For the bundled template itself, run `python scripts/validate_admin_prototype.py --template assets/prototype-demo-framework/index.html`.
+7. Run validation.
+   First run `python scripts/validate_admin_blueprint.py <blueprint.md>` and fix any `FAIL`. The builder validates the Schema against the component registry and blocks missing/unknown components. Then run `python scripts/validate_admin_prototype.py <html-file>`; it compares all five protected component-kit sections with source files, verifies SHA-256 hashes, validates Schema coverage and rejects legacy generic renderers. For the bundled Demo itself, run `python scripts/validate_admin_prototype.py --template assets/prototype-demo-framework/index.html`.
 
 ## Hard Rules
 
-- Do not generate admin prototypes from blank HTML or generic admin templates.
-- Do not use one universal table, universal drawer, universal field array, or universal `currentConfig` to stand in for multiple business pages.
+- Do not generate admin prototypes from blank HTML, generic admin templates, or by editing the built Demo HTML.
+- Treat `src/snowy-core.css`, `src/snowy-components.js`, `src/annotation.css`, `src/annotation-runtime.js`, and `src/demo-app.js` as protected component-kit source. Business generation may only change the Schema.
+- Use registered components for every field/action. Query, table, detail, create, edit, upload, action, status and annotation behavior must come from the registry in `src/component-registry.js`.
+- If a required visual/interaction does not exist, add a named extension component following the closest core component style, register it, add tests, and then reference it from Schema. Never bypass the registry with page-local arbitrary HTML/CSS/JS.
+- The generated single HTML is a build artifact. Never patch its embedded CSS, component source, annotation runtime, or application shell.
+- Automatic annotations must bind to the concrete field, table column, button, status, drawer field, or other requirement node they explain. Never bind every automatic annotation on a page to one shared container such as `query-card` merely to make markers visible.
+- Shared renderer components are required, but business Schemas may not be generic: every page must independently and completely declare query, columns, detail, create, edit, toolbar and row-action arrays. Do not reuse one shortened field set across pages or guess semantics from names.
 - Do not let different pages share the same `标题/名称、状态、排序、备注` form unless the requirement explicitly says those are the fields.
 - Do not replace explicit requirement fields with summary phrases such as `多条件筛选`, `等状态`, `相关字段`, `已列出`, `同新增`, or `与上一页一致`.
 - Do not add create, edit, delete, import, export, audit, or authorization operations only because Snowy supports them. Every operation must be marked as `需求明确`, `框架惯例`, or `待确认`; risky or data-changing operations need explicit requirement support or a `待确认` note.
@@ -54,6 +63,14 @@ Generate Snowy-style admin low-fidelity HTML prototypes from requirements. The s
 - Annotation additions, edits, deletions, and node bindings must persist locally after every confirmed operation so a refresh does not lose work; “另存为” must also embed the latest state into the exported HTML. Keep an immutable baseline for automatically generated annotations: deleting a user-created annotation removes it, deleting a user modification of an automatic annotation restores the baseline, and deleting an unchanged automatic annotation only hides the local copy without destroying the baseline.
 - Every prototype page must provide a `页面需求` entry in the top annotation toolbar. It opens a right-side drawer that previews the page's overall requirement description by default, derived from the validated page blueprint rather than generic Demo wording. Match the annotation detail interaction: hovering the content reveals an edit icon, and only clicking that icon switches to an editable textarea. Show Save only after the content changes; canceling edit restores the previous text. Store descriptions independently by page, persist confirmed edits locally, and embed them in “另存为” HTML. Do not render a bottom `annotation-card` or a visible requirement-description list inside the business page.
 - Treat the Demo component preset page as a reference library, not as required business navigation. Reuse its upload, image, status, switch, badge, progress, attachment, avatar, tree, and action patterns only when the current blueprint needs them; remove the preset menu/page from real prototypes unless the requirement explicitly asks for a component showcase.
+
+## Large Scope Performance Rules
+
+- Product documents and prototypes are not code-development tasks. Do not invoke `subagent-driven-development`, create Product-stage worktrees, or run a separate review Agent after every intermediate file solely to generate PRD, blueprint, and prototype artifacts.
+- Read and normalize the requirement set once per Product run. Reuse an already accepted requirement baseline, PRD, and blueprint when their source requirements have not changed; regenerate only changed pages and their coverage rows.
+- For more than 10 independent admin pages, batch page-blueprint/business-configuration work by module. Batches may run independently only when they write separate files or structured fragments. One owner must assemble the shared HTML template so parallel Agents never edit the same monolithic HTML.
+- Use one requirement/blueprint quality review before HTML generation and one final prototype review after static/runtime validation. Add another repair/review cycle only when a concrete `FAIL`, P0, or P1 finding exists; do not repeat full reviews after harmless warnings.
+- Strict coverage is unchanged: batching and reuse reduce repeated reading and rewriting, but may not omit fields, actions, states, permissions, exceptions, node bindings, or page-level coverage rows.
 
 ## Strict Blueprint Gate
 

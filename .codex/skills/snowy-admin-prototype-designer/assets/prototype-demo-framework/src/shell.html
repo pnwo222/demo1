@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{DOCUMENT_TITLE}}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/reset.css" />
+  <style>
+    /* SNOWY_ADMIN_CORE_CSS_START */
+{{SNOWY_CORE_CSS}}
+    /* SNOWY_ADMIN_CORE_CSS_END */
+    /* SNOWY_ANNOTATION_CSS_START */
+{{ANNOTATION_CSS}}
+    /* SNOWY_ANNOTATION_CSS_END */
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script id="snowy-component-manifest" type="application/json">{{COMPONENT_MANIFEST}}</script>
+  <script id="snowy-prototype-schema" type="application/json">{{PROTOTYPE_SCHEMA_JSON}}</script>
+  <script id="snowy-annotation-state" type="application/json">{}</script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/dayjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/advancedFormat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/customParseFormat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/localeData.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/quarterOfYear.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/weekOfYear.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/weekYear.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.19/plugin/weekday.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/antd.min.js"></script>
+  <script>
+    window.SNOWY_PROTOTYPE_SCHEMA=JSON.parse(document.getElementById('snowy-prototype-schema').textContent);
+    /* SNOWY_COMPONENTS_SOURCE_START */
+{{SNOWY_COMPONENTS_JS}}
+    /* SNOWY_COMPONENTS_SOURCE_END */
+    /* SNOWY_ANNOTATION_COMPONENT_START */
+{{ANNOTATION_RUNTIME_JS}}
+    /* SNOWY_ANNOTATION_COMPONENT_END */
+    /* SNOWY_DEMO_APP_START */
+{{DEMO_APP_JS}}
+    /* SNOWY_DEMO_APP_END */
+  </script>
+</body>
+</html>

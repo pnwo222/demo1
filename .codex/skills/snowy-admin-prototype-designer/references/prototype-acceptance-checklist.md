@@ -2,8 +2,10 @@
 
 ## 模板门禁
 
-- 使用 `assets/prototype-demo-framework/index.html` 复制生成。
-- 保留 Demo 版本标识、`prototypeMeta`、Vue、Ant Design Vue、`.snowy-sider`、`.snowy-header`、`.tabs-row`、查询卡片、工具栏、`a-table`、`a-drawer`、`a-modal`、顶部标注工具栏、节点标注、本地持久化、页面需求抽屉和另存为。
+- 已生成独立业务 Schema，并通过 `build-prototype.mjs` 构建；没有复制或手改 `index.html`。
+- Schema 中每个查询字段、表格列、详情字段、新增字段、编辑字段、工具栏操作和行操作均显式指定已注册组件。
+- 输出保留 `snowy-prototype-kit-v1` 组件清单、源码哈希、Vue、Ant Design Vue、Snowy 壳、查询、表格、抽屉、弹窗、标注、本地持久化、页面需求和另存为。
+- 五段组件包源码与 `src/` 一致，业务差异仅在 Schema；缺失组件已按核心组件样式扩展、注册并测试。
 - 系统标题、Logo 简称、浏览器标题来自需求或标记待确认。
 - 图片上传和组件预设按需求复用；未涉及的组件不得作为无关业务菜单或页面保留。
 
