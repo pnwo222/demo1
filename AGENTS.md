@@ -17,8 +17,10 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 - 后管原型不仅要使用 `.codex/skills/snowy-admin-prototype-designer/assets/prototype-demo-framework/index.html`，还必须符合该 Demo 的原型设计规则：菜单层级来自需求；字段按语义展示；业务状态和启停操作按 Snowy 习惯拆分；上传可选择并预览/移除；所有可点击元素有交互；不得出现开发提示、教学说明或无关功能。
 - 后管原型生成 HTML 前必须先输出“需求到原型页面蓝图”：逐个独立页面列出需求编号、原始需求摘录、原子需求清单、菜单路径、路由路径、权限标识、页面类型、参考 Snowy 页面、同步字段、展示字段、筛选字段、查询字段、表格字段、详情字段、新增字段、编辑字段、状态字段、敏感字段、操作按钮、状态/异常、权限差异、字段展示形态和点击交互。每个字段、按钮、状态和权限必须标记来源：`需求明确`、`框架惯例`、`待确认` 或 `不适用`。蓝图必须通过 `.codex/skills/snowy-admin-prototype-designer/scripts/validate_admin_blueprint.py`；没有蓝图、蓝图字段不来自需求、蓝图未通过校验、出现 `等状态`/`多条件筛选`/`同新增` 等压缩写法、或多个业务页面共用一套万能查询/表格/表单/抽屉时，原型视为不合格，必须退回 Product 阶段重做。
 - 后管原型生成、审查或重做时必须使用 `.codex/skills/snowy-admin-prototype-designer`。该 skill 内置原始 Demo 金标、运行时 Vue 预设组件库、蓝图模板、验收清单和校验脚本。
+- PRD、页面蓝图和低保真 HTML 原型属于 Product 阶段产物，默认由当前 Product Agent 直接读取需求、复用 Demo 组件并连续生成，不得仅因已有计划文件、页面较多或产物较多而调用 `executing-plans`、`subagent-driven-development`、代码开发型 worktree 或逐 Task Owner 派发。只有开发者明确要求按既有执行计划分批实施，或任务已经进入包含业务代码修改的开发阶段时，才允许使用 `executing-plans`。原型页面较多时可在同一次 Product 运行中按模块批量生成，但不得为每个页面重复启动计划、审查和上下文装载。
 - 后管原型必须以多文件目录交付：`index.html` 只负责引用 CSS、状态和组件脚本，现有预设组件直接引入使用。需求没有匹配组件时，可参考 Snowy 真实框架、最接近的 Demo 组件或 Ant Design Vue 官方组件进行选择和组合；仍无法满足时才新增独立组件，并同步登记 `registry.js`、`index.html`、`component-manifest.json`、组件说明和验证用例。
 - 原始组件的样式、DOM 结构和标注行为是受保护基础设施。业务原型应复用组件并替换业务内容，不得删除原始 Demo 能力、覆盖基础样式或另建平行标注/页面引擎。
+- 后管原型必须生成逐页 `prototype-contract.json`，完整声明查询字段及控件类型、表头、工具栏、分页、Demo 布局指标和自动标注目标/气泡。静态校验必须将受保护组件与 Skill 内 canonical Demo manifest 对比并检查核心组件从 `app/main.js` 实际可达，禁止自刷新 manifest 掩盖改动、只导入未使用、字段 `slice` 截断和万能页面引擎；运行时校验必须逐页验证契约并输出截图。任一失败不得进入下一阶段。
 - 缺少组件时，优先从 Snowy 真实框架、最接近的 Demo 组件和 Ant Design Vue 官方组件中复用或组合；新增组件必须沿用最接近的结构和样式并补运行验证。禁止使用原生文件输入、字段名猜测、万能字段集或精简渲染器绕过组件库。
 - 涉及后管且未跳过原型时，必须执行 `.codex/workflows/admin-prototype-design-workflow.md`；未输出框架参考、菜单映射、CRUD 形式、原始组件复用清单、拟真原型和覆盖矩阵时，不得进入下一阶段。
 - 只有用户明确说“跳过工作流”“直接改代码”“无需 PRD/设计/技术方案”时，才允许跳过整个前置工作流；跳过原因必须在回复中简短记录。

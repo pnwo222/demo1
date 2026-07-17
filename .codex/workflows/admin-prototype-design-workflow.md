@@ -224,6 +224,7 @@ python .codex/skills/snowy-admin-prototype-designer/scripts/validate_admin_bluep
 - 顶部栏，包含面包屑、标签页或页签、用户区/操作区的框架占位。
 - 内容区，按 Snowy 页面密度设计，不使用营销页、卡片墙或移动端布局。
 - 页面标题、查询表单、工具栏、表格、分页、抽屉/弹窗必须在视觉上接近 Snowy 管理端。
+- 必须从蓝图生成 `prototype-contract.json`：逐页登记激活/根节点选择器、完整查询字段及控件类型、完整表头、工具栏操作、分页、Demo padding/圆角/区块间距，以及每条自动标注的目标和气泡选择器。禁止使用 `slice`、最大字段数或只展示前 N 项。
 - 所有可点击元素必须绑定交互，至少体现页面切换、弹窗/抽屉打开关闭、状态切换、勾选、分页、查询/重置和保存反馈。
 - 表格单元格必须按字段类型展示真实内容，图片字段必须展示缩略图或空图占位，不得用“已上传/未上传”等文字替代。
 - 上传字段必须可点击选择本地文件或图片，并在原型中回显、预览和移除，图片上传优先参考 Snowy 的卡片式图片上传形态。
@@ -294,7 +295,8 @@ python .codex/skills/snowy-admin-prototype-designer/scripts/validate_admin_bluep
 - 后管 HTML 原型符合 Demo 原型设计规则：菜单按需求、字段按语义展示、状态标签和启停开关按 Snowy 习惯拆分、上传可选择并预览/移除、所有可点击元素有交互、无开发提示和无关说明。
 - 后管 HTML 原型逐页实现蓝图，不存在多个业务页面共用同一个万能表单、万能抽屉或万能字段集的情况。
 - 已运行 `.codex/skills/snowy-admin-prototype-designer/scripts/validate_admin_prototype.py`，并按原始需求传入必含字段；无 `FAIL`。
-- `validate_admin_prototype.py` 已确认入口引用、组件加载顺序和运行时文件 SHA-256 有效；业务页面全部字段和操作均复用对应预设组件或已登记扩展，且不存在平行标注或旧万能渲染器。
+- `validate_admin_prototype.py` 已将受保护组件与 canonical Demo manifest 对比，确认入口引用、组件加载顺序、核心组件从 `app/main.js` 实际可达，且不存在字段截断、平行标注或万能页面引擎。
+- 已运行 `runtime_check_admin_prototype.mjs <index.html> <截图目录>`；脚本按 `prototype-contract.json` 逐页确认查询字段及控件类型、表头、工具栏、分页、布局指标和自动标注目标/气泡均可见，并生成逐页截图供最终审查。
 - 已用 `.codex/skills/snowy-admin-prototype-designer/scripts/runtime_check_admin_prototype.mjs` 或 Codex browser/node_repl 打开 HTML 做运行时校验；无 `pageerror`、console `error`、空白页和核心点击报错。
 - 已验证顶部标注工具栏默认关闭标注模式；已有标注始终可见；开启标注后可选择节点、新增/编辑/删除标注；刷新后标注保留；“全部删除”符合自动标注基线恢复规则。
 - 已验证“页面需求”按当前页面分别展示，默认预览，点击编辑图标后才进入 textarea，内容变化后才显示保存，取消恢复原文，保存后本地持久化。
@@ -312,7 +314,7 @@ python .codex/skills/snowy-admin-prototype-designer/scripts/validate_admin_bluep
 
 ## 大规模原型提速规则
 
-- Product 阶段生成 PRD、蓝图和原型时，不使用面向代码开发的 `subagent-driven-development`、worktree 开发流程，也不为每个中间文件单独启动一轮独立审查。
+- Product 阶段生成或修改 PRD、蓝图和原型时，由当前 Product Agent 在同一次运行中直接完成，不使用面向代码开发的 `executing-plans`、`subagent-driven-development`、worktree 开发流程、逐 Task Owner 派发，也不为每个页面或中间文件单独启动一轮独立审查。已有计划文件、页面数量多、产物文件多都不是调用 `executing-plans` 的理由；只有开发者明确要求执行既有计划，或任务已进入经确认的业务代码开发阶段时才允许使用。
 - 同一次 Product 运行只读取、归一化需求集合一次。需求来源未变化时复用已确认的需求基线、PRD 和蓝图，仅重生成发生变化的页面及覆盖矩阵行。
 - 超过 10 个独立后管页面时，按业务模块批量生成页面蓝图、数据和独立页面组件；共享入口和注册表由一个 Owner 汇总，禁止多个 Agent 并发编辑同一文件。
 - HTML 生成前做一次需求/蓝图质量审查，静态与运行时校验后做一次最终原型审查。只有出现明确 `FAIL`、P0 或 P1 时才增加修复和复审，不因无害 WARN 重跑全量链路。

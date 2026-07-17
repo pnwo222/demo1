@@ -32,7 +32,7 @@
                           </a-select>
                         </a-form-item>
                       </a-col>
-                      <a-col :xs="24" :md="6" class="annotation-host">
+                      <a-col :xs="24" :md="6" class="annotation-host" data-annotation-id="banner-date-range">
                         <button v-if="hasAnnotation('banner-date-range')" class="annotation-pin" type="button" @click.stop="showAnnotation('banner-date-range')">1</button>
                         <a-form-item label="创建时间">
                           <a-range-picker v-model:value="query.dateRange" style="width:100%" />

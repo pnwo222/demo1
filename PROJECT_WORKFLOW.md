@@ -47,10 +47,10 @@ flowchart TD
     L2 --> L2A["蓝图必须包含原始需求摘录、原子需求清单、字段来源、操作来源和逐项覆盖矩阵<br/>运行 validate_admin_blueprint.py"]
     L2A --> L2B{"蓝图校验通过"}
     L2B -- 否 --> L2
-    L2B -- 是 --> L2C["复用未变化的已确认产物<br/>超过 10 页按模块生成独立页面组件<br/>共享入口和注册表由单一 Owner 汇总"]
+    L2B -- 是 --> L2C["Product Agent 在当前任务直接生成原型<br/>不使用 executing-plans 或逐 Task 派发<br/>超过 10 页按模块连续生成，共享入口由单一 Owner 汇总"]
     L2C --> L3["复制完整运行时组件目录<br/>按蓝图引入查询、表格、抽屉、弹窗和标注组件<br/>缺少时参考 Snowy、Demo 或 Ant Design Vue"]
     L3 --> L4["生成多文件 Snowy 后管拟真原型<br/>保留原始 Demo 内容密度、样式和标注能力<br/>入口只引用组件，禁止重新内嵌完整实现"]
-    L4 --> L4A{"静态校验、运行时交互校验和覆盖矩阵是否通过"}
+    L4 --> L4A{"canonical 哈希、组件可达性、逐页契约、运行时截图和覆盖矩阵是否通过"}
     L4A -- 否 --> L2
     L4A -- 是 --> L1
     L0 -- 否 --> L1{"PRD / 原型确认"}
@@ -167,8 +167,9 @@ flowchart TB
 - 开发环境检测结果写入 `docs/workflow/local-environment-status.md`，该文件被 `.gitignore` 忽略，不提交到 Git；`docs/workflow/status.md` 保持可提交。
 - PRD 和低保真 HTML 原型未确认，不进入 UI 设计。
 - 涉及后管且未跳过原型时，必须使用 `.codex/skills/snowy-admin-prototype-designer` 并套用 `.codex/workflows/admin-prototype-design-workflow.md`，先输出严格页面蓝图。蓝图通过后必须读取原始 Demo 金标和 `components/` 组件清单，复用原始 Snowy 壳、查询、表格、上传、抽屉、弹窗、组件预设和完整标注能力。禁止精简 Schema 渲染器、平行标注、万能字段集或覆盖基础 CSS。必须通过组件哈希、静态、运行时、截图和覆盖矩阵验收。
-- Product 阶段不使用代码开发型 `subagent-driven-development` 或 worktree 流程。超过 10 个页面时按模块生成独立蓝图/业务配置，由一个 Owner 汇总共享 HTML；需求来源未变化时复用已确认产物。默认只做一次生成前需求/蓝图审查和一次最终原型审查，只有明确 `FAIL`、P0 或 P1 才增加修复复审。
+- Product 阶段由当前 Product Agent 直接生成 PRD、蓝图和原型，不使用代码开发型 `executing-plans`、`subagent-driven-development`、worktree 或逐 Task Owner 流程。只有开发者明确要求执行既有计划，或任务已进入经确认的业务代码开发阶段时才允许使用 `executing-plans`。超过 10 个页面时按模块连续生成独立蓝图/业务配置，由一个 Owner 汇总共享 HTML；需求来源未变化时复用已确认产物。默认只做一次生成前需求/蓝图审查和一次最终原型审查，只有明确 `FAIL`、P0 或 P1 才增加修复复审。
 - 后管原型必须从完整原始 Demo 的运行时组件目录生成，`index.html` 通过本地脚本实际引入组件。业务页面按字段语义复用预设表单、表格、上传、状态、开关、附件、头像、进度、长文本和动作组件；缺少组件时可参考 Snowy 真实框架、最接近的 Demo 组件或 Ant Design Vue 官方组件进行选择和组合，仍不满足时再新增并登记。每页字段独立完整，禁止原生文件输入、字段名猜测和万能业务字段集。
+- 后管原型必须包含从蓝图生成的逐页 `prototype-contract.json`。静态门禁将受保护组件与 canonical Demo manifest 对比，并检查核心组件从 `app/main.js` 真实可达、无字段截断和万能页面引擎；运行时门禁逐页验证查询控件、表头、工具栏、分页、Demo 布局指标和默认标注目标/气泡，并输出截图供最终视觉审查。
 - Figma UI 未确认，不进入技术设计。
 - 技术设计、数据模型、migration 和回滚策略未确认，不进入开发。
 - 开发环境检测必须检测可用 MySQL CLI；PATH 找不到 `mysql` 时自动搜索常见安装目录中的 `mysql.exe` 并用绝对路径验证。PATH 和搜索都找不到时记录全局状态 `blocked_missing_mysql_cli`，不进入 PRD/UI/技术设计或开发阶段。

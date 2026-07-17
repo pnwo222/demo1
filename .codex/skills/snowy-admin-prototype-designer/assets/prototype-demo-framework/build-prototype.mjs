@@ -9,6 +9,7 @@ const sha256 = value => createHash('sha256').update(value).digest('hex');
 
 const runtimeFiles = manifest => [
   { file: manifest.entry, sha256: manifest.entrySha256 },
+  { file: manifest.contract, sha256: manifest.contractSha256 },
   ...manifest.styles,
   ...manifest.app,
   ...manifest.components.map(item => ({ ...item, file: `components/${item.file}` })),
