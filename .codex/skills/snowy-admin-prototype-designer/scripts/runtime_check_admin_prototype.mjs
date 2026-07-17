@@ -206,18 +206,62 @@ async function main() {
 
   await requireVisible(page.locator('.app-shell'), 'Snowy application shell', errors);
   await requireVisible(page.locator('.annotation-toolbar'), 'top annotation toolbar', errors);
+  const sidebar = page.locator('.snowy-sider');
+  if (await requireVisible(sidebar, 'fixed left Snowy sidebar', errors)) {
+    const sidebarStyle = await sidebar.evaluate(node => {
+      const style = getComputedStyle(node);
+      return { position: style.position, top: style.top, height: style.height, overflowY: style.overflowY };
+    });
+    if (sidebarStyle.position !== 'fixed' || sidebarStyle.top !== '0px' || sidebarStyle.overflowY !== 'auto') {
+      errors.push(`Snowy sidebar is not viewport-pinned: ${JSON.stringify(sidebarStyle)}.`);
+    }
+    await page.evaluate(() => {
+      document.body.dataset.runtimeOriginalMinHeight = document.body.style.minHeight || '';
+      document.body.style.minHeight = '2200px';
+      window.scrollTo(0, 420);
+    });
+    await page.waitForTimeout(150);
+    const stickyTop = await sidebar.evaluate(node => Math.round(node.getBoundingClientRect().top));
+    if (stickyTop !== 0) errors.push(`Snowy sidebar moved with page scroll; top=${stickyTop}.`);
+    await page.evaluate(() => {
+      window.scrollTo(0, 0);
+      document.body.style.minHeight = document.body.dataset.runtimeOriginalMinHeight || '';
+      delete document.body.dataset.runtimeOriginalMinHeight;
+    });
+  }
+  if (await page.locator('.annotation-toolbar .annotation-tool-meta').count() > 0) {
+    errors.push('Annotation toolbar still renders the redundant mode label.');
+  }
+  const toolbarActions = page.locator('.annotation-toolbar .annotation-tool-action');
+  if (await toolbarActions.count() !== 4) errors.push('Annotation toolbar must expose exactly four hover-expand actions.');
+  const toolbarMinWidth = await page.locator('.annotation-toolbar').evaluate(node => getComputedStyle(node).minWidth);
+  if (toolbarMinWidth !== '0px') errors.push(`Annotation toolbar must size to content without a forced min-width, got ${toolbarMinWidth}.`);
+  if (await page.locator('.annotation-toolbar .annotation-tool-separator').count() !== 2) {
+    errors.push('Annotation toolbar must separate both the collapse control and the destructive action.');
+  }
+  if (await toolbarActions.count() > 0) {
+    const iconSize = await toolbarActions.first().locator('svg').evaluate(node => getComputedStyle(node).width);
+    if (iconSize !== '19px') errors.push(`Annotation action icon size must be 19px, got ${iconSize}.`);
+    const firstLabel = toolbarActions.first().locator('.annotation-tool-label');
+    const hiddenOpacity = await firstLabel.evaluate(node => getComputedStyle(node).opacity);
+    if (hiddenOpacity !== '0') errors.push('Annotation action text is visible before hover.');
+    await toolbarActions.first().hover();
+    await page.waitForTimeout(250);
+    const hoverOpacity = await firstLabel.evaluate(node => getComputedStyle(node).opacity);
+    if (hoverOpacity !== '1') errors.push('Annotation action text did not appear on hover.');
+  }
 
   for (const contractPage of pageContract.pages || []) {
     await validateDeclaredPage(page, contractPage, screenshotDirectory, errors);
   }
 
-  const annotationToggle = page.locator('.annotation-toolbar').getByText('开启', { exact: true });
+  const annotationToggle = page.locator('.annotation-toolbar button[title="开启标注"]');
   await requireVisible(annotationToggle, 'annotation mode defaults to off', errors);
 
   const generatedPins = page.locator('.annotation-pin:visible');
   if (await generatedPins.count() === 0) errors.push('Generated annotation bubbles are not visible while annotation mode is off.');
 
-  const requirementButton = page.locator('.annotation-toolbar').getByText('页面需求', { exact: true });
+  const requirementButton = page.locator('.annotation-toolbar button[title="查看和编辑当前页面整体需求"]');
   if (await requireVisible(requirementButton, '页面需求 toolbar action', errors)) {
     await requirementButton.click();
     const requirementDrawer = page.locator('.ant-drawer:visible').filter({ hasText: '整体需求说明' }).last();
@@ -251,7 +295,7 @@ async function main() {
 
           await page.reload({ waitUntil: 'networkidle' });
           await page.waitForTimeout(800);
-          await page.locator('.annotation-toolbar').getByText('页面需求', { exact: true }).click();
+          await page.locator('.annotation-toolbar button[title="查看和编辑当前页面整体需求"]').click();
           const reloadedDrawer = page.locator('.ant-drawer:visible').filter({ hasText: '整体需求说明' }).last();
           const reloadedPreview = reloadedDrawer.locator('.requirement-preview');
           if (!(await reloadedPreview.textContent().catch(() => '')).includes('[运行时校验]')) {
@@ -273,10 +317,56 @@ async function main() {
   await page.reload({ waitUntil: 'networkidle' });
   await page.waitForTimeout(500);
 
-  const enableAnnotation = page.locator('.annotation-toolbar').getByText('开启', { exact: true });
+  const enableAnnotation = page.locator('.annotation-toolbar button[title="开启标注"]');
   if (await requireVisible(enableAnnotation, 'annotation enable action', errors)) {
     await enableAnnotation.click();
-    await requireVisible(page.locator('.annotation-toolbar').getByText('关闭', { exact: true }), 'annotation mode enabled state', errors);
+    await requireVisible(page.locator('.annotation-toolbar button[title="关闭标注"]'), 'annotation mode enabled state', errors);
+    await page.waitForTimeout(250);
+    const activeAnnotationButton = page.locator('.annotation-toolbar button[title="关闭标注"]');
+    const activeLabel = activeAnnotationButton.locator('.annotation-tool-label');
+    if ((await activeLabel.textContent()).trim() !== '正在标注') errors.push('Active annotation action must display 正在标注.');
+    if (await activeLabel.evaluate(node => getComputedStyle(node).opacity) !== '1') errors.push('Active annotation action did not stay expanded.');
+    const toolbarCursor = await page.locator('.annotation-toolbar').evaluate(node => getComputedStyle(node).cursor);
+    const toolbarButtonCursor = await activeAnnotationButton.evaluate(node => getComputedStyle(node).cursor);
+    if (toolbarCursor !== 'default' || toolbarButtonCursor !== 'pointer') {
+      errors.push(`Annotation toolbar cursor override failed: toolbar=${toolbarCursor}, button=${toolbarButtonCursor}.`);
+    }
+    if (!await page.locator('body').evaluate(node => node.classList.contains('annotation-cursor-mode'))) {
+      errors.push('Annotation cursor mode is not applied to body; teleported overlays will use the wrong cursor.');
+    }
+    for (const selector of ['[data-annotation-key="page-content"]', '.query-card']) {
+      const arbitraryTarget = page.locator(selector).first();
+      if (await requireVisible(arbitraryTarget, `arbitrary annotation target ${selector}`, errors)) {
+        await arbitraryTarget.dispatchEvent('mousemove', { clientX: 24, clientY: 24 });
+        const hoverOutline = page.locator('.node-comment-outline:not(.selected)');
+        await requireVisible(hoverOutline, `arbitrary node hover ${selector}`, errors);
+        if (await isVisible(hoverOutline)) {
+          const highlightStyle = await hoverOutline.evaluate(node => {
+            const style = getComputedStyle(node);
+            return { borderWidth: style.borderTopWidth, backgroundColor: style.backgroundColor };
+          });
+          if (highlightStyle.borderWidth !== '3px') errors.push(`Annotation hover border must be 3px, got ${highlightStyle.borderWidth}.`);
+          if (!/^rgba\(.+,\s*0\.(?:1[0-9]|2[0-9])\)$/.test(highlightStyle.backgroundColor)) {
+            errors.push(`Annotation hover highlight needs a translucent background, got ${highlightStyle.backgroundColor}.`);
+          }
+        }
+        await arbitraryTarget.dispatchEvent('click', { clientX: 24, clientY: 24 });
+        await requireVisible(page.locator('.node-comment-popover'), `arbitrary node selection ${selector}`, errors);
+        await page.locator('.node-comment-popover .node-comment-cancel').click();
+      }
+    }
+    const selectControl = page.locator('.query-card .ant-select-selector').first();
+    if (await isVisible(selectControl)) {
+      await selectControl.click();
+      await requireVisible(page.locator('.node-comment-popover'), 'select control annotation composer', errors);
+      if (await page.locator('.ant-select-dropdown:visible').count() > 0) {
+        errors.push('Business select dropdown opened while annotation mode was enabled.');
+      }
+      await page.locator('.node-comment-popover .node-comment-cancel').click();
+    }
+    await page.keyboard.press('Escape');
+    await requireVisible(page.locator('.annotation-toolbar button[title="开启标注"]'), 'Escape exits annotation mode', errors);
+    await page.locator('.annotation-toolbar button[title="开启标注"]').click();
     const commentTarget = page.locator('.query-card .ant-form-item-label').first();
     if (await requireVisible(commentTarget, 'commentable business node', errors)) {
       await commentTarget.hover();
@@ -292,13 +382,78 @@ async function main() {
           await page.reload({ waitUntil: 'networkidle' });
           await page.waitForTimeout(800);
           await requireVisible(page.locator('.node-comment-pin').last(), 'persisted node comment bubble after reload', errors);
-          await requireVisible(page.locator('.annotation-toolbar').getByText('开启', { exact: true }), 'annotation mode resets to off after reload', errors);
+          await requireVisible(page.locator('.annotation-toolbar button[title="开启标注"]'), 'annotation mode resets to off after reload', errors);
+
+          const resourceSubmenu = page.locator('.ant-menu-submenu-title').filter({ hasText: /资源\s*权限/ });
+          if (await isVisible(resourceSubmenu)) {
+            await resourceSubmenu.click();
+            await page.waitForTimeout(200);
+          }
+          const menuResourceItem = page.locator('.ant-menu-item').filter({ hasText: /菜单\s*资源/ });
+          if (await requireVisible(menuResourceItem, 'menu resource page switch target', errors)) {
+            await menuResourceItem.click();
+            await page.waitForTimeout(300);
+            if (await page.locator('.node-comment-pin:visible').count() !== 0) {
+              errors.push('Page-scoped annotation leaked from Banner to menu resource page.');
+            }
+
+            const bannerMenuItem = page.locator('.ant-menu-item').filter({ hasText: /首页\s*Banner/ });
+            if (await requireVisible(bannerMenuItem, 'banner page switch target', errors)) {
+              await bannerMenuItem.click();
+              await page.waitForTimeout(300);
+              await page.locator('.annotation-toolbar button[title="开启标注"]').click();
+              const globalBrand = page.locator('[data-annotation-key="global-brand"]');
+              if (await requireVisible(globalBrand, 'global annotation target', errors)) {
+                await globalBrand.hover();
+                await globalBrand.click();
+                const globalComposer = page.locator('.node-comment-popover');
+                await globalComposer.locator('textarea').fill('运行时全局标注');
+                await globalComposer.locator('.node-comment-submit').click();
+                await page.locator('.annotation-toolbar button[title="关闭标注"]').click();
+                await menuResourceItem.click();
+                await page.waitForTimeout(300);
+                if (await page.locator('.node-comment-pin:visible').count() !== 1) {
+                  errors.push('Global annotation did not remain unique and visible after page switch.');
+                }
+
+                await bannerMenuItem.click();
+                await page.waitForTimeout(300);
+                const addContent = page.getByText('新增内容', { exact: true });
+                if (await requireVisible(addContent, 'business drawer trigger', errors)) {
+                  await addContent.click();
+                  const businessDrawerTitle = page.locator('.ant-drawer:visible .ant-drawer-title');
+                  if (await requireVisible(businessDrawerTitle, 'business drawer annotation target', errors)) {
+                    await page.locator('.annotation-toolbar button[title="开启标注"]').click();
+                    const drawerCursor = await page.locator('.ant-drawer:visible .ant-drawer-body').evaluate(node => getComputedStyle(node).cursor);
+                    if (!drawerCursor.startsWith('url(')) errors.push('Teleported business drawer did not inherit the annotation cursor.');
+                    await businessDrawerTitle.hover();
+                    await businessDrawerTitle.click();
+                    const drawerComposer = page.locator('.node-comment-popover');
+                    await drawerComposer.locator('textarea').fill('运行时弹窗标注');
+                    await drawerComposer.locator('.node-comment-submit').click();
+                    await page.locator('.annotation-toolbar button[title="关闭标注"]').click();
+                    await page.reload({ waitUntil: 'networkidle' });
+                    await page.waitForTimeout(500);
+                    if (await isVisible(resourceSubmenu)) {
+                      await resourceSubmenu.click();
+                      await page.waitForTimeout(200);
+                    }
+                    await menuResourceItem.click();
+                    await page.waitForTimeout(300);
+                    if (await page.locator('.node-comment-pin:visible').count() !== 1) {
+                      errors.push('Drawer/page annotation leaked after switching away; only the global annotation should remain.');
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
   }
 
-  const saveAsButton = page.locator('.annotation-toolbar').getByText('另存为', { exact: true });
+  const saveAsButton = page.locator('.annotation-toolbar button[title="另存为包含当前标注的 HTML"]');
   if (await requireVisible(saveAsButton, '另存为 toolbar action', errors)) {
     const downloadPromise = page.waitForEvent('download', { timeout: 10000 }).catch(error => {
       errors.push(`SAVE AS DOWNLOAD FAILED: ${error.message}`);

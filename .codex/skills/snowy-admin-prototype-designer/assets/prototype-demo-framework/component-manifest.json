@@ -7,7 +7,7 @@
   "styles": [
     {
       "file": "styles/snowy-prototype.css",
-      "sha256": "f0527ebbe59e58dc2859798fe8aa67abfcb1b72c191704aa58b985eb4b3b92af"
+      "sha256": "49db3244955dabaf536f192d19e275efa3cc5748a0cdda793a6e4f075f3dfbc5"
     }
   ],
   "app": [
@@ -17,7 +17,7 @@
     },
     {
       "file": "app/prototype-state.js",
-      "sha256": "3b73b0912eb7f892951554bd5b48c51b93d1756f5b15fa3f6c4caa4d7bca850d"
+      "sha256": "5af16bdc269253b1ec206050033f7df9fcbc671b68b44474f4692247284a4670"
     },
     {
       "file": "app/main.js",
@@ -28,12 +28,12 @@
     {
       "name": "SnowyAnnotationToolbar",
       "file": "annotation-toolbar.js",
-      "sha256": "023dbc64d69287c24a257829384a8800c24bc8bca76003ecce400fa3fcfa39cb"
+      "sha256": "b22c4c57ee1d9ddef5c9f59f04bf8c8a00290ef4017c9a0358102f1f443c3c57"
     },
     {
       "name": "SnowyShell",
       "file": "snowy-shell.js",
-      "sha256": "c48f74a2b16fecbb480fcbdfcb0421f540ed1aac71772a3c1a8f2417f6f93ba5"
+      "sha256": "a271e8891b7c07cc53e05e0f6bfc7268a0fa1a93bd6b5e36fc7a2067bb77a115"
     },
     {
       "name": "SnowyBannerQueryForm",
@@ -53,7 +53,7 @@
     {
       "name": "SnowyMenuResourcePage",
       "file": "menu-resource-page.js",
-      "sha256": "a8b9b34b850465b6d2c6dab8dbfab56afb3f09ff531e8308496ec4f97d177521"
+      "sha256": "f5446c0d57901d79fd0e8a4f8bfeb7201907f57ce7b963788aa48e77e979b202"
     },
     {
       "name": "SnowyComponentPresetPage",
