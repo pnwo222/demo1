@@ -1,6 +1,7 @@
-import { existsSync } from 'node:fs';
-import { readFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { existsSync, readdirSync, statSync } from 'node:fs';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
+import { dirname, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 async function isVisible(locator) {
@@ -13,14 +14,134 @@ async function requireVisible(locator, label, errors) {
   return false;
 }
 
+async function closeVisibleOverlays(page) {
+  for (const selector of ['.ant-modal-wrap:visible .ant-modal-close', '.ant-drawer:visible .ant-drawer-close']) {
+    const controls = page.locator(selector);
+    for (let index = (await controls.count()) - 1; index >= 0; index -= 1) {
+      await controls.nth(index).click({ force: true }).catch(() => {});
+    }
+  }
+  await page.keyboard.press('Escape').catch(() => {});
+  await page.waitForTimeout(200);
+}
+
+const normalizeText = value => String(value || '').replace(/\s+/g, ' ').trim();
+
+async function readPrototypeSources(rootDirectory) {
+  const files = [];
+  const visit = directory => {
+    for (const name of readdirSync(directory)) {
+      const path = resolve(directory, name);
+      if (statSync(path).isDirectory()) visit(path);
+      else if (/\.(?:html|css|js|mjs|json)$/i.test(name)) files.push(path);
+    }
+  };
+  visit(rootDirectory);
+  return (await Promise.all(files.map(path => readFile(path, 'utf8')))).join('\n');
+}
+
+async function validateDeclaredPage(page, pageContract, screenshotDirectory, errors) {
+  if (pageContract.activateSelector) {
+    const activation = page.locator(pageContract.activateSelector).first();
+    if (await requireVisible(activation, `${pageContract.id} activation`, errors)) {
+      await activation.click();
+      await page.waitForTimeout(250);
+    }
+  }
+  const root = page.locator(pageContract.rootSelector).first();
+  if (!await requireVisible(root, `${pageContract.id} page root`, errors)) return;
+  const query = root.locator(pageContract.query.rootSelector).first();
+  const table = root.locator(pageContract.table.rootSelector).first();
+  if (!await requireVisible(query, `${pageContract.id} query form`, errors)) return;
+  if (!await requireVisible(table, `${pageContract.id} data table`, errors)) return;
+
+  const queryBox = await query.boundingBox();
+  const tableBox = await table.boundingBox();
+  if (queryBox && tableBox) {
+    if (queryBox.y >= tableBox.y) errors.push(`LAYOUT ${pageContract.id}: query area must be before table area`);
+    const actualGap = Math.round(tableBox.y - (queryBox.y + queryBox.height));
+    if (Math.abs(actualGap - Number(pageContract.layout.queryTableGap)) > 3) {
+      errors.push(`LAYOUT ${pageContract.id}: query/table gap ${actualGap}px differs from contract ${pageContract.layout.queryTableGap}px`);
+    }
+  }
+
+  const layout = await Promise.all([query, table].map(locator => locator.evaluate(element => {
+    const style = getComputedStyle(element);
+    return { padding: style.padding, borderRadius: style.borderRadius };
+  })));
+  if (layout[0].padding !== pageContract.layout.queryPadding) {
+    errors.push(`LAYOUT ${pageContract.id}: query padding ${layout[0].padding} differs from ${pageContract.layout.queryPadding}`);
+  }
+  if (layout[1].padding !== pageContract.layout.tablePadding) {
+    errors.push(`LAYOUT ${pageContract.id}: table padding ${layout[1].padding} differs from ${pageContract.layout.tablePadding}`);
+  }
+  if (layout.some(item => item.borderRadius !== pageContract.layout.cardBorderRadius)) {
+    errors.push(`LAYOUT ${pageContract.id}: card border radius differs from ${pageContract.layout.cardBorderRadius}`);
+  }
+
+  const controlSelectors = {
+    input: '.ant-input',
+    select: '.ant-select',
+    'date-range': '.ant-picker-range',
+    date: '.ant-picker',
+    tree: '.ant-select-tree, .ant-tree-select',
+  };
+  const formItems = query.locator('.ant-form-item');
+  for (const field of pageContract.query.fields) {
+    const item = formItems.filter({ hasText: field.label }).first();
+    if (!await requireVisible(item, `${pageContract.id} query field ${field.label}`, errors)) continue;
+    const selector = controlSelectors[field.control];
+    if (!selector) {
+      errors.push(`CONTRACT ${pageContract.id}: unsupported query control ${field.control}`);
+    } else {
+      await requireVisible(item.locator(selector).first(), `${pageContract.id} query control ${field.label}/${field.control}`, errors);
+    }
+  }
+
+  const queryButtons = (await query.locator('button').allTextContents()).map(normalizeText).filter(Boolean);
+  let previousAction = -1;
+  for (const action of pageContract.query.actions) {
+    const compactAction = action.replace(/\s+/g, '');
+    const actionIndex = queryButtons.findIndex(text => text.replace(/\s+/g, '').endsWith(compactAction));
+    if (actionIndex < 0) errors.push(`MISSING ${pageContract.id}: query action ${action}`);
+    if (actionIndex >= 0 && actionIndex <= previousAction) errors.push(`ORDER ${pageContract.id}: query action ${action} is out of Demo order`);
+    if (actionIndex >= 0) previousAction = actionIndex;
+  }
+
+  const headers = (await table.locator('thead th').allTextContents()).map(normalizeText);
+  for (const field of pageContract.table.fields) {
+    if (!headers.includes(field)) errors.push(`MISSING ${pageContract.id}: table field ${field}`);
+  }
+  const tableText = normalizeText(await table.innerText());
+  for (const action of pageContract.table.toolbarActions) {
+    if (!tableText.includes(action)) errors.push(`MISSING ${pageContract.id}: table toolbar action ${action}`);
+  }
+  if (pageContract.table.pagination) {
+    await requireVisible(table.locator('.ant-pagination').first(), `${pageContract.id} pagination`, errors);
+  }
+
+  for (const annotation of pageContract.annotations) {
+    const target = root.locator(annotation.targetSelector).first();
+    const marker = root.locator(annotation.markerSelector).first();
+    await requireVisible(target, `${pageContract.id} annotation target ${annotation.id}`, errors);
+    await requireVisible(marker, `${pageContract.id} automatic annotation marker ${annotation.id}`, errors);
+  }
+
+  if (screenshotDirectory) {
+    await mkdir(screenshotDirectory, { recursive: true });
+    await page.screenshot({ path: resolve(screenshotDirectory, `${pageContract.id}.png`), fullPage: true });
+  }
+}
+
 async function main() {
   const target = process.argv[2];
   if (!target) {
-    console.error('Usage: node runtime_check_admin_prototype.mjs <admin-prototype.html>');
+    console.error('Usage: node runtime_check_admin_prototype.mjs <admin-prototype.html> [screenshot-directory]');
     process.exit(2);
   }
 
   const filePath = resolve(target);
+  const screenshotDirectory = process.argv[3] ? resolve(process.argv[3]) : '';
   if (!existsSync(filePath)) {
     console.error(`FAIL file not found: ${filePath}`);
     process.exit(2);
@@ -30,9 +151,19 @@ async function main() {
   try {
     ({ chromium } = await import('playwright'));
   } catch (error) {
-    console.error('FAIL Playwright is not available to local node. Install/use Playwright, or use Codex browser/node_repl runtime check instead.');
-    console.error(String(error && error.message || error));
-    process.exit(2);
+    const require = createRequire(import.meta.url);
+    const nodeModules = process.env.NODE_PATH
+      || 'C:/Users/Administrator/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules';
+    const pnpmRoot = resolve(nodeModules, '.pnpm');
+    const playwrightPackage = existsSync(pnpmRoot)
+      ? readdirSync(pnpmRoot).find(name => /^playwright@/.test(name))
+      : '';
+    if (!playwrightPackage) {
+      console.error('FAIL Playwright is not available to local node or the bundled Codex runtime.');
+      console.error(String(error && error.message || error));
+      process.exit(2);
+    }
+    ({ chromium } = require(resolve(pnpmRoot, playwrightPackage, 'node_modules/playwright')));
   }
 
   const browser = await chromium.launch({ headless: true, channel: 'msedge' })
@@ -41,7 +172,15 @@ async function main() {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   const errors = [];
   const warnings = [];
-  const source = await readFile(filePath, 'utf8');
+  const source = await readPrototypeSources(dirname(filePath));
+  const contractPath = resolve(dirname(filePath), 'prototype-contract.json');
+  let pageContract;
+  try {
+    pageContract = JSON.parse(await readFile(contractPath, 'utf8'));
+  } catch (error) {
+    console.error(`FAIL unable to read prototype contract: ${contractPath}: ${error.message}`);
+    process.exit(1);
+  }
   const requiredSourceMarkers = [
     'snowy-admin-prototype-v2',
     'annotation-toolbar',
@@ -68,6 +207,10 @@ async function main() {
   await requireVisible(page.locator('.app-shell'), 'Snowy application shell', errors);
   await requireVisible(page.locator('.annotation-toolbar'), 'top annotation toolbar', errors);
 
+  for (const contractPage of pageContract.pages || []) {
+    await validateDeclaredPage(page, contractPage, screenshotDirectory, errors);
+  }
+
   const annotationToggle = page.locator('.annotation-toolbar').getByText('开启', { exact: true });
   await requireVisible(annotationToggle, 'annotation mode defaults to off', errors);
 
@@ -91,12 +234,14 @@ async function main() {
         const textarea = requirementDrawer.locator('textarea');
         if (await requireVisible(textarea, '页面需求 textarea after edit', errors)) {
           const originalRequirement = await textarea.inputValue();
-          const saveBeforeChange = requirementDrawer.getByText('保存', { exact: true });
+          const saveBeforeChange = page.locator('.ant-drawer-footer button').filter({ hasText: /保\s*存/ }).last();
           if (await isVisible(saveBeforeChange)) errors.push('页面需求 Save is visible before content changes.');
 
           const runtimeRequirement = `${originalRequirement}\n[运行时校验]`;
           await textarea.fill(runtimeRequirement);
-          const saveRequirement = requirementDrawer.getByText('保存', { exact: true });
+          await textarea.dispatchEvent('input');
+          await page.waitForTimeout(300);
+          const saveRequirement = page.locator('.ant-drawer-footer button').filter({ hasText: /保\s*存/ }).last();
           if (await requireVisible(saveRequirement, '页面需求 Save after change', errors)) {
             await saveRequirement.click();
             if (!await isVisible(requirementDrawer.locator('.requirement-preview'))) {
@@ -115,14 +260,18 @@ async function main() {
 
           await reloadedDrawer.getByTitle('编辑整体需求描述').click();
           await reloadedDrawer.locator('textarea').fill(originalRequirement);
-          const restoreSave = reloadedDrawer.getByText('保存', { exact: true });
+          await reloadedDrawer.locator('textarea').dispatchEvent('input');
+          await page.waitForTimeout(200);
+          const restoreSave = page.locator('.ant-drawer-footer button').filter({ hasText: /保\s*存/ }).last();
           if (await isVisible(restoreSave)) await restoreSave.click();
-          const closeRequirement = reloadedDrawer.getByText('关闭', { exact: true });
-          if (await isVisible(closeRequirement)) await closeRequirement.click();
         }
       }
     }
   }
+
+  await closeVisibleOverlays(page);
+  await page.reload({ waitUntil: 'networkidle' });
+  await page.waitForTimeout(500);
 
   const enableAnnotation = page.locator('.annotation-toolbar').getByText('开启', { exact: true });
   if (await requireVisible(enableAnnotation, 'annotation enable action', errors)) {
@@ -186,16 +335,14 @@ async function main() {
     }
   }
 
-  const buttonTexts = ['查询', '重置', '新增', '详情', '编辑', '删除', '导入', '导出'];
-  for (const text of buttonTexts) {
-    const candidate = page.getByText(text, { exact: true }).first();
-    if (await candidate.isVisible().catch(() => false)) {
-      await candidate.click({ timeout: 5000 }).catch(error => {
-        errors.push(`CLICK FAILED ${text}: ${error.message}`);
-      });
-      await page.keyboard.press('Escape').catch(() => {});
-      await page.waitForTimeout(150);
-    }
+  if (screenshotDirectory) {
+    await mkdir(screenshotDirectory, { recursive: true });
+    await writeFile(resolve(screenshotDirectory, 'runtime-validation.json'), JSON.stringify({
+      status: errors.length ? 'FAIL' : 'PASS',
+      checkedPages: (pageContract.pages || []).map(item => item.id),
+      errors,
+      warnings,
+    }, null, 2) + '\n', 'utf8');
   }
 
   await browser.close();

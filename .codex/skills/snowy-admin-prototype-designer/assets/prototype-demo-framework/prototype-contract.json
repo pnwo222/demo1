@@ -1,0 +1,39 @@
+{
+  "version": "snowy-prototype-page-contract-v1",
+  "pages": [
+    {
+      "id": "banner",
+      "default": true,
+      "rootSelector": ".content",
+      "query": {
+        "rootSelector": ".query-card",
+        "fields": [
+          { "label": "标题", "control": "input" },
+          { "label": "栏目", "control": "select" },
+          { "label": "是否显示", "control": "select" },
+          { "label": "创建时间", "control": "date-range" }
+        ],
+        "actions": ["查询", "重置", "展开"]
+      },
+      "table": {
+        "rootSelector": ".table-card",
+        "fields": ["标题", "封面图", "栏目", "发布位置", "排序", "发布状态", "是否显示", "附件", "操作"],
+        "toolbarActions": ["新增内容", "批量删除", "导入", "导出"],
+        "pagination": true
+      },
+      "layout": {
+        "queryPadding": "16px 16px 12px",
+        "tablePadding": "16px",
+        "cardBorderRadius": "4px",
+        "queryTableGap": 14
+      },
+      "annotations": [
+        { "id": "banner-date-range", "targetSelector": "[data-annotation-id='banner-date-range']", "markerSelector": "[data-annotation-id='banner-date-range'] .annotation-pin" },
+        { "id": "banner-batch-delete", "targetSelector": "[data-annotation-id='banner-batch-delete']", "markerSelector": "[data-annotation-id='banner-batch-delete'] .annotation-pin" },
+        { "id": "banner-cover-image", "targetSelector": "[data-annotation-id='banner-cover-image']", "markerSelector": "[data-annotation-id='banner-cover-image'] .annotation-pin" },
+        { "id": "banner-publish-status", "targetSelector": "[data-annotation-id='banner-publish-status']", "markerSelector": "[data-annotation-id='banner-publish-status'] .annotation-pin" },
+        { "id": "banner-enable-status", "targetSelector": "[data-annotation-id='banner-enable-status']", "markerSelector": "[data-annotation-id='banner-enable-status'] .annotation-pin" }
+      ]
+    }
+  ]
+}

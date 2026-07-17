@@ -38,12 +38,12 @@
     {
       "name": "SnowyBannerQueryForm",
       "file": "banner-query-form.js",
-      "sha256": "03aea25456c0adb2492bfbe57841049b883fe74eb69ff38276a177ef33a6aab6"
+      "sha256": "7c32b0a7e2aeb17895f540a2722af4a29ba0adf775a32ea52b2a50d06f3f0887"
     },
     {
       "name": "SnowyBannerDataTable",
       "file": "banner-data-table.js",
-      "sha256": "928b37acf7a3a23b8753466e0fc22955eeef93c71fc222d541dc57a6f4427575"
+      "sha256": "554391d6287baac80c08d4301ad78ccafc487d14f6abfde572a0cd4cfe180d46"
     },
     {
       "name": "SnowyBannerPage",
@@ -105,5 +105,7 @@
       "file": "registry.js",
       "sha256": "6474beef03943e830e7362fc61160ba5706ebada10b3f697cf4f0c7851b73ac1"
     }
-  ]
+  ],
+  "contract": "prototype-contract.json",
+  "contractSha256": "528ecae9282c9317502563c80e8b7093851e31e8cec140d9b88e4c001e79feaf"
 }

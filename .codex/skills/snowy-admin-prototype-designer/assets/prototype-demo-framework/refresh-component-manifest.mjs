@@ -34,6 +34,8 @@ export async function refreshComponentManifest(targetRoot = defaultRoot) {
   manifest.version = 'snowy-runtime-components-v1';
   manifest.entry = entryFile;
   manifest.entrySha256 = sha256(Buffer.from(entry, 'utf8'));
+  if (!manifest.contract) manifest.contract = 'prototype-contract.json';
+  manifest.contractSha256 = sha256(await readFile(resolve(root, manifest.contract)));
   manifest.styles = await Promise.all((manifest.styles || []).map(item => hashFile(root, item.file)));
   manifest.app = await Promise.all((manifest.app || []).map(item => hashFile(root, item.file)));
   manifest.components = components;

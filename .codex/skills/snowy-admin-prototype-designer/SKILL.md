@@ -29,27 +29,30 @@ Generate Snowy-style admin low-fidelity HTML prototypes from requirements. The s
    Use `references/page-blueprint-template.md`. Every independent page must have its own source requirement excerpt, atomic requirement list, query fields, table fields, detail fields, create fields, edit fields, actions, states, permissions, display semantics, click behavior, and field source notes. Do not compress original requirements into vague phrases.
 
 4. Generate a multi-file prototype directory from the runtime component set.
-   Run `node assets/prototype-demo-framework/build-prototype.mjs <output-directory>` and modify the copied data and page components. `index.html` remains a lightweight entry that imports CSS, state and Vue component scripts. Reuse matching files under `components/` for the Snowy shell, query form, table, upload, drawers, modals, component presets and annotation system.
+   Run `node assets/prototype-demo-framework/build-prototype.mjs <output-directory>` and modify the copied data and page components. `index.html` remains a lightweight entry that imports CSS, state and Vue component scripts. Reuse matching files under `components/` for the Snowy shell, query form, table, upload, drawers, modals, component presets and annotation system. Update the copied `prototype-contract.json` from the validated blueprint; every page contract declares its activation/root selectors, complete query fields and control types, table fields, toolbar actions, pagination, Demo layout metrics, and concrete automatic-annotation target/marker selectors.
 
 5. Generate or embed the coverage matrix.
    Use `references/prototype-acceptance-checklist.md`. A row marked `已覆盖` must map to the blueprint and to concrete HTML UI or behavior.
 
 6. Run validation.
-   First run `python scripts/validate_admin_blueprint.py <blueprint.md>`. Then run `python scripts/validate_admin_prototype.py <prototype-directory>/index.html`. The validator checks runtime component references, hashes, load order, original layout/annotation markers and required business fields. For the bundled Demo itself, add `--template`.
+   First run `python scripts/validate_admin_blueprint.py <blueprint.md>`. Then run `python scripts/validate_admin_prototype.py <prototype-directory>/index.html`. Finally run `node scripts/runtime_check_admin_prototype.mjs <prototype-directory>/index.html <screenshot-directory>`. Static validation compares protected files with the canonical Demo manifest, rejects dead imports, field slicing and universal page engines, and validates `prototype-contract.json`. Runtime validation checks every declared page's visible fields, semantic controls, toolbar, pagination, layout metrics and automatic annotation bindings, then writes per-page screenshots and `runtime-validation.json` for auditable visual review. For the bundled Demo itself, add `--template` to the static validator.
 
 ## Hard Rules
 
 - Do not generate admin prototypes from blank HTML, generic admin templates, or the previous simplified Schema renderer.
 - Preserve the original Demo's full content and capabilities: all menu levels, Banner CRUD, menu resources, component preset page, field display types, uploads, drawers, modals and complete annotation workflow.
 - Reuse the imported runtime components. Existing components must not be redrawn with different classes, spacing, controls, wording or reduced interactions.
+- Importing or registering a component is not reuse unless it is reachable from `app/main.js` and rendered by the page. Protected CSS and components must match the canonical Demo manifest, not a manifest regenerated inside the output directory. `refresh-component-manifest.mjs` may register extensions, but it cannot authorize changes to protected files.
 - If a required component does not exist, choose or compose from the matching Snowy framework page, the closest Demo component, or official Ant Design Vue components. Only create a standalone component when those sources cannot satisfy the requirement. Add new components to `components/registry.js`, load them from `index.html`, update `components/README.md`, run `refresh-component-manifest.mjs <prototype-directory>`, and add static/runtime checks.
 - The original Demo golden file is immutable. The runtime component directory must preserve the same capabilities and equivalent browser rendering while keeping `index.html` free of the full inline implementation.
 - Automatic annotations must bind to the concrete field, table column, button, status, drawer field, or other requirement node they explain. Never bind every automatic annotation on a page to one shared container such as `query-card` merely to make markers visible.
 - Components may be reused, but every business page must independently preserve all requirement fields and operations. Component reuse must not turn different pages into one shortened universal CRUD.
+- Never truncate blueprint fields with `slice`, maximum-column shortcuts, or viewport-driven omission. Use horizontal table scrolling, query expand/collapse and column settings while keeping the complete field contract.
 - Do not let different pages share the same `标题/名称、状态、排序、备注` form unless the requirement explicitly says those are the fields.
 - Do not replace explicit requirement fields with summary phrases such as `多条件筛选`, `等状态`, `相关字段`, `已列出`, `同新增`, or `与上一页一致`.
 - Do not add create, edit, delete, import, export, audit, or authorization operations only because Snowy supports them. Every operation must be marked as `需求明确`, `框架惯例`, or `待确认`; risky or data-changing operations need explicit requirement support or a `待确认` note.
 - Do not mark a requirement `已覆盖` unless the HTML contains the page, field, action, state, or interaction named by the blueprint.
+- Every generated page must have a `prototype-contract.json` entry. A field or annotation is not covered until the runtime validator finds its concrete visible control/header/marker on that page.
 - Do not use broad coverage rows such as `ADM-S-001~020` as proof of coverage. Each independent page needs its own coverage row.
 - Do not put developer-facing notes in visible business UI: no `mock`, `s-table`, `xn-*`, `hasPerm`, `toolConfig`, selector names, event names, or workflow explanations.
 - If H5/mobile is involved, output a separate H5 prototype file. This skill only governs the admin prototype.
@@ -63,7 +66,7 @@ Generate Snowy-style admin low-fidelity HTML prototypes from requirements. The s
 
 ## Large Scope Performance Rules
 
-- Product documents and prototypes are not code-development tasks. Do not invoke `subagent-driven-development`, create Product-stage worktrees, or run a separate review Agent after every intermediate file solely to generate PRD, blueprint, and prototype artifacts.
+- Product documents and prototypes are not code-development tasks. Generate or revise the blueprint and HTML prototype directly in the current Product run. Do not invoke `executing-plans` or `subagent-driven-development`, create Product-stage worktrees, split pages into Task 1/2/3 Owner execution, or run a separate review Agent after every intermediate file solely to generate PRD, blueprint, and prototype artifacts. Use `executing-plans` only when the developer explicitly requests execution of an existing plan or when the same task has entered approved business-code implementation; the existence of a plan file, many pages, or many prototype files is not sufficient.
 - Read and normalize the requirement set once per Product run. Reuse an already accepted requirement baseline, PRD, and blueprint when their source requirements have not changed; regenerate only changed pages and their coverage rows.
 - For more than 10 independent admin pages, batch page-blueprint/business-configuration work by module. Batches may run independently only when they write separate files or structured fragments. One owner must assemble the shared HTML template so parallel Agents never edit the same monolithic HTML.
 - Use one requirement/blueprint quality review before HTML generation and one final prototype review after static/runtime validation. Add another repair/review cycle only when a concrete `FAIL`, P0, or P1 finding exists; do not repeat full reviews after harmless warnings.

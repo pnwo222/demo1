@@ -31,6 +31,8 @@
 4. 三类来源仍无法满足时才新增组件；新组件沿用现有 Ant Design Vue 控件、CSS 变量、间距、状态和交互方式。
 5. 新组件必须独立存放、加入 `registry.js`、`index.html` 和 `component-manifest.json`，并补充测试与运行验证。
 6. 不得直接修改 `golden/original-demo.html`；它只用于内容和能力回归。
+7. `prototype-contract.json` 是逐页运行契约。业务原型必须从蓝图更新该文件，完整列出查询控件、表头、工具栏、分页、布局指标和自动标注节点；禁止通过 `slice` 截断字段。
+8. `refresh-component-manifest.mjs` 只登记业务扩展和当前文件哈希，不能授权修改受保护组件。最终校验会再次与 Skill 内 canonical Demo manifest 对比，并递归检查核心组件是否从 `app/main.js` 实际可达。
 
 ## 重新抽取
 
