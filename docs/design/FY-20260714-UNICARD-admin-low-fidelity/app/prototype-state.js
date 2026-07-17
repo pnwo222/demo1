@@ -5,10 +5,13 @@
   global.createSnowyPrototypeContext = function createSnowyPrototypeContext() {
         const collapsed = ref(false);
         const businessPages = Object.freeze([...global.UnicardSchoolPages, ...global.UnicardPlatformPages]);
-        const currentPage = ref('ADM-S-001');
-        const activeTab = ref('业务首页');
-        const selectedKeys = ref(['ADM-S-001']);
-        const openKeys = ref(['school-root']);
+        const pageStorageKey = 'snowy-admin-prototype:current-page:' + (window.location.pathname || document.title);
+        const initialPageId = businessPages.some(page => page.id === window.localStorage.getItem(pageStorageKey)) ? window.localStorage.getItem(pageStorageKey) : 'ADM-S-001';
+        const initialPage = businessPages.find(page => page.id === initialPageId) || businessPages[0];
+        const currentPage = ref(initialPage.id);
+        const activeTab = ref(initialPage.title);
+        const selectedKeys = ref([initialPage.id]);
+        const openKeys = ref(['school-root', 'school-people', 'school-content', 'school-query', 'platform-root', 'platform-org', 'platform-auth', 'platform-log']);
         const tableSize = ref('middle');
         const selectedRowKeys = ref([]);
         const rows = ref(seedRows.map(item => ({ ...item })));
@@ -166,7 +169,7 @@
         const menuItems = [
           { key: 'school-root', label: '学校端', children: [
             leaf('ADM-S-001'),
-            { key: 'school-people', label: '师生管理', children: ['ADM-S-002', 'ADM-S-003', 'ADM-S-004', 'ADM-S-005'].map(leaf) },
+            { key: 'school-people', label: '师生管理', children: ['ADM-S-003', 'ADM-S-004', 'ADM-S-005'].map(leaf) },
             { key: 'school-content', label: '内容管理', children: ['ADM-S-006', 'ADM-S-007', 'ADM-S-008', 'ADM-S-009', 'ADM-S-010', 'ADM-S-011'].map(leaf) },
             leaf('ADM-S-012'), leaf('ADM-S-013'),
             { key: 'school-query', label: '信息查询', children: ['ADM-S-014', 'ADM-S-015', 'ADM-S-016', 'ADM-S-017', 'ADM-S-018'].map(leaf) },
@@ -218,10 +221,6 @@
           if (!filters.length) return source;
           return source.filter(record => filters.every(([key, value]) => String(record[key] || '').includes(Array.isArray(value) ? '' : String(value))));
         });
-        const businessColumns = computed(() => [
-          ...activeBusinessPage.value.tableFields.slice(0, 8).map(field => ({ title: field.label, dataIndex: field.key, key: field.key, width: field.sensitive ? 170 : 150, ellipsis: true })),
-          { title: '操作', key: '__actions', fixed: 'right', width: 190 }
-        ]);
         const businessField = key => activeBusinessPage.value.tableFields.find(field => field.key === key) || { key, label: key, shape: '文本', sensitive: false };
         const businessImage = computed(() => demoImages[0]);
         const businessDrawerTitle = computed(() => businessDrawerMode.value === 'detail' ? `${activeBusinessPage.value.title.replace('管理', '')}详情` : `${businessDrawerMode.value === 'edit' ? '编辑' : '新增'}${activeBusinessPage.value.title.replace('管理', '')}`);
@@ -245,7 +244,7 @@
           ] }
         ];
         const roleGrantTreeData = menuItems.map(group => ({ key: `grant-${group.key}`, title: group.label, children: group.children.map(item => ({ key: item.key, title: item.label, children: item.children?.map(child => ({ key: child.key, title: child.label })) })) }));
-        const businessSelectOptions = field => activeBusinessPage.value.states.slice(0, 6).map(state => ({ label: state.name, value: state.name }));
+        const businessSelectOptions = field => activeBusinessPage.value.states.map(state => ({ label: state.name, value: state.name }));
         const businessMetricValue = index => [12860, 4382, 96, 17, 8, 3][index] || 0;
         const businessStatusColor = value => /失败|异常|离线|报警|驳回|停用/.test(String(value)) ? 'red' : /待|中/.test(String(value)) ? 'orange' : 'green';
 
@@ -335,9 +334,8 @@
           if (name === '新增') return openBusinessForm('add');
           if (name === '编辑' || name === '配置显示字段') return openBusinessForm('edit', record || businessRows.value[0]);
           if (/查看.*详情|查看详情|查看关联菜单与权限/.test(name)) return openBusinessDetail(record);
-          if (name === '菜单授权' || name === '数据授权' || name === '分配角色') return openRoleGrant(record);
           const action = activeBusinessPage.value.actions.find(item => item.name === name);
-          if (action?.kind === 'danger' || action?.kind === 'controlled' || /审核|发布|同步|导出|删除|调整/.test(name)) {
+          if (action?.kind === 'danger' || action?.kind === 'controlled' || /审核|发布|同步|导出|删除|调整|授权|分配/.test(name)) {
             antd.Modal.confirm({ title: '操作确认', content: `确定执行“${name}”吗？该操作将记录审计日志。`, okText: '确定', cancelText: '取消', onOk: () => showMessage('success', `${name}已完成`) });
             return;
           }
@@ -378,6 +376,7 @@
           selectedKeys.value = [key];
           activeTab.value = target.title;
           currentPage.value = key;
+          window.localStorage.setItem(pageStorageKey, key);
           currentRole.value = target.roles[0];
           const nextOpenKeys = [target.id.startsWith('ADM-S-') ? 'school-root' : 'platform-root'];
           if (/ADM-S-00[2-5]/.test(target.id)) nextOpenKeys.push('school-people');
@@ -386,9 +385,11 @@
           if (/ADM-P-00[23]/.test(target.id)) nextOpenKeys.push('platform-org');
           if (/ADM-P-00[4-6]/.test(target.id)) nextOpenKeys.push('platform-auth');
           if (/ADM-P-00[7-9]/.test(target.id)) nextOpenKeys.push('platform-log');
-          openKeys.value = nextOpenKeys;
+          openKeys.value = ['school-root', 'school-people', 'school-content', 'school-query', 'platform-root', 'platform-org', 'platform-auth', 'platform-log'];
           resetBusinessQuery();
-          nextTick(restoreNodeCommentPinsForCurrentPage);
+          nextTick(() => {
+            restoreNodeCommentPinsForCurrentPage();
+          });
           showMessage('success', '已切换到' + activeTab.value);
         };
         const onOpenChange = keys => openKeys.value = keys;
@@ -662,6 +663,21 @@
           if (!annotationEnabled.value) {
             clearHoverNode();
             clearNodeSelection();
+          } else {
+            nextTick(() => {
+              const target = document.querySelector('.explicit-business-page .ant-form-item-label');
+              if (!target) return;
+              selectedNodeEl = target;
+              positionCommentOutline(ensureCommentOutline(true), selectedNodeEl);
+              const rect = target.getBoundingClientRect();
+              nodeCommentAnchor.left = rect.right;
+              nodeCommentAnchor.top = rect.bottom;
+              positionNodeCommentPopover(nodeCommentAnchor);
+              nodeCommentTarget.value = getNodeTitle(selectedNodeEl);
+              nodeCommentEditingId.value = '';
+              nodeCommentText.value = '';
+              nodeCommentOpen.value = false;
+            });
           }
         };
         const handleAnnotationKeydown = event => {
@@ -1039,7 +1055,7 @@
           requirementDrawerOpen, requirementDraft, requirementDrawerTitle, requirementEditing, requirementDirty,
           nodeCommentOpen, nodeCommentText, nodeCommentTarget, nodeCommentEditingId, nodeCommentInputRef, nodeCommentStyle, nodeCommentMultiline,
           menuItems, columns, componentColumns, componentRows, filteredRows, pageTitle, rowSelection,
-          businessPages, activeBusinessPage, businessQuery, businessRows, businessColumns, businessPagination, businessImage,
+          businessPages, activeBusinessPage, businessQuery, businessRows, businessPagination, businessImage,
           allowedBusinessActions, primaryBusinessActions, rowBusinessActions, permissionGuideRows,
           currentRole, availableRoleOptions, businessDrawerOpen, businessDrawerMode, businessDrawerTitle, businessForm, businessDetailRecord,
           businessUploadFiles, businessPreviewOpen, businessPreviewImage, governanceTreeData, governanceTreeSelection,

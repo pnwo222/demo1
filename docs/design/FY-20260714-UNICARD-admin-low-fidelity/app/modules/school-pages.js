@@ -138,8 +138,9 @@
     }),
   ];
 
-  if (!Array.isArray(pages) || pages.length !== 20) {
-    throw new Error('school page contracts must contain 20 pages');
+  const independentPages = pages.filter(item => item.id !== 'ADM-S-002');
+  if (!Array.isArray(independentPages) || independentPages.length !== 19) {
+    throw new Error('school independent page contracts must contain 19 pages');
   }
-  global.UnicardSchoolPages = Object.freeze(pages.map(item => Object.freeze(item)));
+  global.UnicardSchoolPages = Object.freeze(independentPages.map(item => Object.freeze(item)));
 })(window);

@@ -1,18 +1,34 @@
-(function (global) {
-  'use strict';
-  global.SnowyPrototypeComponents = global.SnowyPrototypeComponents || {};
-  global.SnowyPrototypeComponents.SnowyUnicardPageOutlet = {
-    name: 'SnowyUnicardPageOutlet',
-    setup() { return Vue.inject('snowyPrototypeContext'); },
-    template: `
-      <snowy-unicard-dashboard-pages v-if="activeBusinessPage.componentKey==='dashboard'" />
-      <snowy-unicard-content-pages v-else-if="activeBusinessPage.componentKey==='content'" />
-      <snowy-unicard-readonly-pages v-else-if="activeBusinessPage.componentKey==='readonly'" />
-      <snowy-unicard-log-monitor-pages v-else-if="activeBusinessPage.componentKey==='logMonitor'" />
-      <snowy-unicard-permission-guide-pages v-else-if="activeBusinessPage.componentKey==='permissionGuide'" />
-      <snowy-unicard-governance-pages v-else-if="activeBusinessPage.componentKey==='governance'" />
-      <snowy-unicard-role-grant-page v-else-if="activeBusinessPage.componentKey==='roleGrant'" />
-      <snowy-unicard-audit-page v-else-if="activeBusinessPage.componentKey==='audit'" />
-      <a-result v-else class="unicard-empty-error" status="error" title="页面组件未登记" :sub-title="activeBusinessPage.id+' 未映射到明确业务组件'" />`
-  };
-})(window);
+(function(global){'use strict';global.SnowyPrototypeComponents=global.SnowyPrototypeComponents||{};global.SnowyPrototypeComponents.SnowyUnicardPageOutlet={name:'SnowyUnicardPageOutlet',setup(){return Vue.inject('snowyPrototypeContext')},template:`
+<snowy-adm-s-001-page v-if="currentPage==='ADM-S-001'"></snowy-adm-s-001-page>
+<snowy-adm-s-003-page v-else-if="currentPage==='ADM-S-003'"></snowy-adm-s-003-page>
+<snowy-adm-s-004-page v-else-if="currentPage==='ADM-S-004'"></snowy-adm-s-004-page>
+<snowy-adm-s-005-page v-else-if="currentPage==='ADM-S-005'"></snowy-adm-s-005-page>
+<snowy-adm-s-006-page v-else-if="currentPage==='ADM-S-006'"></snowy-adm-s-006-page>
+<snowy-adm-s-007-page v-else-if="currentPage==='ADM-S-007'"></snowy-adm-s-007-page>
+<snowy-adm-s-008-page v-else-if="currentPage==='ADM-S-008'"></snowy-adm-s-008-page>
+<snowy-adm-s-009-page v-else-if="currentPage==='ADM-S-009'"></snowy-adm-s-009-page>
+<snowy-adm-s-010-page v-else-if="currentPage==='ADM-S-010'"></snowy-adm-s-010-page>
+<snowy-adm-s-011-page v-else-if="currentPage==='ADM-S-011'"></snowy-adm-s-011-page>
+<snowy-adm-s-012-page v-else-if="currentPage==='ADM-S-012'"></snowy-adm-s-012-page>
+<snowy-adm-s-013-page v-else-if="currentPage==='ADM-S-013'"></snowy-adm-s-013-page>
+<snowy-adm-s-014-page v-else-if="currentPage==='ADM-S-014'"></snowy-adm-s-014-page>
+<snowy-adm-s-015-page v-else-if="currentPage==='ADM-S-015'"></snowy-adm-s-015-page>
+<snowy-adm-s-016-page v-else-if="currentPage==='ADM-S-016'"></snowy-adm-s-016-page>
+<snowy-adm-s-017-page v-else-if="currentPage==='ADM-S-017'"></snowy-adm-s-017-page>
+<snowy-adm-s-018-page v-else-if="currentPage==='ADM-S-018'"></snowy-adm-s-018-page>
+<snowy-adm-s-019-page v-else-if="currentPage==='ADM-S-019'"></snowy-adm-s-019-page>
+<snowy-adm-s-020-page v-else-if="currentPage==='ADM-S-020'"></snowy-adm-s-020-page>
+<snowy-adm-p-001-page v-else-if="currentPage==='ADM-P-001'"></snowy-adm-p-001-page>
+<snowy-adm-p-002-page v-else-if="currentPage==='ADM-P-002'"></snowy-adm-p-002-page>
+<snowy-adm-p-003-page v-else-if="currentPage==='ADM-P-003'"></snowy-adm-p-003-page>
+<snowy-adm-p-004-page v-else-if="currentPage==='ADM-P-004'"></snowy-adm-p-004-page>
+<snowy-adm-p-005-page v-else-if="currentPage==='ADM-P-005'"></snowy-adm-p-005-page>
+<snowy-adm-p-006-page v-else-if="currentPage==='ADM-P-006'"></snowy-adm-p-006-page>
+<snowy-adm-p-007-page v-else-if="currentPage==='ADM-P-007'"></snowy-adm-p-007-page>
+<snowy-adm-p-008-page v-else-if="currentPage==='ADM-P-008'"></snowy-adm-p-008-page>
+<snowy-adm-p-009-page v-else-if="currentPage==='ADM-P-009'"></snowy-adm-p-009-page>
+<snowy-adm-p-010-page v-else-if="currentPage==='ADM-P-010'"></snowy-adm-p-010-page>
+<snowy-adm-p-011-page v-else-if="currentPage==='ADM-P-011'"></snowy-adm-p-011-page>
+<snowy-adm-p-012-page v-else-if="currentPage==='ADM-P-012'"></snowy-adm-p-012-page>
+<snowy-adm-p-013-page v-else-if="currentPage==='ADM-P-013'"></snowy-adm-p-013-page>
+<a-result v-else status="error" title="页面未登记" />`}})(window);

@@ -3,7 +3,7 @@
   "goldenFile": "golden/original-demo.html",
   "goldenSha256": "8543e869e1deeb9a4aac98e007f0edaacb0666e6160ccb98bb62fcf5f6ba2fa7",
   "entry": "index.html",
-  "entrySha256": "36b82d122303081249f64b7142adec53fbd27beab7810347a1103d471045fce7",
+  "entrySha256": "8ee6833edbd98622a4002c786abae82876697550abf8c171cd1650a86bda9de1",
   "styles": [
     {
       "file": "styles/snowy-prototype.css",
@@ -11,7 +11,7 @@
     },
     {
       "file": "styles/unicard-business.css",
-      "sha256": "272e5a9e615c8de9779574ea1678824c6d5e846e1c530cb8c8a22ed841e0efef"
+      "sha256": "57e13edda459a6cf94b7fc9210c0b502f8e1d0c929798d9012587dc5a42bc892"
     }
   ],
   "app": [
@@ -21,7 +21,7 @@
     },
     {
       "file": "app/modules/school-pages.js",
-      "sha256": "3f9f5e267802545b56501f275e38893ac6dcab1f6764342d2f429148a3064ff9"
+      "sha256": "90bab692353d8d47d0e263e7a69ca36e1ca9485296ccfe1db4c723e1d495bc75"
     },
     {
       "file": "app/modules/platform-pages.js",
@@ -37,15 +37,15 @@
     },
     {
       "file": "app/modules/coverage-data.js",
-      "sha256": "9dd1e20f1c4a46686c4776f215a13bde08ec00071465fe83b888291c71e2e2ac"
+      "sha256": "e124ad359a1486e2f13254ea1068db81ccea1256f9b008e2a957dce4381b6b03"
     },
     {
       "file": "app/prototype-state.js",
-      "sha256": "b45043b3df8cf2b126cdd564c72d3551886928e410540fb9c654e1d6c034eeba"
+      "sha256": "a84bfa23ac2c929a808e2383c9f5caad44aebb0605367e3adf392ab30edeb151"
     },
     {
       "file": "app/main.js",
-      "sha256": "036199ce0091ebe05f9dba76728c6a84aecaa73b6b81b377634f4d0bb68ad3de"
+      "sha256": "3ab60f9b95f477a443185a6f26532bc707a390c514b9341516ab5cf461029802"
     }
   ],
   "components": [
@@ -62,12 +62,12 @@
     {
       "name": "SnowyBannerQueryForm",
       "file": "banner-query-form.js",
-      "sha256": "03aea25456c0adb2492bfbe57841049b883fe74eb69ff38276a177ef33a6aab6"
+      "sha256": "7c32b0a7e2aeb17895f540a2722af4a29ba0adf775a32ea52b2a50d06f3f0887"
     },
     {
       "name": "SnowyBannerDataTable",
       "file": "banner-data-table.js",
-      "sha256": "928b37acf7a3a23b8753466e0fc22955eeef93c71fc222d541dc57a6f4427575"
+      "sha256": "554391d6287baac80c08d4301ad78ccafc487d14f6abfde572a0cd4cfe180d46"
     },
     {
       "name": "SnowyBannerPage",
@@ -125,64 +125,191 @@
       "sha256": "6a4a4557ab5b30f2f2133a44633dbbcccb017ffd20efb3485ad4c81488c24541"
     },
     {
-      "name": "SnowyUnicardDashboardPages",
-      "file": "business/unicard-dashboard-pages.js",
-      "sha256": "44640935128751217a7f362eb4f16258eabcbb947811f86cbb36ad6f4f573362"
+      "name": "SnowyUnicardSchoolDashboardCharts",
+      "file": "business/unicard-school-dashboard-charts.js",
+      "sha256": "83233270de7faa0bb1f35321236bdd665ea70abe85d04a7d9c2ccc1b485fc57e"
     },
     {
-      "name": "SnowyUnicardContentPages",
-      "file": "business/unicard-content-pages.js",
-      "sha256": "cda91ab464bfea7dd647f9475b5b2fd46fd3f97938b37b2ae410293d2e5d8529"
+      "name": "SnowyAdmS001Page",
+      "file": "pages/adm-s-001.js",
+      "sha256": "304d5fdea8bc3ef09592af8b06d20bc2f1376d34314fea86470b8b8263d5d6dd"
     },
     {
-      "name": "SnowyUnicardReadonlyPages",
-      "file": "business/unicard-readonly-pages.js",
-      "sha256": "0b4b14a32c751996703948056515018dd9f77c812f5286668d7392377ab9a829"
+      "name": "SnowyAdmS003Page",
+      "file": "pages/adm-s-003.js",
+      "sha256": "b863fba1407d5e7639b52ce614f1bd4ba85236b2074a2b55c7b9cbb435532812"
     },
     {
-      "name": "SnowyUnicardLogMonitorPages",
-      "file": "business/unicard-log-monitor-pages.js",
-      "sha256": "ddd4df5976193843a36333588dee5d87475ac2179fbaafba59a7b3fc3222b7ed"
+      "name": "SnowyAdmS004Page",
+      "file": "pages/adm-s-004.js",
+      "sha256": "b07f4f8f4e195b0a5ad293585a1de2cac17d90cdc8b6d4b1927ec1a8428c6cbc"
     },
     {
-      "name": "SnowyUnicardPermissionGuidePages",
-      "file": "business/unicard-permission-guide-pages.js",
-      "sha256": "eb8087f0c599cf6acb9c17b7d6f5720e31975a4fbfda22547bf3f2d6c38a5d22"
+      "name": "SnowyAdmS005Page",
+      "file": "pages/adm-s-005.js",
+      "sha256": "1d527c6f9ca29ed6bf13c59540676b69f54134639bf9317ce5257228971657c6"
     },
     {
-      "name": "SnowyUnicardGovernancePages",
-      "file": "business/unicard-governance-pages.js",
-      "sha256": "d7fe9c4365b99c112981eb675629b6e99f02df35f0a13f4cf296066bc35ddb73"
+      "name": "SnowyAdmS006Page",
+      "file": "pages/adm-s-006.js",
+      "sha256": "95f84904bc58753d9818f44caad870e70821541b461814d15e5ef29c33d9e365"
     },
     {
-      "name": "SnowyUnicardRoleGrantPage",
-      "file": "business/unicard-role-grant-page.js",
-      "sha256": "0d6a8a706e963437b5ea40a190ff78b2994379afe65a3f5a829609d18728ae2d"
+      "name": "SnowyAdmS007Page",
+      "file": "pages/adm-s-007.js",
+      "sha256": "ecdd224ed4d5a4d5bf1f1fe1a2879502130acb7a44e27a9ed0e3b119e0c06e27"
     },
     {
-      "name": "SnowyUnicardAuditPage",
-      "file": "business/unicard-audit-page.js",
-      "sha256": "b84c8936e54ddb15ad14b643611f99452d54e1e0d45083a3ad08076320f9917b"
+      "name": "SnowyAdmS008Page",
+      "file": "pages/adm-s-008.js",
+      "sha256": "5d3381bc1c986aa5c3953ca7c8d9dc7e6b83821c3d6158cb52da34ed9b969dfb"
+    },
+    {
+      "name": "SnowyAdmS009Page",
+      "file": "pages/adm-s-009.js",
+      "sha256": "59fd963427bb7cff5f2f4fbd4343b4fe6cddc402abf17c4894279d17ccfb3afc"
+    },
+    {
+      "name": "SnowyAdmS010Page",
+      "file": "pages/adm-s-010.js",
+      "sha256": "0892da4c29774dee08722946ac2b06a46e0b21e7be9d7cbb1518c0b67a27c38d"
+    },
+    {
+      "name": "SnowyAdmS011Page",
+      "file": "pages/adm-s-011.js",
+      "sha256": "0a6c1ce71a86f581cdc402545a79ec061e2525b3e5b6cbd965b5ba59ac6cef2e"
+    },
+    {
+      "name": "SnowyAdmS012Page",
+      "file": "pages/adm-s-012.js",
+      "sha256": "a6147846345d704b0e9df27b8a28f3ac030450a59e7be9e3dc2190e023becd91"
+    },
+    {
+      "name": "SnowyAdmS013Page",
+      "file": "pages/adm-s-013.js",
+      "sha256": "aa4f30176bd54bde89cb19de3fb2b29c84891b48bef13016044cdc0de11950f5"
+    },
+    {
+      "name": "SnowyAdmS014Page",
+      "file": "pages/adm-s-014.js",
+      "sha256": "d631ed0b3ad7124ef883da59eabc7f5c3bc3e134f62511690366c56aa4a2ba0a"
+    },
+    {
+      "name": "SnowyAdmS015Page",
+      "file": "pages/adm-s-015.js",
+      "sha256": "9d1ddda272639114635732509a820914e9bd525178f3efd81634ed9a3b558505"
+    },
+    {
+      "name": "SnowyAdmS016Page",
+      "file": "pages/adm-s-016.js",
+      "sha256": "700a9c8a9e2986838438bb0f97c06a3770fbb2b4f20a8d91c058a3a4da7b9f50"
+    },
+    {
+      "name": "SnowyAdmS017Page",
+      "file": "pages/adm-s-017.js",
+      "sha256": "5d261e7c044f76de277dd71b363b2cb689f74fb9494254e67fd926afc76ef930"
+    },
+    {
+      "name": "SnowyAdmS018Page",
+      "file": "pages/adm-s-018.js",
+      "sha256": "56ddef813bee3ea34354a7031cc50d81b9cc25247139462be94a55083b5fd707"
+    },
+    {
+      "name": "SnowyAdmS019Page",
+      "file": "pages/adm-s-019.js",
+      "sha256": "818a1cc3c8718f5768d2299b5f3beb78ef81d6912ab9ad08329425bd32cab5d7"
+    },
+    {
+      "name": "SnowyAdmS020Page",
+      "file": "pages/adm-s-020.js",
+      "sha256": "e5c75a2bd0e098758d7750a459e94a165397e0fc05c7e3a43e576f99e2dd44e0"
+    },
+    {
+      "name": "SnowyAdmP001Page",
+      "file": "pages/adm-p-001.js",
+      "sha256": "b506b41da13be7a48af253d8c2926c9ce815af3b2a8ef8eda396da9feb43ec0f"
+    },
+    {
+      "name": "SnowyAdmP002Page",
+      "file": "pages/adm-p-002.js",
+      "sha256": "073085d4ad8b65ea1c0d640c5b1071a8153434e9f78bd1d9d7dd386951e1bd4c"
+    },
+    {
+      "name": "SnowyAdmP003Page",
+      "file": "pages/adm-p-003.js",
+      "sha256": "67f823025db0a7381a60f6272360e975ace7ba2cad6da98f8f596c8896671a6b"
+    },
+    {
+      "name": "SnowyAdmP004Page",
+      "file": "pages/adm-p-004.js",
+      "sha256": "f00369e4eb58407de0d2f914521e300c3092b00355a1c46d4f552a72539e13dd"
+    },
+    {
+      "name": "SnowyAdmP005Page",
+      "file": "pages/adm-p-005.js",
+      "sha256": "f824126b0f5bda4007f98cf1660322370950f433e74c737d92cf2038daed0cad"
+    },
+    {
+      "name": "SnowyAdmP006Page",
+      "file": "pages/adm-p-006.js",
+      "sha256": "0cb553bf141100cdb4231cb254fed9859278c36f9b2d5f6a1f646d9de446536f"
+    },
+    {
+      "name": "SnowyAdmP007Page",
+      "file": "pages/adm-p-007.js",
+      "sha256": "211decc5ecca3749d6b6a21fc2a066ab38b185b998f955370af894d7e10fa0d5"
+    },
+    {
+      "name": "SnowyAdmP008Page",
+      "file": "pages/adm-p-008.js",
+      "sha256": "5ff902b9ca5b019fa51731a0fdeb7348dfba4b22e57cfa3d1df8b401a8684203"
+    },
+    {
+      "name": "SnowyAdmP009Page",
+      "file": "pages/adm-p-009.js",
+      "sha256": "afc07a3e824819b0e8550ecbc33da3c30fb8501ef8f52b914a2accfa6dfaab5e"
+    },
+    {
+      "name": "SnowyAdmP010Page",
+      "file": "pages/adm-p-010.js",
+      "sha256": "bdff9bd0e5375b0d878169858de3e0731949478a6901c23225dda95d5d9baf31"
+    },
+    {
+      "name": "SnowyAdmP011Page",
+      "file": "pages/adm-p-011.js",
+      "sha256": "82234bdec817f11530f1252f212e9cd34cf77ec3652beee51b594e4737ecb2de"
+    },
+    {
+      "name": "SnowyAdmP012Page",
+      "file": "pages/adm-p-012.js",
+      "sha256": "9420b20c16c76e90b3649ec299e9eb594572607860dd3b14159b9fcfa0d3b0e3"
+    },
+    {
+      "name": "SnowyAdmP013Page",
+      "file": "pages/adm-p-013.js",
+      "sha256": "3db40ad95b900c238a98398290e197f18defa92f1ebbe9c96344e1052383011d"
     },
     {
       "name": "SnowyUnicardPageOutlet",
       "file": "business/unicard-page-outlet.js",
-      "sha256": "02b2b947e06d467a318ca6b3c4201bea7acc3f2d09577c9b4cb5eb967e19400f"
+      "sha256": "6110519befd6ed62218d19d70ffda3812c7748764c3814b15cef490fd4956c03"
     },
     {
       "name": "SnowyUnicardShell",
       "file": "business/unicard-shell.js",
-      "sha256": "b18137a667c3c9e0d8b9a6d9350dfcd025ee8c32e9ee1fb358028c0a7f323a96"
+      "sha256": "467ca4698e5c059d248108a0586d7960619cd74442cb0504f59d09561b44553a"
     },
     {
-      "name": "SnowyUnicardBusinessDrawers",
-      "file": "business/unicard-business-drawers.js",
-      "sha256": "d17a6b91e2a6e3ab51edaecf636e3e79922bdbca3446c21b5c3b212a8bf6e639"
+      "name": "SnowyUnicardNodeCommentComposer",
+      "file": "business/unicard-node-comment-composer.js",
+      "sha256": "5b34b3bea56cb77b98c883b9fa54add31a84d8bc7bb89e48f585ffc6c5e8e36b"
     },
     {
       "name": "registry",
       "file": "registry.js",
-      "sha256": "9cdcb12d85b5ca6f2f9c7e4c7bf03ff25785b70c412714d1cdbbd524f59a86e7"
+      "sha256": "b25712f9da8d7acd66a1117a63f07dcb42a0b9b7400551c42f7d320001969a03"
     }
-  ]
+  ],
+  "contract": "prototype-contract.json",
+  "contractSha256": "d631aeed0575d17fb04c975b08a15f0e5fc932a89a8c589c4d50eb7d4fb1f257"
 }

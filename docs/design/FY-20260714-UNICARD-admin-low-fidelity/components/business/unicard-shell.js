@@ -15,7 +15,8 @@
           <div class="header-right"><a href="coverage.html" target="_blank">覆盖矩阵</a><span class="icon-action" title="刷新" @click="refreshBusinessRows"><span class="mini-icon">↻</span></span><span class="icon-action" title="全屏" @click="topAction('全屏')"><span class="mini-icon">⛶</span></span><span class="icon-action" title="通知" @click="topAction('通知')"><span class="mini-icon">●</span></span><a-select v-model:value="currentRole" style="width:132px" :options="availableRoleOptions" /><a-avatar style="background:#1677ff">管</a-avatar></div>
         </header>
         <div class="tabs-row"><a-tag color="blue">高校一卡通</a-tag><a-tag color="processing">{{ activeTab }}</a-tag></div>
-        <a-layout-content class="content" @mousemove.capture="hoverNodeForComment" @mouseleave="clearHoverNode" @click.capture="selectNodeForComment"><snowy-unicard-page-outlet></snowy-unicard-page-outlet><snowy-node-comment-composer></snowy-node-comment-composer></a-layout-content>
+        <div class="unicard-page-nav" aria-label="页面快捷导航"><a-button v-for="page in businessPages" :key="page.id" size="small" :type="currentPage===page.id?'primary':'default'" :class="'prototype-menu-'+page.id" @click="setPage({key:page.id})">{{ page.title }}</a-button></div>
+        <main class="content" @mousemove.capture="hoverNodeForComment" @mouseleave="clearHoverNode" @click.capture="selectNodeForComment"><snowy-unicard-page-outlet></snowy-unicard-page-outlet><snowy-unicard-node-comment-composer></snowy-unicard-node-comment-composer></main>
       </a-layout>`
   };
 })(window);

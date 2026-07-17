@@ -9,7 +9,7 @@
                   <div class="toolbar">
                     <div class="toolbar-left">
                       <a-button type="primary" @click="openAdd"><span class="mini-icon">＋</span>新增内容</a-button>
-                      <span class="annotation-host">
+                      <span class="annotation-host" data-annotation-id="banner-batch-delete">
                         <button v-if="hasAnnotation('banner-batch-delete')" class="annotation-pin" type="button" @click.stop="showAnnotation('banner-batch-delete')">5</button>
                         <a-button danger @click="batchDelete"><span class="mini-icon">×</span>批量删除</a-button>
                       </span>
@@ -34,7 +34,7 @@
                   >
                     <template #bodyCell="{ column, record }">
                       <template v-if="column.key === 'cover'">
-                        <span class="annotation-host" style="display:inline-block">
+                        <span class="annotation-host" data-annotation-id="banner-cover-image" style="display:inline-block">
                           <button v-if="rows.length && record.id === rows[0].id && hasAnnotation('banner-cover-image')" class="annotation-pin" type="button" @click.stop="showAnnotation('banner-cover-image')">4</button>
                           <img v-if="record.cover" class="cover" :src="record.cover" alt="封面图" />
                           <div v-else class="cover-empty">无图</div>
@@ -44,13 +44,13 @@
                         <a-tag :color="record.position === '后台首页' ? 'green' : 'blue'">{{ record.position }}</a-tag>
                       </template>
                       <template v-else-if="column.key === 'audit'">
-                        <span class="annotation-host" style="display:inline-block">
+                        <span class="annotation-host" data-annotation-id="banner-publish-status" style="display:inline-block">
                           <button v-if="rows.length && record.id === rows[0].id && hasAnnotation('banner-publish-status')" class="annotation-pin" type="button" @click.stop="showAnnotation('banner-publish-status')">2</button>
                           <a-tag :color="record.audit === '待审核' ? 'orange' : record.audit === '已发布' ? 'success' : 'default'">{{ record.audit }}</a-tag>
                         </span>
                       </template>
                       <template v-else-if="column.key === 'status'">
-                        <span class="annotation-host" style="display:inline-block">
+                        <span class="annotation-host" data-annotation-id="banner-enable-status" style="display:inline-block">
                           <button v-if="rows.length && record.id === rows[0].id && hasAnnotation('banner-enable-status')" class="annotation-pin" type="button" @click.stop="showAnnotation('banner-enable-status')">3</button>
                           <a-switch :checked="record.status" @change="value => toggleStatus(record, value)" />
                         </span>

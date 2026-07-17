@@ -37,6 +37,7 @@
 | Product 原型重画规格 | 已完成 | `docs/superpowers/specs/2026-07-16-fyy-admin-prototype-redesign.md` | 用户选择 1，确认规格并进入实施计划 | 2026-07-16 |
 | Product 原型重画计划 | 已完成 | `docs/superpowers/plans/2026-07-16-fyy-admin-prototype-redesign.md` | 用户选择 1，当前会话内联执行 | 2026-07-16 |
 | Product 原型重画执行 | 已完成 | `docs/design/FY-20260714-UNICARD-admin-low-fidelity/index.html`、`coverage.html`、兼容跳转入口 | 用户要求不走 executing-plans、直接画；学校端 20 页、平台端 13 页均完成，接口中心与 PAM 仅跳过本次原型 | 2026-07-16 |
+| Product 后管原型逐页重设计 | 已完成 | 32 个独立页面组件、ADM-S-002 菜单分组、`prototype-contract.json`、逐页截图与 `runtime-validation.json` | 根据开发者新标注加入 ECharts、移除师生管理独立页并补 Banner 详情图片；继续排除接口中心、PAM、H5 | 2026-07-17 |
 | UI/Figma 决策 | 需确认 | - | 等待开发者选择生成 UI/Figma 或跳过 UI 并复用 Snowy 现有 UI | 2026-07-15 |
 | Design 产物 | 未开始 | - | - | - |
 | 技术设计 | 未开始 | - | - | - |
@@ -64,7 +65,7 @@
 ```text
 重画原因: 新原型规范要求基于完整原始 Demo 金标复用 components 预设组件，并以多文件目录交付
 交付策略: 新建 docs/design/FY-20260714-UNICARD-admin-low-fidelity/；旧 HTML 改为轻量跳转入口
-页面范围: 学校端 20 页、平台端 13 页，共 33 页
+页面范围: 学校端 19 个独立页面 + 1 个师生管理菜单分组，平台端 13 个独立页面，共 32 个逐页契约
 本次原型不适用: 接口中心 8 页、PAM 8 页；需求和 PRD 保留
 H5: 继续需求保留、设计延期
 标注迁移: 保留页面需求，自动标注按蓝图重建，不迁移旧手工评论
@@ -73,11 +74,15 @@ H5: 继续需求保留、设计延期
 交付入口: docs/design/FY-20260714-UNICARD-admin-low-fidelity/index.html
 覆盖矩阵: docs/design/FY-20260714-UNICARD-admin-low-fidelity/coverage.html
 兼容入口: docs/design/FY-20260714-UNICARD-admin-low-fidelity.html
-组件清单: snowy-runtime-components-v1，26 个运行时组件
-验证结果: 范围 33/16 PASS；蓝图 PASS；原始模板 PASS；目标原型 PASS；33 页模型与 49 行覆盖 PASS；浏览器交互 PASS；UTF-8 PASS；旧精简引擎禁用词为 0
+组件清单: snowy-runtime-components-v1，51 个运行时组件；其中 32 个需求编号对应独立页面组件，ADM-S-002 仅作为菜单分组
+逐页契约: docs/design/FY-20260714-UNICARD-admin-low-fidelity/prototype-contract.json
+逐页截图: docs/design/FY-20260714-UNICARD-admin-low-fidelity/runtime-screenshots/ADM-S-001.png 至 ADM-P-013.png
+运行报告: docs/design/FY-20260714-UNICARD-admin-low-fidelity/runtime-screenshots/runtime-validation.json
+标注落实: ADM-S-001 使用 ECharts 展示用户趋势与活跃/社保卡码应用量；ADM-S-002 删除独立页面；ADM-S-006 详情展示 Banner 图片并支持大图预览
+验证结果: 页面蓝图、静态组件契约、32 页运行时契约、32 张逐页截图及 3 条标注浏览器交互回归全部 PASS
 残余风险: 接口中心 8 页、PAM 8 页仅跳过本次原型；H5 13 项设计继续延期；正式接口契约、数据库和业务代码尚未进入技术设计与开发
 状态: 已完成
-记录时间: 2026-07-16
+记录时间: 2026-07-17
 ```
 
 ## 跳过记录

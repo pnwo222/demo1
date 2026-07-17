@@ -1,4 +1,15 @@
-.unicard-page { display: flex; flex-direction: column; gap: 16px; }
+.unicard-page { display: block; }
+.canonical-demo-reference { display: none; }
+.explicit-business-page > .query-card { margin-bottom: 14px; }
+.explicit-business-page .unicard-page-header { margin-bottom: 16px; }
+.unicard-field-rule { display: inline-flex; align-items: center; min-height: 32px; padding: 0 8px; border: 1px solid #e5e6eb; border-radius: 4px; }
+.unicard-page-nav { display: flex; gap: 6px; padding: 8px 16px; overflow-x: auto; border-bottom: 1px solid #e5e6eb; background: #fff; white-space: nowrap; }
+.explicit-business-page ~ .node-comment-mask { pointer-events: none; }
+.unicard-dashboard { margin-bottom: 18px; }
+.unicard-dashboard-metrics { display: grid; grid-template-columns: repeat(4, minmax(160px, 1fr)); gap: 14px; margin-bottom: 14px; }
+.unicard-dashboard-metrics .ant-card { background: #f7f9fc; }
+.unicard-dashboard-charts { display: grid; grid-template-columns: repeat(2, minmax(320px, 1fr)); gap: 14px; }
+.unicard-echart { width: 100%; height: 300px; }
 .unicard-page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
 .unicard-page-title { margin: 0; color: #1d2129; font-size: 20px; font-weight: 600; line-height: 30px; }
 .unicard-page-caption { margin-top: 4px; color: #86909c; font-size: 13px; }
@@ -22,6 +33,7 @@
 .unicard-status-item strong { display: block; margin-top: 8px; font-size: 22px; }
 .unicard-sensitive { color: #4e5969; font-family: ui-monospace,SFMono-Regular,Consolas,monospace; }
 .unicard-thumbnail { width: 72px; height: 42px; object-fit: cover; border-radius: 4px; cursor: pointer; }
+.unicard-detail-image { width: 240px; max-height: 150px; object-fit: cover; border-radius: 6px; cursor: pointer; }
 .unicard-group-grid { display: grid; grid-template-columns: repeat(3,minmax(220px,1fr)); gap: 16px; }
 .unicard-group-card { cursor: pointer; transition: border-color .2s, box-shadow .2s; }
 .unicard-group-card:hover { border-color: #1677ff; box-shadow: 0 4px 16px rgba(22,119,255,.12); }
@@ -29,4 +41,5 @@
 @media (max-width: 1100px) {
   .unicard-query-grid,.unicard-metric-grid { grid-template-columns: repeat(2,minmax(180px,1fr)); }
   .unicard-chart-grid { grid-template-columns: 1fr; }
+  .unicard-dashboard-metrics,.unicard-dashboard-charts { grid-template-columns: repeat(2,minmax(220px,1fr)); }
 }
