@@ -1,5 +1,5 @@
 (function (global) {
-  const { ref, reactive, computed, h, nextTick, onMounted, onBeforeUnmount } = Vue;
+  const { ref, reactive, computed, h, nextTick, watch, onMounted, onBeforeUnmount } = Vue;
   const { prototypeMeta, demoImages, seedRows, componentRows } = global.SnowyPrototypeData;
 
   global.createSnowyPrototypeContext = function createSnowyPrototypeContext() {
@@ -59,6 +59,7 @@
         const annotationEditingField = ref('');
         const annotationForm = reactive({ id: '', index: 1, title: '', summary: '', detail: '' });
         const annotationFormSnapshot = ref('');
+        const annotationFormScopeKey = ref('');
         const requirementDrawerOpen = ref(false);
         const requirementDraft = ref('');
         const requirementSnapshot = ref('');
@@ -98,12 +99,16 @@
           ]
         };
         const annotationGroups = reactive(JSON.parse(JSON.stringify(baseAnnotationGroups)));
+        if (!annotationGroups.global) annotationGroups.global = [];
         if (persistedAnnotationState.annotationGroups) {
           Object.entries(persistedAnnotationState.annotationGroups).forEach(([key, value]) => {
             if (Array.isArray(value)) annotationGroups[key] = value;
           });
         }
-        const savedNodeComments = reactive(Array.isArray(persistedAnnotationState.nodeComments) ? persistedAnnotationState.nodeComments : []);
+        const savedNodeComments = reactive((Array.isArray(persistedAnnotationState.nodeComments) ? persistedAnnotationState.nodeComments : []).map(item => ({
+          ...item,
+          scopeKey: item.scopeKey || (item.pageKey ? `page:${item.pageKey}` : 'global')
+        })));
         const basePageRequirements = {
           banner: '本页面用于管理首页 Banner 内容。支持按标题、栏目、发布状态、是否显示和创建时间筛选；列表展示封面图、栏目、发布位置、排序、发布状态、是否显示、附件和创建时间；支持新增、编辑、详情、审核、删除、批量删除、导入、导出、图片上传预览及附件管理。',
           menuResource: '本页面用于维护后管菜单资源。左侧展示业务菜单层级，右侧展示当前菜单的路由地址、权限名称、可见角色和操作范围；支持新增、编辑、角色授权、删除菜单，并对影响已有权限分配的操作进行确认。',
@@ -222,6 +227,9 @@
 
         const showMessage = (type, text) => antd.message[type](text);
         const setPage = ({ key }) => {
+          clearHoverNode();
+          clearNodeSelection();
+          clearNodeCommentPins();
           selectedKeys.value = [key];
           const names = {
             banner: '首页 Banner',
@@ -514,12 +522,28 @@
           }
         };
         const handleAnnotationKeydown = event => {
-          if (event.key === 'Escape' && nodeCommentOpen.value) clearNodeSelection();
+          if (event.key !== 'Escape' || !annotationEnabled.value) return;
+          annotationEnabled.value = false;
+          clearHoverNode();
+          clearNodeSelection();
+        };
+        const annotationSystemSelector = '.annotation-toolbar,.annotation-pin,.node-comment-pin,.node-comment-popover,.node-comment-outline,.node-comment-mask';
+        const isAnnotationSystemTarget = target => {
+          if (!target || !target.closest) return false;
+          if (target.closest(annotationSystemSelector)) return true;
+          const modal = target.closest('.ant-modal-wrap');
+          return Boolean(modal && modal.querySelector('.annotation-modal-footer'));
+        };
+        const blockBusinessInteractionInAnnotationMode = event => {
+          if (!annotationEnabled.value || isAnnotationSystemTarget(event.target)) return;
+          event.preventDefault();
+          event.stopPropagation();
         };
         const findCommentableNode = event => {
-          const ignore = event.target.closest('.annotation-pin,.node-comment-pin,.node-comment-popover,.ant-modal,.ant-message,.ant-dropdown,.ant-picker-dropdown');
-          if (ignore) return null;
-          return event.target.closest('label,.ant-form-item-label,.ant-input,.ant-select-selector,.ant-picker,th,td,button,a,.ant-tag,.ant-switch,.cover,.file-thumb,.resource-node,h1,.page-title') || event.target;
+          const target = event.target && event.target.nodeType === Node.ELEMENT_NODE ? event.target : event.target && event.target.parentElement;
+          if (!target || target === document.documentElement) return null;
+          if (isAnnotationSystemTarget(target)) return null;
+          return target;
         };
         const getNodeTitle = node => {
           const raw = (node.innerText || node.getAttribute('placeholder') || node.getAttribute('title') || node.getAttribute('aria-label') || node.tagName || '').trim();
@@ -534,12 +558,30 @@
           return null;
         };
         const cssEscape = value => (window.CSS && CSS.escape ? CSS.escape(value) : String(value).replace(/["\\#.:,[\]>+~*]/g, '\\$&'));
+        const getNodeScopeKey = node => {
+          if (node && node.closest('[data-annotation-scope="global"]')) return 'global';
+          return `page:${currentAnnotationKey.value}`;
+        };
         const getNodeSelector = node => {
           if (!node || !node.isConnected) return '';
+          const stableNode = node.closest('[data-annotation-key]');
+          if (stableNode === node) {
+            return `[data-annotation-key="${cssEscape(stableNode.getAttribute('data-annotation-key'))}"]`;
+          }
           const parts = [];
           let current = node;
           while (current && current.nodeType === 1 && current.id !== 'app') {
             let selector = current.tagName.toLowerCase();
+            if (current.hasAttribute('data-annotation-key')) {
+              selector = `[data-annotation-key="${cssEscape(current.getAttribute('data-annotation-key'))}"]`;
+              parts.unshift(selector);
+              break;
+            }
+            if (current.hasAttribute('data-page-id')) {
+              selector = `[data-page-id="${cssEscape(current.getAttribute('data-page-id'))}"]`;
+              parts.unshift(selector);
+              break;
+            }
             if (current.id) {
               selector += '#' + cssEscape(current.id);
               parts.unshift(selector);
@@ -557,8 +599,9 @@
         };
         const restoreNodeCommentPinsForCurrentPage = () => {
           clearNodeCommentPins();
+          const activeScopes = new Set(['global', `page:${currentAnnotationKey.value}`]);
           savedNodeComments
-            .filter(item => item.pageKey === currentAnnotationKey.value)
+            .filter(item => activeScopes.has(item.scopeKey || (item.pageKey ? `page:${item.pageKey}` : 'global')))
             .forEach(item => {
               const target = document.querySelector(item.selector);
               const note = findNodeCommentNote(item.noteId);
@@ -705,8 +748,9 @@
             showMessage('success', '注释已更新');
             return;
           }
-          const key = currentAnnotationKey.value;
-          const group = annotationGroups[key] || annotationGroups.banner;
+          const scopeKey = getNodeScopeKey(selectedNodeEl);
+          const key = scopeKey === 'global' ? 'global' : currentAnnotationKey.value;
+          const group = annotationGroups[key] || (annotationGroups[key] = []);
           const maxIndex = group.reduce((max, item) => Math.max(max, Number(item.index) || 0), 0);
           const noteId = key + '-node-comment-' + Date.now();
           const nextIndex = maxIndex + 1;
@@ -726,8 +770,8 @@
           if (targetEl) targetEl.__commentNoteId = noteId;
           const selector = getNodeSelector(targetEl);
           if (selector) {
-            const existing = savedNodeComments.find(item => item.selector === selector && item.pageKey === key);
-            const payload = { noteId, pageKey: key, selector, targetTitle: nodeCommentTarget.value };
+            const existing = savedNodeComments.find(item => item.selector === selector && item.scopeKey === scopeKey);
+            const payload = { noteId, pageKey: key, scopeKey, selector, targetTitle: nodeCommentTarget.value };
             if (existing) Object.assign(existing, payload);
             else savedNodeComments.push(payload);
           }
@@ -741,6 +785,7 @@
           const maxIndex = currentAnnotations.value.reduce((max, item) => Math.max(max, Number(item.index) || 0), 0);
           Object.assign(annotationForm, { id: '', index: maxIndex + 1, title: '', summary: '', detail: '' });
           annotationFormSnapshot.value = snapshotAnnotationForm();
+          annotationFormScopeKey.value = currentAnnotationKey.value;
           annotationEditorMode.value = 'add';
           annotationEditingField.value = '';
           annotationEditorOpen.value = true;
@@ -754,6 +799,7 @@
             detail: note.detail
           });
           annotationFormSnapshot.value = snapshotAnnotationForm();
+          annotationFormScopeKey.value = Object.keys(annotationGroups).find(key => annotationGroups[key].some(item => item.id === note.id)) || currentAnnotationKey.value;
           annotationEditorMode.value = 'edit';
           annotationEditingField.value = '';
           annotationEditorOpen.value = true;
@@ -767,7 +813,7 @@
             showMessage('warning', '请输入标注摘要');
             return;
           }
-          const key = currentAnnotationKey.value;
+          const key = annotationFormScopeKey.value || currentAnnotationKey.value;
           const group = annotationGroups[key] || annotationGroups.banner;
           const payload = {
             id: annotationForm.id || key + '-custom-' + Date.now(),
@@ -801,7 +847,7 @@
           });
         };
         const deleteAnnotation = () => {
-          const key = currentAnnotationKey.value;
+          const key = annotationFormScopeKey.value || currentAnnotationKey.value;
           const group = annotationGroups[key] || annotationGroups.banner;
           const targetIndex = group.findIndex(item => item.id === annotationForm.id);
           if (targetIndex < 0) return;
@@ -840,7 +886,7 @@
             cancelText: '取消',
             onOk: () => {
               const noteIds = savedNodeComments
-                .filter(item => item.pageKey === key)
+                .filter(item => (item.scopeKey || `page:${item.pageKey}`) === `page:${key}`)
                 .map(item => item.noteId);
               noteIds.forEach(removeNodeCommentState);
               annotationGroups[key] = JSON.parse(JSON.stringify(baseAnnotationGroups[key] || []));
@@ -852,7 +898,7 @@
           });
         };
         const showAnnotation = id => {
-          const note = currentAnnotations.value.find(item => item.id === id);
+          const note = findNodeCommentNote(id) || currentAnnotations.value.find(item => item.id === id);
           if (!note) return;
           openAnnotationEdit(note);
         };
@@ -866,12 +912,26 @@
           });
         };
         onMounted(() => {
+          ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'dblclick', 'contextmenu'].forEach(type => {
+            document.addEventListener(type, blockBusinessInteractionInAnnotationMode, true);
+          });
+          document.addEventListener('mousemove', hoverNodeForComment, true);
+          document.addEventListener('click', selectNodeForComment, true);
           window.addEventListener('scroll', scheduleCommentOverlayUpdate, true);
           window.addEventListener('resize', scheduleCommentOverlayUpdate);
           window.addEventListener('keydown', handleAnnotationKeydown);
           nextTick(restoreNodeCommentPinsForCurrentPage);
         });
+        watch([annotationEnabled, nodeCommentOpen], ([enabled, commentOpen]) => {
+          document.body.classList.toggle('annotation-cursor-mode', enabled && !commentOpen);
+        }, { immediate: true });
         onBeforeUnmount(() => {
+          document.body.classList.remove('annotation-cursor-mode');
+          ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'dblclick', 'contextmenu'].forEach(type => {
+            document.removeEventListener(type, blockBusinessInteractionInAnnotationMode, true);
+          });
+          document.removeEventListener('mousemove', hoverNodeForComment, true);
+          document.removeEventListener('click', selectNodeForComment, true);
           window.removeEventListener('scroll', scheduleCommentOverlayUpdate, true);
           window.removeEventListener('resize', scheduleCommentOverlayUpdate);
           window.removeEventListener('keydown', handleAnnotationKeydown);

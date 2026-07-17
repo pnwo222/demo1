@@ -5,7 +5,7 @@
     setup() {
       return Vue.inject('snowyPrototypeContext');
     },
-    template: `              <section v-else-if="currentPage === 'menuResource'" class="tree-layout">
+    template: `              <section v-if="currentPage === 'menuResource'" class="tree-layout">
                 <div class="tree-card annotation-host">
                   <button v-if="hasAnnotation('menu-tree')" class="annotation-pin" type="button" @click.stop="showAnnotation('menu-tree')">1</button>
                   <a-space style="margin-bottom:12px">

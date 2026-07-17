@@ -5,8 +5,8 @@
     setup() {
       return Vue.inject('snowyPrototypeContext');
     },
-    template: `          <a-layout-sider class="snowy-sider" :width="232" :collapsed="collapsed" collapsible :trigger="null">
-            <div class="brand">
+    template: `          <a-layout-sider class="snowy-sider" data-annotation-scope="global" data-annotation-key="global-sidebar" :width="232" :collapsed="collapsed" collapsible :trigger="null">
+            <div class="brand" data-annotation-key="global-brand">
               <div class="brand-mark">
                 <img v-if="prototypeMeta.logoImage" :src="prototypeMeta.logoImage" alt="Logo" style="width:100%;height:100%;object-fit:cover;border-radius:8px" />
                 <span v-else>{{ prototypeMeta.logoText }}</span>
@@ -14,6 +14,7 @@
               <span v-show="!collapsed">{{ prototypeMeta.systemName }}</span>
             </div>
             <a-menu
+              data-annotation-key="global-menu"
               mode="inline"
               theme="dark"
               :items="menuItems"
@@ -23,8 +24,8 @@
               @openChange="onOpenChange"
             />
           </a-layout-sider>
-          <a-layout>
-            <header class="snowy-header">
+          <a-layout :style="{ marginLeft: collapsed ? '80px' : '232px', transition: 'margin-left .2s ease' }">
+            <header class="snowy-header" data-annotation-scope="global" data-annotation-key="global-header">
               <div class="header-left">
                 <span class="icon-action" title="折叠菜单" @click="collapsed = !collapsed">
                   <span class="mini-icon">{{ collapsed ? '☰' : '≡' }}</span>
@@ -43,11 +44,11 @@
                 <span>管理员</span>
               </div>
             </header>
-            <div class="tabs-row">
+            <div class="tabs-row" data-annotation-scope="global" data-annotation-key="global-tabs">
               <a-tag color="blue">首页</a-tag>
               <a-tag color="processing">{{ activeTab }}</a-tag>
             </div>
-            <a-layout-content class="content" @mousemove.capture="hoverNodeForComment" @mouseleave="clearHoverNode" @click.capture="selectNodeForComment">
+            <a-layout-content class="content" data-annotation-key="page-content">
               <snowy-banner-page v-if="currentPage === 'banner'"></snowy-banner-page>
               <snowy-menu-resource-page v-else-if="currentPage === 'menuResource'"></snowy-menu-resource-page>
               <snowy-component-preset-page v-else></snowy-component-preset-page>
