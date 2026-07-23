@@ -310,7 +310,7 @@ Recommended Markdown shape:
 - General business admin features usually start from `biz` or `dev` module patterns.
 - System user, role, menu, permissions, logs, and organization features usually reuse `sys` and `dev` capabilities.
 - Banner/轮播图-like needs should check `project/docs/patterns/feature-capability-map.md` first.
-- H5/mobile user-facing pages stay as requirements until the user provides an H5 framework.
+- H5/mobile user-facing pages map to `project/h5/` when that framework exists. Requirement decomposition must retain mobile routes, page types, fields, states, interactions, media and device capabilities so `.codex/skills/snowy-h5-app-designer` can generate the H5 blueprint and annotated prototype.
 
 ## Quality Gates
 

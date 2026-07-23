@@ -1,0 +1,12 @@
+{
+  "duoYuYan": "多言語demo、フレームワークのデフォルトでは多言語が設定されていません。必要に応じて、{'@'}/hooks/useVuei 18 n内のuseChangeLang()メソッドを導入するだけで言語切り替えが可能になります。入力は言語コード、たとえばzhです。言語切り替えリストデータは、useLangList()メソッドを用いて取得することができる。詳細は、このdemoコードを参照してください。",
+  "en": "英語",
+  "jp": "日本語",
+  "zh": "中国語の簡体字",
+  "NBn6x3ObMKlcBQxirVBrsIh": "勝手に文字を書いて、[i 18 n ally]で自動的に翻訳し、[lang]目下のjsonファイルに翻訳後の文字を加えることができます",
+  "NbkkJycJvFmn66Rbrv1ikJ": "現在のjsonを読み込むために言語を切り替えると、最初の画面の読み込み時間が短縮されます",
+  "napFxj6ZHyIvv4BxIoB51A": "多言語ts使用",
+  "n559HAtTrZ_3hyhYNw5N": "君は黄河の水が天に昇るのを見ない",
+  "kor": "韓国語",
+  "nDd6vt3tLv9XldrNeY451w": "自動翻訳は百度翻訳APIを使用する"
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>切片</title>
+    <g id="纺院" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="图书检索" transform="translate(-104.000000, -129.000000)">
+            <g id="1.基础/2.图标/小图标/20*搜索" transform="translate(104.000000, 129.000000)">
+                <rect id="矩形" x="0" y="0" width="16" height="16"></rect>
+                <rect id="矩形" stroke="currentColor" stroke-width="1.5" x="2.35" y="2.35" width="11.3" height="11.3" rx="5.65"></rect>
+                <line x1="14.4" y1="14.4" x2="12.4" y2="12.4" id="直线" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></line>
+            </g>
+        </g>
+    </g>
+</svg>

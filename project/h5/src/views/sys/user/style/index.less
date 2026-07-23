@@ -1,0 +1,83 @@
+.auth {
+  min-height: 100vh;
+  padding: 0 24px;
+  padding-top: 44px;
+
+  h1 {
+    text-align: center;
+    font-weight: 600;
+    font-size: 20px;
+    color: #333333;
+    line-height: 28px;
+  }
+
+  p {
+    font-weight: 400;
+    font-size: 14px;
+    color: #4A7C9D;
+    line-height: 20px;
+    text-align: center;
+    width: 168px;
+    margin: 0 auto;
+    margin-top: 16px;
+  }
+
+  .role-select {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .role {
+    width: 140px;
+    // background: #FFFFFF;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    position: relative;
+    padding-right: 43px;
+    box-sizing: border-box;
+
+    &.active {
+      .man {
+        border: 3px solid #2D65F0;
+      }
+    }
+
+    .man {
+      width: 140px;
+      height: 160px;
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all .1s;
+      img {
+        width: 100%;
+        display: block;
+      }
+    }
+
+    .text {
+      --at-apply: 'text-15 text-center z-10 w-100% absolute';
+      top: 15px;
+    }
+  }
+
+  .role-select {
+    margin-top: 59px;
+  }
+
+  .agreen {
+    font-weight: 400;
+    font-size: 12px;
+    color: #333333;
+    line-height: 18px;
+  }
+
+  .input {
+    width: 299px;
+    height: 48px;
+    background: #FFFFFF;
+    border-radius: 24px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+  }
+}

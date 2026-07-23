@@ -5,6 +5,7 @@
 - `project/README.md`
 - `project/pom.xml`
 - `project/snowy-admin-web/package.json`
+- `project/h5/package.json`
 - `project/snowy-web-app/pom.xml`
 - `docs/requirements/**`
 
@@ -17,6 +18,7 @@
 | 层 | 技术 |
 | --- | --- |
 | 前端 | Vue 3、Ant Design Vue 4、Vite、Pinia、Vue Router、Axios、Tailwind CSS |
+| H5 | Vue 3、Vite、TypeScript、Vant、Pinia、Vue Router、Axios、UnoCSS、Less |
 | 后端 | Java 17、Spring Boot 3、MyBatis-Plus、Sa-Token、Druid、MySQL、Redis |
 | 安全 | 国密相关能力、Sa-Token 权限、审计日志、敏感字段处理 |
 | 构建 | 前端 npm scripts，后端 Maven 多模块 |
@@ -26,6 +28,7 @@
 | 目录 | 类型 | 说明 |
 | --- | --- | --- |
 | `project/snowy-admin-web/` | 前端 | Vue 3 管理端，包含 `src/api`、`src/components`、`src/router`、`src/store`、`src/views` 等 |
+| `project/h5/` | H5 前端 | Vue 3 + Vant 移动端应用，当前以 `/demo` 作为组件和设计规范入口 |
 | `project/snowy-web-app/` | 后端启动模块 | Spring Boot 主应用、资源配置、初始化 SQL、运行入口 |
 | `project/snowy-common/` | 后端公共模块 | 公共实体、结果对象、异常、分页、工具类、拦截器等 |
 | `project/snowy-plugin/` | 后端插件实现 | `auth`、`biz`、`client`、`dev`、`gen`、`mobile`、`sys` 等插件实现 |
@@ -67,6 +70,8 @@
 - `locales/`：国际化配置。
 
 后台管理功能应优先按现有 `views`、`api`、`router` 和组件组织方式扩展。面向移动端或用户侧功能时，应先评估 Snowy 现有 `client`、`mobile` 插件和前端路由/布局能否承载；若需新增独立应用，必须先由 Architect Agent 说明与现有管理端、后端插件、认证和接口契约的边界。
+
+独立 H5 页面与 H5 原型优先基于 `project/h5/`。当前 H5 默认不装载历史业务路由和认证守卫，视觉、代码和组件参考见 `h5-framework-overview.md`、`h5-development-guidelines.md` 与 `project/h5/src/views/demo/`。
 
 ## 开发前必读
 

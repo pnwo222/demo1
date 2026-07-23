@@ -1,0 +1,12 @@
+{
+  "duoYuYan": "Multi language demo, the framework is not configured with multiple languages by default. If necessary, simply introduce the useChangeLang() method in {'@'}/books/useVuei18n to achieve language switching, with the input parameter being the language code, such as zh. The language switching list data can be obtained using the useLangList() method. Please refer to this demo code for details.",
+  "en": "English",
+  "jp": "Japanese",
+  "zh": "Simplified Chinese",
+  "NBn6x3ObMKlcBQxirVBrsIh": "Write any text that can be automatically translated through [i18n all] and add the translated text to the JSON file under [lang]",
+  "NbkkJycJvFmn66Rbrv1ikJ": "The current JSON will only be loaded when switching languages, reducing the first screen loading time",
+  "napFxj6ZHyIvv4BxIoB51A": "Multi language TS usage",
+  "n559HAtTrZ_3hyhYNw5N": "Don't you see the water of the Yellow River rising from the sky",
+  "kor": "Korean",
+  "nDd6vt3tLv9XldrNeY451w": "Automatic translation using Baidu Translation API"
+}

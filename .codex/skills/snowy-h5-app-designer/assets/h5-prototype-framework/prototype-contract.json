@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "viewport": [320, 375, 390, 414],
+  "pages": [
+    {
+      "id": "home",
+      "name": "首页",
+      "route": "/home",
+      "type": "portal",
+      "referenceFiles": [
+        "project/h5/src/views/index/index.vue",
+        "project/h5/src/views/index/modules"
+      ],
+      "rootSelector": "[data-page-id=\"home\"]",
+      "requiredKeys": ["home-hero", "home-service-grid", "home-notice", "home-news"],
+      "automaticAnnotationKeys": ["home-service-grid"]
+    },
+    {
+      "id": "records",
+      "name": "记录列表",
+      "route": "/records",
+      "type": "record-list",
+      "referenceFiles": [
+        "project/h5/src/views/xf/index.vue",
+        "project/h5/src/views/mj/index.vue"
+      ],
+      "rootSelector": "[data-page-id=\"records\"]",
+      "requiredKeys": ["record-summary", "record-filter", "record-list"],
+      "automaticAnnotationKeys": []
+    },
+    {
+      "id": "form",
+      "name": "业务表单",
+      "route": "/form",
+      "type": "grouped-form",
+      "referenceFiles": [
+        "project/h5/src/views/yy/form.vue",
+        "project/h5/src/views/mine/info.vue"
+      ],
+      "rootSelector": "[data-page-id=\"form\"]",
+      "requiredKeys": ["visit-form"],
+      "automaticAnnotationKeys": []
+    }
+  ]
+}
