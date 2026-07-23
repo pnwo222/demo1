@@ -1,7 +1,7 @@
 window.H5BooksPage = {
   name:'H5BooksPage', emits:['navigate'],
   template:`
-    <main class="h5-page">
+    <main class="h5-page" data-page-id="books">
       <van-nav-bar title="图书服务" left-arrow @click-left="$emit('navigate','home')" />
       <section class="book-hero" data-annotation-key="book-service-source">
         <h1>发现一本好书</h1>
@@ -18,7 +18,7 @@ window.H5BooksPage = {
 window.H5BookResultsPage = {
   name:'H5BookResultsPage', emits:['navigate'],
   template:`
-    <main class="h5-page">
+    <main class="h5-page" data-page-id="book-results">
       <van-nav-bar title="检索结果" left-arrow @click-left="$emit('navigate','books')" />
       <van-search v-model="keyword" show-action placeholder="书名 / 作者 / ISBN" @search="run"><template #action><button class="text-button" @click="run">搜索</button></template></van-search>
       <van-dropdown-menu><van-dropdown-item v-model="status" :options="statusOptions"/><van-dropdown-item v-model="sort" :options="sortOptions"/></van-dropdown-menu>
@@ -32,7 +32,7 @@ window.H5BookResultsPage = {
 window.H5BookDetailPage = {
   name:'H5BookDetailPage', emits:['navigate'],
   template:`
-    <main class="h5-page">
+    <main class="h5-page" data-page-id="book-detail">
       <van-nav-bar title="图书详情" left-arrow @click-left="$emit('navigate','book-results')" />
       <section class="book-detail-head"><img src="./images/book-cover.png"><div><h1>{{book.title}}</h1><p>{{book.author}}</p><van-tag :type="book.status==='在馆'?'success':'warning'">{{book.status}}</van-tag></div></section>
       <van-cell-group inset title="书目信息">
@@ -49,7 +49,7 @@ window.H5BookDetailPage = {
 window.H5MinePage = {
   name:'H5MinePage', emits:['navigate'],
   template:`
-    <main class="h5-page mine-page">
+    <main class="h5-page mine-page" data-page-id="mine">
       <section class="mine-head" data-annotation-key="mine-user-summary">
         <img src="./images/avatar.png"><div><h1>张同学</h1><p>数字媒体技术 · 2026 级</p></div><van-icon name="setting-o" size="22" @click="$emit('navigate','profile')"/>
       </section>
@@ -70,7 +70,7 @@ window.H5MinePage = {
 window.H5ProfilePage = {
   name:'H5ProfilePage', emits:['navigate'],
   template:`
-    <main class="h5-page">
+    <main class="h5-page" data-page-id="profile">
       <van-nav-bar title="个人资料" left-arrow @click-left="$emit('navigate','mine')" />
       <section class="avatar-panel"><img src="./images/avatar.png"><strong>张同学</strong><van-tag type="primary">在校学生</van-tag></section>
       <van-cell-group inset title="基础资料" data-annotation-key="profile-edit-scope">
@@ -83,7 +83,7 @@ window.H5ProfilePage = {
 window.H5MessagesPage = {
   name:'H5MessagesPage', emits:['navigate'],
   template:`
-    <main class="h5-page">
+    <main class="h5-page" data-page-id="messages">
       <van-nav-bar title="服务消息" left-arrow right-text="全部已读" @click-left="$emit('navigate','home')" @click-right="readAll" />
       <van-notice-bar left-icon="info-o" text="消息由宁波一卡通 APP 服务通道统一送达。" data-annotation-key="message-integration"/>
       <section class="message-list"><button v-for="msg in messages" :key="msg.id" :class="{unread:!msg.read}" @click="open(msg)"><i></i><span><strong>{{msg.title}}</strong><small>{{msg.content}}</small><time>{{msg.time}}</time></span><van-icon name="arrow"/></button></section>
@@ -94,7 +94,7 @@ window.H5MessagesPage = {
 window.H5MessageDetailPage = {
   name:'H5MessageDetailPage', emits:['navigate'],
   template:`
-    <main class="h5-page">
+    <main class="h5-page" data-page-id="message-detail">
       <van-nav-bar title="消息详情" left-arrow @click-left="$emit('navigate','messages')" />
       <article class="message-detail" data-annotation-key="message-detail-status"><h1>{{msg.title}}</h1><time>{{msg.time}}</time><p>{{msg.content}}</p><p>请进入对应服务查看详情，如有疑问请联系校园服务中心。</p></article>
       <div class="safe-actions"><van-button round block type="primary" @click="$emit('navigate',target)">查看相关服务</van-button></div>
@@ -105,7 +105,7 @@ window.H5MessageDetailPage = {
 window.H5WalletPage = {
   name:'H5WalletPage', emits:['navigate'],
   template:`
-    <main class="h5-page wallet-page">
+    <main class="h5-page wallet-page" data-page-id="wallet">
       <van-nav-bar title="校园卡包" left-arrow @click-left="$emit('navigate','mine')" />
       <section v-if="bound" class="campus-card" data-annotation-key="wallet-integration">
         <div><img src="./images/fy-logo.png"><span>浙江纺织服装职业技术学院</span></div><p>校园卡</p><strong data-annotation-key="wallet-card-number">2026 **** 1208</strong><small>张同学 · 正常</small>
@@ -113,8 +113,8 @@ window.H5WalletPage = {
       <section v-else class="unbound-card" data-annotation-key="wallet-integration"><van-icon name="card" size="52"/><h2>尚未绑定校园卡</h2><p>完成身份核验后绑定校园卡，使用校园码服务。</p><van-button round type="primary" @click="bindShow=true">立即绑定</van-button></section>
       <section v-if="bound" class="wallet-actions"><button @click="qrShow=true"><van-icon name="qr" size="30"/><strong>校园码</strong><small>校门通行与身份核验</small></button><button @click="vant.showToast('余额 ¥ 126.80')"><van-icon name="balance-o" size="30"/><strong>卡片余额</strong><small>¥ 126.80</small></button></section>
       <van-cell-group v-if="bound" inset><van-cell title="绑定手机号" value="138****8000"/><van-cell title="绑定状态" value="已绑定" value-class="success-text"/><van-cell title="解除绑定" is-link @click="unbind"/></van-cell-group>
-      <van-popup v-model:show="bindShow" round position="bottom"><div class="bottom-form"><h2>绑定校园卡</h2><van-field v-model="studentNo" label="学号" placeholder="请输入学号"/><van-field v-model="idLast" label="身份证后六位" placeholder="请输入后六位"/><van-button block round type="primary" @click="bind">确认绑定</van-button><button class="simulate-fail" @click="fail">演示绑定失败</button></div></van-popup>
-      <van-dialog v-model:show="qrShow" title="校园码" confirm-button-text="关闭"><div class="qr-box"><van-icon name="qr" size="160"/><p>动态码 28 秒后刷新</p></div></van-dialog>
+      <van-popup data-page-id="wallet" v-model:show="bindShow" round position="bottom"><div class="bottom-form"><h2>绑定校园卡</h2><van-field v-model="studentNo" label="学号" placeholder="请输入学号"/><van-field v-model="idLast" label="身份证后六位" placeholder="请输入后六位"/><van-button block round type="primary" @click="bind">确认绑定</van-button><button class="simulate-fail" @click="fail">演示绑定失败</button></div></van-popup>
+      <van-dialog data-page-id="wallet" v-model:show="qrShow" title="校园码" confirm-button-text="关闭"><div class="qr-box"><van-icon name="qr" size="160"/><p>动态码 28 秒后刷新</p></div></van-dialog>
     </main>`,
   setup(){const bound=Vue.ref(true),bindShow=Vue.ref(false),qrShow=Vue.ref(false),studentNo=Vue.ref('20261001208'),idLast=Vue.ref('011234');const bind=()=>{if(!studentNo.value||!idLast.value)return vant.showToast('请填写绑定信息');bound.value=true;bindShow.value=false;vant.showSuccessToast('绑定成功')};const fail=()=>vant.showFailToast('信息不匹配，绑定失败');const unbind=()=>vant.showConfirmDialog({title:'解除校园卡绑定？',message:'解除后将无法使用校园码。'}).then(()=>{bound.value=false}).catch(()=>{});return{vant,bound,bindShow,qrShow,studentNo,idLast,bind,fail,unbind}}
 }

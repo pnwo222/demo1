@@ -36,7 +36,7 @@
           </article>
         </section>
         <van-empty v-else image="./images/empty.png" description="没有符合条件的专业"><van-button size="small" type="primary" @click="reset">清空筛选</van-button></van-empty>
-        <van-popup v-model:show="picker" position="bottom" round>
+        <van-popup data-page-id="majors" v-model:show="picker" position="bottom" round>
           <van-picker title="选择所属分院" :columns="colleges" @confirm="confirmCollege" @cancel="picker=false" />
         </van-popup>
       </main>`,
@@ -125,8 +125,8 @@
         <section class="wechat-card">
           <h2>微信公众号</h2><div class="qr-code" @click="qr=true"><span>纺院招生</span></div><p>长按或点击放大二维码关注</p>
         </section>
-        <van-dialog v-model:show="dialConfirm" title="拨打招生热线" show-cancel-button @confirm="dialDone">即将调用手机拨号能力：0574-8632 8888</van-dialog>
-        <van-image-preview v-model:show="qr" :images="[qrImage]" />
+        <van-dialog data-page-id="admission" v-model:show="dialConfirm" title="拨打招生热线" show-cancel-button @confirm="dialDone">即将调用手机拨号能力：0574-8632 8888</van-dialog>
+        <van-image-preview data-page-id="admission" v-model:show="qr" :images="[qrImage]" />
       </main>`,
     setup() {
       const dialConfirm = Vue.ref(false)

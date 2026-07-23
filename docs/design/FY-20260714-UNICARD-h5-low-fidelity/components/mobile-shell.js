@@ -10,7 +10,7 @@ window.H5MobileShell = {
     H5ProfilePage:window.H5ProfilePage,H5MessagesPage:window.H5MessagesPage,H5MessageDetailPage:window.H5MessageDetailPage,H5WalletPage:window.H5WalletPage
   },
   template:`
-    <div class="prototype-shell" data-annotation-key="global-shell" :data-page-id="page">
+    <div class="prototype-shell" data-annotation-key="global-shell">
       <component :is="pageComponent" @navigate="navigate"/>
       <van-tabbar v-if="tabPages.includes(page)" :model-value="tabValue" safe-area-inset-bottom data-annotation-key="global-tabbar" @change="changeTab">
         <van-tabbar-item name="home" icon="home-o">首页</van-tabbar-item>

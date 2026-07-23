@@ -169,10 +169,21 @@ H5 Product 阶段 worktree: 不适用
 产物: docs/design/FY-20260714-UNICARD-h5-page-blueprint.md；docs/design/FY-20260714-UNICARD-h5-low-fidelity/
 页面范围: 26 个独立页面；学校专区、访客预约、校园启航、图书服务、我的、服务消息、校园卡包
 验证: H5 蓝图校验 PASS；H5 原型静态校验 PASS；JS 语法 PASS；26 页组件/路由/需求映射 PASS；320/375/390/414 视口契约已声明
-标注: 全局壳与页面级作用域分离；29 个自动标注目标与页面蓝图一致
+标注: 已按最新共享标注契约重建；27 个有效业务规则标注连续编号，全局壳/底部导航与逐页内容/业务浮层作用域分离
 运行时限制: Codex 浏览器安全策略禁止访问本地 file:// 页面，未绕过策略，未生成浏览器截图
 缓存更新: 无需更新，未修改 project/h5 生产代码或形成新的框架实现模式
 下一步: UI/Figma 决策
+时间: 2026-07-23
+```
+
+```text
+阶段: Product H5 原型标注重建
+状态: 已完成
+来源: 开发者反馈“标注不对，重新按规则生成标注”；snowy-h5-app-designer 标注契约
+处理: 删除旧 h5-annotation-* 平行实现；迁移到受保护 shared/annotation-core.js 与 shared/annotation-theme.css；移除泛化标注；重建 27 条约束、状态、敏感数据、权限、校验、宿主限制和对接边界标注
+作用域: 底部导航和全局壳保持 global；26 个页面根节点和挂载到 body 的 Popup、Dialog、ActionSheet 显式声明 page:<page-id>
+兼容: 新自动标注使用 h5ann-001 至 h5ann-027 稳定 ID，避免旧自动标注覆盖状态污染新基线；用户手工标注仍按契约保留
+验证: 共享核心哈希一致；旧标注类名为 0；27 条编号唯一连续；scope/pageId、targetKey、source、蓝图、DOM、逐页契约全部一致；蓝图校验与最新静态校验 PASS
 时间: 2026-07-23
 ```
 

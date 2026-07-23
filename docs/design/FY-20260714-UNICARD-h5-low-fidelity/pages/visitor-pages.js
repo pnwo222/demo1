@@ -2,7 +2,7 @@ window.H5VisitorApplyPage = {
   name: 'H5VisitorApplyPage',
   emits: ['navigate'],
   template: `
-    <main class="h5-page">
+    <main class="h5-page" data-page-id="visitor-apply">
       <van-nav-bar title="访客预约" left-arrow @click-left="$emit('navigate','home')" />
       <van-form @submit="submit" class="page-form">
         <van-cell-group inset>
@@ -24,10 +24,10 @@ window.H5VisitorApplyPage = {
         <div class="form-tip">提交即表示您同意访客信息仅用于本次预约审核与校园通行。</div>
         <div class="sticky-action"><van-button round block type="primary" native-type="submit">提交预约</van-button></div>
       </van-form>
-      <van-action-sheet v-model:show="reasonPicker" :actions="reasonActions" @select="pick('reason',$event)" />
-      <van-action-sheet v-model:show="departmentPicker" :actions="departmentActions" @select="pick('department',$event)" />
-      <van-action-sheet v-model:show="passagePicker" :actions="passageActions" @select="pick('passage',$event)" />
-      <van-popup v-model:show="timePicker" position="bottom"><van-date-picker title="选择来访日期" :min-date="minDate" @confirm="pickDate" @cancel="timePicker=false" /></van-popup>
+      <van-action-sheet data-page-id="visitor-apply" v-model:show="reasonPicker" :actions="reasonActions" @select="pick('reason',$event)" />
+      <van-action-sheet data-page-id="visitor-apply" v-model:show="departmentPicker" :actions="departmentActions" @select="pick('department',$event)" />
+      <van-action-sheet data-page-id="visitor-apply" v-model:show="passagePicker" :actions="passageActions" @select="pick('passage',$event)" />
+      <van-popup data-page-id="visitor-apply" v-model:show="timePicker" position="bottom"><van-date-picker title="选择来访日期" :min-date="minDate" @confirm="pickDate" @cancel="timePicker=false" /></van-popup>
     </main>`,
   setup(_, { emit }) {
     const form = Vue.reactive({ name:'张访客', idCard:'330203199812121234', phone:'13800138000', company:'宁波新材料科技有限公司', reason:'', target:'王老师', department:'', visitTime:'', passage:'', plate:'' })
@@ -48,7 +48,7 @@ window.H5VisitorApplyPage = {
 window.H5VisitorRecordsPage = {
   name:'H5VisitorRecordsPage', emits:['navigate'],
   template:`
-    <main class="h5-page">
+    <main class="h5-page" data-page-id="visitor-records">
       <van-nav-bar title="预约记录" left-arrow right-text="新增" @click-left="$emit('navigate','mine')" @click-right="$emit('navigate','visitor-apply')" />
       <van-tabs v-model:active="active" sticky data-annotation-key="visitor-status-tabs">
         <van-tab v-for="status in statuses" :key="status" :title="status">
@@ -74,7 +74,7 @@ window.H5VisitorRecordsPage = {
 window.H5VisitorDetailPage = {
   name:'H5VisitorDetailPage', emits:['navigate'],
   template:`
-    <main class="h5-page">
+    <main class="h5-page" data-page-id="visitor-detail">
       <van-nav-bar title="预约详情" left-arrow @click-left="$emit('navigate','visitor-records')" />
       <section class="status-hero" :class="'is-'+item.status">
         <van-icon :name="item.status==='已通过'?'passed':item.status==='未通过'?'close':'clock-o'" size="40" />

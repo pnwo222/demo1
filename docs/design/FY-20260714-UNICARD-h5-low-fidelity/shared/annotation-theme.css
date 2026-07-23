@@ -1,0 +1,362 @@
+:root {
+  --annotation-primary: #1677ff;
+  --annotation-text: #344054;
+  --annotation-danger: #ff4d4f;
+}
+
+.annotation-toolbar {
+  position: fixed;
+  top: max(14px, env(safe-area-inset-top));
+  left: 50%;
+  z-index: 2105;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: max-content;
+  min-width: 0;
+  min-height: 44px;
+  padding: 5px 8px;
+  color: #1f2937;
+  background: #fff;
+  border: 1px solid #dbe3ef;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 12%), 0 1px 2px rgb(15 23 42 / 4%);
+  transform: translateX(-50%);
+  backdrop-filter: blur(10px);
+}
+
+.annotation-toolbar.collapsed {
+  min-width: 38px;
+  min-height: 38px;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.annotation-tool-button {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  height: 32px;
+  padding: 0 10px;
+  color: #344054;
+  font-size: 13px;
+  background: #fff;
+  border: 0;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background-color .16s ease, color .16s ease, padding .18s ease;
+}
+
+.annotation-tool-button:hover {
+  color: var(--annotation-primary);
+  background: #f0f7ff;
+}
+
+.annotation-tool-button.primary {
+  color: #fff;
+  background: var(--annotation-primary);
+}
+
+.annotation-tool-button.danger { color: var(--annotation-danger); }
+.annotation-tool-button.danger:hover { color: #cf1322; background: #fff1f0; }
+.annotation-tool-button.icon-only { width: 32px; padding: 0; justify-content: center; }
+.annotation-toolbar.collapsed .annotation-tool-button.icon-only { width: 38px; height: 38px; border-radius: 0; }
+.annotation-tool-button svg { width: 15px; height: 15px; flex: 0 0 auto; stroke: currentColor; }
+.annotation-tool-actions { display: flex; gap: 4px; align-items: center; justify-content: center; min-width: 0; }
+.annotation-tool-separator { width: 1px; height: 20px; flex: 0 0 1px; background: #e7ebf0; }
+.annotation-tool-danger-separator { margin-left: 2px; }
+.annotation-tool-action { min-width: 36px; padding: 0 8.5px; gap: 0; overflow: hidden; white-space: nowrap; }
+.annotation-tool-action svg { width: 19px; height: 19px; }
+.annotation-tool-label {
+  max-width: 0;
+  margin-left: 0;
+  overflow: hidden;
+  opacity: 0;
+  white-space: nowrap;
+  transition: max-width .2s ease, margin-left .2s ease, opacity .14s ease;
+}
+.annotation-tool-action:hover .annotation-tool-label,
+.annotation-tool-action:focus-visible .annotation-tool-label,
+.annotation-tool-action.expanded .annotation-tool-label {
+  max-width: 88px;
+  margin-left: 6px;
+  opacity: 1;
+}
+
+.node-comment-outline {
+  position: fixed;
+  z-index: 1998;
+  box-sizing: border-box;
+  pointer-events: none;
+  background: rgb(22 119 255 / 14%);
+  border: 3px solid rgb(22 119 255 / 92%);
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 88%);
+}
+.node-comment-outline.selected {
+  z-index: 1999;
+  background: rgb(22 119 255 / 18%);
+  border-color: var(--annotation-primary);
+  box-shadow: 0 0 0 2px rgb(255 255 255 / 95%), 0 0 0 5px rgb(22 119 255 / 16%);
+}
+.node-comment-mask,
+.annotation-modal-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1996;
+  background: rgb(15 23 42 / 8%);
+  cursor: default;
+}
+.annotation-modal-mask { z-index: 2200; background: rgb(15 23 42 / 46%); }
+
+.node-comment-popover {
+  position: fixed;
+  z-index: 2000;
+  width: min(360px, calc(100vw - 24px));
+  padding: 8px 10px;
+  background: #fff;
+  border: 1px solid #e8edf3;
+  border-radius: 999px;
+  box-shadow: 0 4px 16px rgb(15 23 42 / 12%);
+  transition: border-radius .16s ease, padding .16s ease, box-shadow .16s ease;
+}
+.node-comment-popover.multiline {
+  padding: 10px 12px;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 14%);
+}
+.node-comment-input {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) 30px;
+  gap: 8px;
+  align-items: center;
+}
+.node-comment-popover.multiline .node-comment-input {
+  grid-template-rows: minmax(40px, auto) 30px;
+  align-items: start;
+  row-gap: 4px;
+}
+.node-comment-cancel {
+  display: inline-flex;
+  grid-column: 1;
+  grid-row: 1;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  color: #667085;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.node-comment-cancel:hover { color: #101828; background: #f2f4f7; }
+.node-comment-cancel svg { width: 15px; height: 15px; }
+.node-comment-input textarea {
+  grid-column: 2;
+  grid-row: 1;
+  width: 100%;
+  min-height: 20px;
+  max-height: 112px;
+  padding: 0;
+  overflow-y: auto;
+  color: #101828;
+  font: 14px/20px inherit;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  resize: none;
+  cursor: text !important;
+  scrollbar-width: thin;
+}
+.node-comment-popover.multiline .node-comment-input textarea { grid-column: 2 / 4; padding: 4px 2px; }
+.node-comment-popover.multiline .node-comment-cancel { align-self: start; }
+.node-comment-submit {
+  display: inline-flex;
+  grid-column: 3;
+  grid-row: 1;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  justify-self: end;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  color: #475467;
+  background: #f2f4f7;
+  border: 0;
+  border-radius: 50%;
+  cursor: default;
+  transition: all .16s ease;
+}
+.node-comment-popover.multiline .node-comment-submit { grid-row: 2; align-self: end; }
+.node-comment-submit:disabled { opacity: .55; cursor: not-allowed !important; }
+.node-comment-submit.ready { color: #fff; background: #272636; cursor: pointer !important; }
+.node-comment-submit.ready:hover { background: #111827; transform: translateY(-1px); }
+.node-comment-submit svg { width: 15px; height: 15px; stroke: currentColor; }
+
+.node-comment-pin {
+  position: fixed;
+  z-index: 999;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+  text-shadow: 0 1px 2px rgb(15 23 42 / 45%);
+  background-color: transparent;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1024 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M186.368 847.361c2.047 13.996-3.755 24.746-17.408 32.256-24.575 14.334-56.32 24.574-95.232 30.719-6.143 1.365 8.192 7.682 43.007 18.945 34.818 11.266 88.405 20.65 160.771 28.16 32.768 2.73 62.123 4.439 88.063 5.121 25.942 0.68 49.665 0.68 71.167 0 21.505-0.686 40.96-1.711 58.37-3.07 17.408-1.371 33.965-3.076 49.665-5.121 58.71-6.148 113.661-22.359 164.861-48.639 51.2-26.285 95.575-59.906 133.12-100.865 37.55-40.961 67.07-87.896 88.58-140.801 21.5-52.906 31.91-109.74 31.23-170.498-0.685-63.488-13.315-122.881-37.89-178.176-24.575-55.297-57.855-103.426-99.84-144.385-41.98-40.961-90.795-73.215-146.431-96.768-55.64-23.553-115.2-34.988-178.69-34.307-63.487 0.686-122.88 13.143-178.178 37.379-55.295 24.234-103.593 57.342-144.896 99.328-41.303 41.984-73.728 90.965-97.28 146.945C55.805 379.562 44.37 439.295 45.052 502.785c1.365 60.076 13.143 116.057 35.328 167.936 22.188 51.881 50.69 97.281 85.505 136.191C177.493 819.881 184.32 833.367 186.368 847.361z' fill='%232f6bff' stroke='%23ffffff' stroke-width='68' stroke-linejoin='round' paint-order='stroke fill'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  border: 0;
+  cursor: pointer;
+}
+.node-comment-pin.automatic {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1024 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M186.368 847.361c2.047 13.996-3.755 24.746-17.408 32.256-24.575 14.334-56.32 24.574-95.232 30.719-6.143 1.365 8.192 7.682 43.007 18.945 34.818 11.266 88.405 20.65 160.771 28.16 32.768 2.73 62.123 4.439 88.063 5.121 25.942 0.68 49.665 0.68 71.167 0 21.505-0.686 40.96-1.711 58.37-3.07 17.408-1.371 33.965-3.076 49.665-5.121 58.71-6.148 113.661-22.359 164.861-48.639 51.2-26.285 95.575-59.906 133.12-100.865 37.55-40.961 67.07-87.896 88.58-140.801 21.5-52.906 31.91-109.74 31.23-170.498-0.685-63.488-13.315-122.881-37.89-178.176-24.575-55.297-57.855-103.426-99.84-144.385-41.98-40.961-90.795-73.215-146.431-96.768-55.64-23.553-115.2-34.988-178.69-34.307-63.487 0.686-122.88 13.143-178.178 37.379-55.295 24.234-103.593 57.342-144.896 99.328-41.303 41.984-73.728 90.965-97.28 146.945C55.805 379.562 44.37 439.295 45.052 502.785c1.365 60.076 13.143 116.057 35.328 167.936 22.188 51.881 50.69 97.281 85.505 136.191C177.493 819.881 184.32 833.367 186.368 847.361z' fill='%2300a896' stroke='%23ffffff' stroke-width='68' stroke-linejoin='round' paint-order='stroke fill'/%3E%3C/svg%3E");
+}
+
+.annotation-detail-modal,
+.requirement-drawer {
+  position: fixed;
+  z-index: 2300;
+  color: #101828;
+  background: #fff;
+  box-shadow: 0 16px 48px rgb(15 23 42 / 24%);
+}
+.annotation-detail-modal {
+  top: 50%;
+  left: 50%;
+  width: min(520px, calc(100vw - 28px));
+  border-radius: 10px;
+  transform: translate(-50%, -50%);
+}
+.annotation-detail-modal header,
+.requirement-drawer header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 54px;
+  padding: 0 20px;
+  border-bottom: 1px solid #eaecf0;
+}
+.annotation-detail-modal header strong,
+.requirement-drawer header strong { font-size: 16px; }
+.modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  color: #667085;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+}
+.modal-close:hover { color: #101828; background: #f2f4f7; }
+.modal-close svg { width: 18px; height: 18px; }
+.annotation-detail-view { display: grid; gap: 14px; padding: 20px; }
+.annotation-detail-title { display: flex; align-items: center; justify-content: center; }
+.annotation-detail-title .annotation-editable { width: 100%; font-size: 20px; font-weight: 600; text-align: center; }
+.annotation-editable {
+  position: relative;
+  min-height: 32px;
+  padding: 6px 38px 6px 8px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  border: 1px solid transparent;
+  border-radius: 6px;
+}
+.annotation-editable:hover { background: #f8fafc; border-color: #d0d5dd; }
+.annotation-editable.muted { color: #667085; }
+.annotation-editable input,
+.annotation-editable textarea {
+  width: 100%;
+  padding: 8px 10px;
+  font: inherit;
+  border: 1px solid var(--annotation-primary);
+  border-radius: 6px;
+  outline: 0;
+  resize: vertical;
+}
+.annotation-edit-action {
+  position: absolute;
+  top: 5px;
+  right: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  color: var(--annotation-primary);
+  background: #eef4ff;
+  border: 0;
+  border-radius: 6px;
+  opacity: 0;
+}
+.annotation-editable:hover .annotation-edit-action,
+.annotation-edit-action:focus-visible { opacity: 1; }
+.annotation-edit-action:hover { background: #dbeafe; }
+.annotation-edit-action svg { width: 14px; height: 14px; stroke: currentColor; }
+.annotation-detail-modal footer,
+.requirement-drawer footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 62px;
+  padding: 10px 20px;
+  border-top: 1px solid #eaecf0;
+}
+.annotation-modal-actions { display: inline-flex; gap: 8px; }
+.annotation-detail-modal footer button,
+.requirement-drawer footer button {
+  min-width: 68px;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 6px;
+}
+.primary-button { color: #fff; background: var(--annotation-primary); border: 1px solid var(--annotation-primary); }
+.cancel-button { color: #344054; background: #fff; border: 1px solid #d0d5dd; }
+.danger-button { color: var(--annotation-danger); background: #fff; border: 1px solid #ffccc7; }
+.requirement-drawer {
+  inset: 0 0 0 auto;
+  width: min(88vw, 420px);
+}
+.requirement-body { min-height: calc(100vh - 116px); padding: 20px; }
+.requirement-body .annotation-editable { min-height: 220px; padding: 12px 42px 12px 12px; line-height: 1.8; color: #344054; }
+.requirement-body textarea { min-height: 55vh; }
+
+body.annotation-cursor-mode,
+body.annotation-cursor-mode * {
+  cursor: url("data:image/svg+xml,%3Csvg width='28' height='28' viewBox='0 0 1024 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M186.368 847.361c2.047 13.996-3.755 24.746-17.408 32.256-24.575 14.334-56.32 24.574-95.232 30.719-6.143 1.365 8.192 7.682 43.007 18.945 34.818 11.266 88.405 20.65 160.771 28.16 32.768 2.73 62.123 4.439 88.063 5.121 25.942 0.68 49.665 0.68 71.167 0 21.505-0.686 40.96-1.711 58.37-3.07 17.408-1.371 33.965-3.076 49.665-5.121 58.71-6.148 113.661-22.359 164.861-48.639 51.2-26.285 95.575-59.906 133.12-100.865 37.55-40.961 67.07-87.896 88.58-140.801 21.5-52.906 31.91-109.74 31.23-170.498-0.685-63.488-13.315-122.881-37.89-178.176-24.575-55.297-57.855-103.426-99.84-144.385-41.98-40.961-90.795-73.215-146.431-96.768-55.64-23.553-115.2-34.988-178.69-34.307-63.487 0.686-122.88 13.143-178.178 37.379-55.295 24.234-103.593 57.342-144.896 99.328-41.303 41.984-73.728 90.965-97.28 146.945C55.805 379.562 44.37 439.295 45.052 502.785c1.365 60.076 13.143 116.057 35.328 167.936 22.188 51.881 50.69 97.281 85.505 136.191C177.493 819.881 184.32 833.367 186.368 847.361z' fill='%232f6bff' stroke='%23ffffff' stroke-width='72' stroke-linejoin='round' paint-order='stroke fill'/%3E%3C/svg%3E") 5 5, pointer !important;
+}
+body.annotation-cursor-mode .annotation-toolbar,
+body.annotation-cursor-mode .annotation-toolbar *,
+body.annotation-cursor-mode .node-comment-popover,
+body.annotation-cursor-mode .node-comment-popover * { cursor: default !important; }
+body.annotation-cursor-mode .annotation-toolbar button,
+body.annotation-cursor-mode .node-comment-popover button { cursor: pointer !important; }
+
+@media (max-width: 480px) {
+  .annotation-toolbar { max-width: calc(100vw - 16px); top: max(8px, env(safe-area-inset-top)); }
+  .annotation-tool-action { min-width: 32px; padding: 0 6px; }
+  .annotation-tool-action svg { width: 18px; height: 18px; }
+  .annotation-detail-modal { width: calc(100vw - 24px); }
+  .annotation-detail-modal header,
+  .requirement-drawer header { padding: 0 16px; }
+  .annotation-detail-view,
+  .requirement-body { padding: 16px; }
+  .annotation-detail-modal footer,
+  .requirement-drawer footer { padding: 10px 16px; }
+}
