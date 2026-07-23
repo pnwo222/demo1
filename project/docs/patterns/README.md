@@ -14,6 +14,8 @@
 | `framework-inventory.md` | 框架技术栈、运行入口、前后端目录、数据和权限入口 | `project/README.md`、`project/pom.xml`、`package.json`、`application.properties` |
 | `module-map.md` | 后端插件、插件 API、前端目录和新需求落点映射 | `snowy-plugin`、`snowy-plugin-api`、`snowy-admin-web/src` |
 | `feature-capability-map.md` | 已有功能能力、可复用模块、缓存命中规则 | auth/biz/client/dev/gen/mobile/sys 代码和 `_sql/snowy_mysql.sql` |
+| `h5-routing-auth-pattern.md` | H5 当前显式路由基线和历史认证链路参考 | `project/h5/src/router`、Store、用户 API、Axios 配置 |
+| `h5-ui-component-pattern.md` | H5 UI、组件选择、页面组织和原型规则 | `project/h5/src/components`、`project/h5/src/views/demo` |
 
 ## 使用规则
 
@@ -21,3 +23,4 @@
 - 标准 SDLC 模式也应读取相关缓存，用于减少框架探索时间。
 - 如果缓存与实际代码冲突，以实际代码为准，并在本目录更新缓存。
 - 后续新增或修改需求的代码后，如果沉淀出新的框架模式、例外规则或可复用模板，必须同步更新对应缓存文档。
+- H5 需求优先读取两个 `h5-*.md` 缓存，再核验 `/demo` 和目标组件源码。

@@ -1,0 +1,224 @@
+.mine {
+  --van-cell-group-inset-padding: 20px;
+  --van-cell-group-inset-radius: 8px;
+  width: 100%;
+
+  padding-bottom: calc(env(safe-area-inset-bottom) + 100px);
+
+  .header {
+    width: 100%;
+    min-height: 310px;
+    overflow: hidden;
+    background: url("@/assets/image/index/index-head.png") no-repeat;
+    background-position: top center;
+    background-size: 100% 100%;
+  }
+
+  .info {
+    position: relative;
+    width: 335px;
+    height: 88px;
+    padding: 16px 20px;
+    padding-right: 0;
+    margin: 0 auto;
+    margin-top: 40px;
+    background: #fff;
+    border-radius: 16px;
+
+    .avatar {
+      width: 56px;
+      height: 56px;
+      overflow: hidden;
+      background: #fff;
+      // border: 2px solid #2d65f9;
+      border-radius: 100%;
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    .text {
+      .name {
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 22px;
+        color: #000;
+      }
+
+      .vip {
+        width: 65px;
+        height: 22px;
+        margin-top: 3px;
+
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+
+    .mine-detail {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 72px;
+      height: 28px;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 17px;
+      color: #fff;
+      text-align: center;
+      background: #3471f3;
+      border-radius: 100px 0 0 100px;
+      transform: translateY(-50%);
+    }
+  }
+
+  .mycard {
+    position: relative;
+    width: 341px;
+    height: 208px;
+    padding-top: 74px;
+    padding-left: 28px;
+    background: url("@/assets/image/mine/mycard.png") no-repeat;
+    background-size: 100% auto;
+
+    .msg {
+      h1 {
+        font-size: 18px;
+        font-weight: 500;
+        line-height: 25px;
+        color: rgba(0, 0, 0, .84);
+      }
+
+      .p {
+        margin-top: 5px;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+        color: rgba(51, 51, 51, .85);
+
+        >div {
+          width: 100%;
+
+          >div {
+            width: 70px;
+            text-align: justify;
+          }
+        }
+      }
+    }
+
+    .code {
+      position: absolute;
+      top: 74px;
+      right: 35px;
+      width: 28px;
+      height: 28px;
+
+      img {
+        width: 100%;
+      }
+    }
+  }
+
+  .myaccount {
+    overflow: hidden;
+    background: url("@/assets/image/mine/myaccount.png") no-repeat;
+    background-size: 100% auto;
+    background-position: top center;
+
+    .title {
+      width: 60px;
+      margin-top: 8px;
+      margin-left: 22px;
+
+      img {
+        width: 100%;
+      }
+    }
+
+    .money {
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 17px;
+      color: rgba(51, 51, 51, .85);
+
+      >div {
+        padding-bottom: 12px;
+        border-top: 1px solid #fafafa;
+        // padding-top: 10px;
+        padding-top: 12px;
+        position: relative;
+
+        &:nth-child(even) {
+          padding-left: 23px;
+          
+          
+          &::after {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 0;
+            width: 1px;
+            height: 80%;
+            background: #fafafa;
+          }
+        }
+
+        &:first-child, &:nth-child(2) {
+          border-top: none;
+        }
+      }
+    }
+
+    .btns {
+      width: 60px;
+      height: 20px;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 20px;
+      color: #216ff2;
+      text-align: center;
+      background: #eaeffe;
+      border-radius: 9px;
+    }
+  }
+
+  .minecard {
+    width: 341px;
+    height: 188px;
+    padding: 42px 27px;
+    margin: 0 auto;
+    overflow: hidden;
+    background: url("@/assets/image/mine/minecard.png") no-repeat;
+    background-size: 100% auto;
+
+    p {
+      width: 191px;
+      margin-top: 10px;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 16px;
+      color: #b2b2b4;
+    }
+
+    .order {
+      width: 153px;
+      height: 32px;
+      padding-left: 15px;
+      margin-top: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 32px;
+      color: #fff;
+      background: url("@/assets/image/mine/order-bg.png") no-repeat;
+      background-size: 100% auto;
+    }
+  }
+}

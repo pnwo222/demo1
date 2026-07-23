@@ -1,0 +1,154 @@
+body, html {
+  min-height: 100vh;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+[data-theme="dark"] {
+  &, * {
+    color-scheme: dark !important;
+  }
+}
+
+[data-theme="light"] {
+  &, * {
+    color-scheme: light !important;
+  }
+
+  body {
+    background-color: #F7F8FA;
+  }
+}
+
+h1 {
+  font-weight: 500;
+  font-size: 20px;
+  color: #202020;
+  line-height: 28px;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+.van-checkbox {
+  align-items: flex-start !important;
+}
+
+.no-bg {
+  --van-button-default-background: transparent;
+  --van-button-default-border-color: #979797;
+}
+// 兼容pc样式，横屏样式
+// @media (orientation: landscape) {
+//   #app {
+//     max-width: 414px;
+//     margin: 0 auto;
+//     transform: translate(0, 0);
+//   }
+// }
+
+.elipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ellipsis-2 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.ellipsis-3 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+img {
+  pointer-events: none;
+}
+
+.f-cell {
+  --van-cell-group-inset-padding: 10px;
+  --van-cell-group-inset-title-padding: 10px;
+  --van-field-disabled-text-color: #333;
+
+  .van-cell-group__title {
+    padding-bottom: 0;
+  }
+
+  .van-cell {
+    padding: 16px 12px;
+    line-height: 24px;
+  }
+
+  .van-cell__value {
+    color: #999;
+    line-height: 24px;
+  }
+
+  .van-cell-group__title {
+    color: #666;
+  }
+
+  .van-field__control {
+    &::placeholder {
+      color: #999;
+    }
+  }
+
+  .van-field__control:disabled {
+    -webkit-text-fill-color: #333;
+    &::placeholder {
+      opacity: 0;
+      // transform: translate(1000px, 1000px);
+    }
+  }
+
+  .van-field--disabled {
+    .van-cell__right-icon {
+      display: none;
+    }
+  }
+}
+
+.f-tab {
+  .van-tab.van-tab--active {
+    font-weight: 600;
+    font-size: 16px;
+    color: #333333;
+  }
+  
+  .van-tab {
+    // font-weight: 500;
+    font-size: 14px;
+    color: #333333;
+  }
+
+  .van-tabs__wrap {
+    height: 48px !important;
+  }
+
+  .van-tabs__line {
+    height: 4px !important;
+    border-radius: 0;
+  }
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}

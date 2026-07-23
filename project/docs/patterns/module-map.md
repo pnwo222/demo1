@@ -9,6 +9,7 @@
 - 有跨插件调用需求时，先在 `snowy-plugin-api` 定义或复用 API 契约，再由 `snowy-plugin` 中对应 provider 实现。
 - 前端 API 和页面目录应与后端插件分组保持一致。
 - SQL 初始化、菜单、按钮、字典和权限资源集中维护在 `project/snowy-web-app/src/main/resources/_sql/snowy_mysql.sql`。
+- 面向用户的独立移动端页面落在 `project/h5/`；后管的移动端资源管理仍落在 Snowy `mobile` 模块，两者不得混淆。
 
 ## 后端模块归属
 
@@ -62,6 +63,19 @@
 | 轮播图/banner | 优先复用 `snowy-plugin-dev` 的 slideshow 能力 | `src/views/dev/slideshow/`、首页 `BizSlideshowCard` | `DEV_SLIDESHOW`、`DEV_SLIDESHOW_*` 字典、`SYS_RESOURCE` |
 | 首页卡片/业务首页 | `snowy-plugin-biz` 和可复用 dev API | `src/views/biz/index/`、`src/components/HomeCard/` | 视具体数据源补 SQL/权限 |
 | 移动端资源 | `snowy-plugin-mobile/.../resource` | `src/views/mobile/resource/` | 移动端菜单/按钮资源 |
+| H5 用户页面 | 按接口归属落到 `client`、`biz` 或专用插件 | `project/h5/src/views/<feature>/` | H5 路由显式登记；认证按需求确认 |
+
+## H5 前端落点
+
+```text
+project/h5/src/views/<feature>/index.vue
+project/h5/src/views/<feature>/components/
+project/h5/src/api/<feature>/
+project/h5/src/router/routes/index.ts
+project/h5/src/components/
+```
+
+新 H5 页面先复用 `/demo` 与 `src/components/`，新增跨页面组件后更新 `h5-ui-component-pattern.md`。
 
 ## 新模块文件模板
 

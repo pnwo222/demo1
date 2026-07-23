@@ -10,6 +10,7 @@
 - 环境检测结果写入 `docs/workflow/local-environment-status.md`，该文件必须被 `.gitignore` 忽略，不提交到 Git；`docs/workflow/status.md` 仍是可提交的项目级状态和需求索引。
 - 修改代码前先识别目标功能应落在哪个 Snowy 模块、插件或前端目录，并在阶段输出中说明映射关系。
 - 修改代码后必须判断是否需要更新 `project/docs/patterns/`；如果新增了可复用框架模式、例外规则或更好的模板，必须同步更新缓存。
+- 涉及 H5 页面、H5 原型或移动端组件时，必须使用 `.codex/skills/snowy-h5-app-designer`，读取 `h5-framework-overview.md`、`h5-development-guidelines.md`、`patterns/h5-*.md` 和 `/demo` 实际代码。
 - 修改代码前必须先完成开发环境检测，再单独进行分支确认；两者不得合并为同一阶段。分支确认通过后，当前分支记录为开发分支，才能创建需求集成分支；实际开发从需求集成分支创建 worktree 开发分支/目录；worktree 完成后先合并回需求集成分支，验证无误后再询问是否合并回开发分支。
 - 优先复用现有组件、接口封装、权限体系、异常处理、分页、字典、日志、审计、配置、文件和消息能力。
 - 不清楚业务规则、权限规则、状态机、金额规则、库存或资源一致性时，不直接进入代码开发。
@@ -66,6 +67,8 @@ npm run dev
 ```
 
 开发者打开 Vite 输出的本地地址，通常是 `http://localhost:5173`。如需生产构建，再手动执行 `npm run build`。
+
+H5 前端使用独立目录 `project/h5/`，包管理器为 pnpm。详细 UI、路由、组件和认证边界以 `h5-development-guidelines.md` 为准，运行命令为 `pnpm install`、`pnpm dev`、`pnpm build`。
 
 ## 后端规范
 

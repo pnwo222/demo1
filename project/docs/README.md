@@ -8,6 +8,8 @@
 | --- | --- |
 | `framework-overview.md` | 介绍 Snowy 框架定位、技术栈、模块关系和前后端目录映射 |
 | `development-guidelines.md` | 说明基于 Snowy 框架增量开发时的前端、后端、数据和工作流规范 |
+| `h5-framework-overview.md` | 介绍 `project/h5` 的移动端技术栈、运行入口、组件和历史认证边界 |
+| `h5-development-guidelines.md` | 说明 H5 页面、H5 原型、路由、组件和移动端 UI 规范 |
 | `patterns/` | 预读 Snowy 代码后沉淀的后端 CRUD、前端 CRUD、权限 SQL、migration 和缓存更新规则 |
 
 ## 工作流要求
@@ -22,5 +24,7 @@ project/README.md
 ```
 
 专业 Agent 执行任务时，必须把本目录文档作为框架约束输入，不得按空白项目或旧的 `frontend/backend` 双目录假设直接生成方案。
+
+涉及 H5 页面、H5 原型或移动端组件时，还必须使用 `.codex/skills/snowy-h5-app-designer`，读取 H5 文档、`patterns/h5-*.md` 和 `project/h5/src/views/demo/`。
 
 后续新增需求或修改需求的代码后，如产生新的可复用模式，必须同步更新 `patterns/` 下对应缓存文档。

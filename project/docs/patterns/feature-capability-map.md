@@ -24,6 +24,8 @@
 | 代码生成 | `snowy-plugin-gen`、`snowy-plugin-gen-api` | `src/views/gen/`、`src/api/gen/` | 生成配置表 | 新 CRUD 可参考生成器产物，但仍要按项目缓存核验 |
 | C 端用户 | `snowy-plugin-client/.../user` | `src/views/client/user/`、`src/api/client/` | `CLIENT_USER` 等 | 客户端账号、个人中心、启停用户优先复用 |
 | 移动端资源 | `snowy-plugin-mobile/.../resource` | `src/views/mobile/resource/`、`src/api/mobile/resource/` | 移动端模块/菜单/按钮资源 | 移动端后台资源管理可复用 |
+| H5 组件与交互 | 按业务接口归属 | `project/h5/src/components/`、`src/views/demo/` | 默认无权限；认证需单独确认 | H5 页面和原型优先复用 Vant 与项目组件 |
+| H5 历史认证参考 | 认证接口需重新确认 | `project/h5/src/store/modules/user.ts`、`src/hooks/system/useUser/` | Token、openId、身份选择 | 当前未启用，只用于认证方案设计参考 |
 
 ## 轮播图/banner 能力细节
 
@@ -58,6 +60,8 @@
 | 文件、图片、附件、上传 | 文件上传/存储 | `dev/file`、`xn-upload`、文件配置 |
 | 业务首页、工作台卡片 | 业务首页 | `biz/index`、`components/HomeCard` |
 | 系统用户、角色授权 | 系统用户、角色和资源权限 | `sys/user`、`sys/role`、`SYS_RELATION` |
+| H5、移动端页面、Vant、H5 原型 | H5 组件与交互 | `h5-ui-component-pattern.md`、`project/h5/src/views/demo/` |
+| H5 登录、Token、身份选择 | H5 历史认证参考 | `h5-routing-auth-pattern.md`，并重新确认接口协议 |
 
 ## 缓存失配处理
 

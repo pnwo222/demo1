@@ -1,0 +1,23 @@
+{
+	"Print to console": {
+    "prefix": "vue3",
+    "body": [
+      "<script setup lang='ts'>",
+
+			"</script>\n",
+
+			"<template>",
+			"  <div class=\"${TM_FILENAME_BASE}\">",
+			"    ${1:todo}",
+			"  </div>",
+			"</template>\n",
+
+			"<style scoped lang='less'>",
+			"  .${TM_FILENAME_BASE} {",
+			"    width: 100%;",
+			"  }",
+			"</style>\n"
+  ],
+    "description": "vue3 view"
+  }
+}
