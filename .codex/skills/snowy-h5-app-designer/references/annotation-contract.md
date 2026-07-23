@@ -1,5 +1,13 @@
 # H5 原型标注契约
 
+## 共享核心
+
+- 行为核心：`assets/h5-prototype-framework/shared/annotation-core.js`
+- 统一主题：`assets/h5-prototype-framework/shared/annotation-theme.css`
+- 视觉基准：Snowy 后管标注工具栏、气泡、节点高亮、评论输入、详情编辑和页面需求。
+- H5 只允许增加安全区、窄屏和软键盘适配，不得创建独立 `h5-annotation-*` 组件或样式。
+- `validate_h5_prototype.py` 对生成目录中的共享核心和统一主题执行 SHA-256 对比；修改即失败。
+
 ## 数据
 
 每条标注至少包含：
