@@ -38,6 +38,8 @@
 | Product 原型重画计划 | 已完成 | `docs/superpowers/plans/2026-07-16-fyy-admin-prototype-redesign.md` | 用户选择 1，当前会话内联执行 | 2026-07-16 |
 | Product 原型重画执行 | 已完成 | `docs/design/FY-20260714-UNICARD-admin-low-fidelity/index.html`、`coverage.html`、兼容跳转入口 | 用户要求不走 executing-plans、直接画；学校端 20 页、平台端 13 页均完成，接口中心与 PAM 仅跳过本次原型 | 2026-07-16 |
 | Product 后管原型逐页重设计 | 已完成 | 32 个独立页面组件、ADM-S-002 菜单分组、`prototype-contract.json`、逐页截图与 `runtime-validation.json` | 根据开发者新标注加入 ECharts、移除师生管理独立页并补 Banner 详情图片；继续排除接口中心、PAM、H5 | 2026-07-17 |
+| H5 原型需求恢复 | 已完成 | H5-001 至 H5-013、`project/h5` 框架与真实页面模式 | 开发者明确要求“生成 h5 原型”，原跳过决定自 2026-07-23 起失效 | 2026-07-23 |
+| Product H5 原型设计 | 已完成（运行时受限） | 26 页逐页蓝图、多文件 H5 原型、契约与 13 项需求覆盖矩阵 | 蓝图、JS 语法、组件/路由/需求映射、静态契约均 PASS；本地 `file://` 被浏览器安全策略拦截，未生成运行时截图 | 2026-07-23 |
 | UI/Figma 决策 | 需确认 | - | 等待开发者选择生成 UI/Figma 或跳过 UI 并复用 Snowy 现有 UI | 2026-07-15 |
 | Design 产物 | 未开始 | - | - | - |
 | 技术设计 | 未开始 | - | - | - |
@@ -54,10 +56,10 @@
 
 ```text
 节点: UI/Figma 决策
-推荐选项: 跳过 UI，复用本次 Snowy 原型进入技术方案
-其他选项: 生成 UI/Figma；返回调整后管原型；暂停
-推荐原因: 后管原型已基于 Snowy 原始 Demo 金标完成并通过静态、浏览器和覆盖校验
-记录时间: 2026-07-16
+推荐选项: 跳过 UI，复用已完成的后管与 H5 原型进入技术方案
+其他选项: 生成 UI/Figma；返回调整后管或 H5 原型；暂停
+推荐原因: 后管与 H5 的需求蓝图、交互原型和覆盖矩阵已完成；H5 本地文件浏览器运行时截图仍需在允许本地 URL 的环境补验
+记录时间: 2026-07-23
 ```
 
 ## 后管原型重画记录
@@ -96,6 +98,17 @@ H5: 继续需求保留、设计延期
 记录时间: 2026-07-15
 ```
 
+```text
+恢复项: H5 页面设计与 H5 低保真原型
+恢复原因: 开发者于 2026-07-23 明确要求“生成 h5 原型”
+需求范围: H5-001 至 H5-013
+框架基线: project/h5；Vue 3、Vant、真实业务页面模式与 H5 多文件原型骨架
+认证约束: 默认不启用历史登录、Token 和身份守卫；宿主 APP、认证协议与服务消息/卡包契约标记待确认
+需求集成分支: codex/fyy-h5-prototype-integration
+状态: 已开始
+记录时间: 2026-07-23
+```
+
 ## 框架缓存记录
 
 ```text
@@ -106,6 +119,16 @@ H5: 继续需求保留、设计延期
 缓存更新: 无需更新
 原因: 本阶段只完成需求装载，未产生可验证的新实现模式
 时间: 2026-07-14
+```
+
+```text
+缓存读取: project/docs/patterns/h5-routing-auth-pattern.md、project/docs/patterns/h5-ui-component-pattern.md
+缓存是否命中: 命中
+代码核验: project/h5/src/views/index、notice、news、yy、signCard、book、mine、code、sys/user/card、demo；project/h5/src/components/OpenApiPicker、OpenDatePicker、Empty
+复用能力: 移动端门户、Banner、应用宫格、公告与资讯、预约表单与记录、多步骤办卡、图书检索与详情、个人中心、校园码与绑卡
+缓存更新: 无需更新
+原因: 本阶段生成业务原型，未修改 project/h5 框架模式
+时间: 2026-07-23
 ```
 
 ## 分支和 Worktree 记录
@@ -122,14 +145,36 @@ Worktree 合回需求集成分支: 未开始
 时间: 2026-07-14
 ```
 
+```text
+H5 原型开发基线: codex/fyy-tender-completion-integration
+H5 原型需求集成分支: codex/fyy-h5-prototype-integration
+H5 Product 阶段 worktree: 不适用
+创建时间: 2026-07-23
+```
+
 ## 风险记录
 
+- H5 原型已完成 26 页、H5-001 至 H5-013 覆盖与静态契约验证；Codex 浏览器禁止访问本地 `file://`，因此 320/375/390/414px 的真实浏览器截图与横向溢出检查需在允许本地 URL 的环境补验。
 - H5/APP 现有框架与对接契约仍需确认。
 - 身份证号、手机号、社保卡号、掌静脉特征属于敏感或生物识别数据，需明确加密、脱敏、授权、留存和删除规则。
 - 移动支付和实体社保卡交易接口需明确签名、幂等、金额校验、重试和对账机制。
 - 设备远程配置、批量导入导出、权限分级和删除操作必须重点进行安全与审计检查。
 
 ## 阶段变更记录
+
+```text
+阶段: Product H5 原型设计
+状态: 已完成（运行时受限）
+来源: docs/requirements/纺院需求.md H5-001 至 H5-013；project/h5/src/views/**；snowy-h5-app-designer
+产物: docs/design/FY-20260714-UNICARD-h5-page-blueprint.md；docs/design/FY-20260714-UNICARD-h5-low-fidelity/
+页面范围: 26 个独立页面；学校专区、访客预约、校园启航、图书服务、我的、服务消息、校园卡包
+验证: H5 蓝图校验 PASS；H5 原型静态校验 PASS；JS 语法 PASS；26 页组件/路由/需求映射 PASS；320/375/390/414 视口契约已声明
+标注: 全局壳与页面级作用域分离；29 个自动标注目标与页面蓝图一致
+运行时限制: Codex 浏览器安全策略禁止访问本地 file:// 页面，未绕过策略，未生成浏览器截图
+缓存更新: 无需更新，未修改 project/h5 生产代码或形成新的框架实现模式
+下一步: UI/Figma 决策
+时间: 2026-07-23
+```
 
 ```text
 阶段: 需求和框架装载
