@@ -4,7 +4,7 @@
 
 通用组件金标：`project/h5/src/views/demo/`
 
-实际页面模式：`project/h5/src/views/`。页面结构选择必须先命中 `.codex/skills/snowy-h5-app-designer/references/actual-page-patterns.md`。
+去重业务场景样本：`.codex/skills/snowy-h5-app-designer/assets/reference-business-scenes/views/`。页面结构选择必须先命中 `.codex/skills/snowy-h5-app-designer/references/actual-page-patterns.md`；这些样本独立于 H5 框架业务目录。
 
 ## 视觉基线
 
@@ -40,6 +40,7 @@
 | 底部弹窗 | `OpenModal` | 必须可由遮罩和关闭按钮退出 |
 | 圆形进度 | `CircleProgress` | 百分比限制 0-100 |
 | 空状态 | `Empty` | 文案应符合具体业务 |
+| 滚动列表 | `CommonInfiniteList` + `useInfiniteList` | 默认 `current/size`；覆盖加载、刷新、空态、失败重试和完成 |
 | 身份证拍摄 | `IdCardCamera` | 需相机权限和 HTTPS/localhost |
 
 ## 页面结构
@@ -55,6 +56,7 @@
 - 原型的字段和交互来自需求，实际业务页面提供页面结构和信息密度，Demo 只补充通用组件用法。
 - 每个按钮均需可操作；不可用时展示禁用原因。
 - 列表至少覆盖加载、正常、空、失败和分页/加载更多状态。
+- 分页列表优先使用 `CommonInfiniteList` 与 `useInfiniteList`，返回结构通过显式提取函数适配。
 - 表单至少覆盖初始、校验错误、提交中、成功和失败状态。
 - 涉及图片、文件、地图、相机时展示真实媒体形态，不用文字占位代替。
 - HTML 原型必须使用 H5 专用多文件骨架和标注运行时，不复用桌面后管壳。

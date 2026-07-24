@@ -1,5 +1,8 @@
 # H5 实现检查表
 
+- [ ] 分页/滚动列表已读取并复用 Skill 内置 `components/CommonInfiniteList` 与 `composables/useInfiniteList` 源码，或记录不适用原因。
+- [ ] 滚动列表已验证首次加载、加载更多、下拉刷新、空态、失败重试和完成状态。
+
 - [ ] 已读取 H5 框架文档、缓存、最接近的 `src/views` 实际页面和 `/demo`。
 - [ ] 路由显式登记，没有重新装载历史业务模块。
 - [ ] 未经需求确认没有恢复认证守卫。

@@ -2,7 +2,7 @@
 
 ## 开发原则
 
-- 新 H5 或 H5 原型优先读取 `project/docs/h5-framework-overview.md`、`project/docs/patterns/h5-*.md`、最接近的 `project/h5/src/views/` 实际页面和 `project/h5/src/views/demo/`。
+- 新 H5 或 H5 原型优先读取 `project/docs/h5-framework-overview.md`、`project/docs/patterns/h5-*.md`、H5 Skill 中最接近的去重业务场景样本和 `project/h5/src/views/demo/`。
 - 页面基于 `project/h5/` 增量开发，不重新搭建 Vue/Vite/Vant 工程。
 - 优先使用项目组件；没有匹配组件时先组合 Vant 组件，再新增项目组件。
 - 业务页面按功能目录拆分，复杂页面将展示区、表单区、选择器和反馈浮层拆成独立组件。
@@ -21,6 +21,7 @@
 - 图片上传必须支持选择、预览、删除、失败和数量限制；原型阶段可使用本地读取，不得假装上传成功到服务端。
 - 设备能力必须说明 HTTPS、权限和宿主限制，并提供取消路径。
 - 所有可见按钮都必须可点击，加载、空、错误、禁用和成功状态按需求覆盖。
+- 分页列表统一使用 `CommonInfiniteList` 与 `useInfiniteList`；接口字段通过提取函数适配，不在页面重复处理并发请求、页码和刷新竞争。
 
 ## 代码规范
 
@@ -35,7 +36,7 @@
 
 ## 原型规范
 
-- H5 原型应优先复用 `src/views/` 中最接近的实际业务页面结构，再使用 `/demo` 补充组件能力，不用桌面后管布局缩放代替。
+- H5 原型应优先参考 `.codex/skills/snowy-h5-app-designer/assets/reference-business-scenes/views/` 中最接近的实际业务页面结构，再使用 `/demo` 补充当前框架组件能力，不用桌面后管布局缩放代替。
 - 原型按真实页面拆分路由，菜单、底部导航、详情、表单和弹窗需实际可切换。
 - 字段、按钮、状态和异常必须来自需求；Demo 中的示例数据不能被当成固定业务规则。
 - 需求没有 H5 设计信息时，以本规范和 Vant 官方交互为基线，并把推断项标记为待确认。

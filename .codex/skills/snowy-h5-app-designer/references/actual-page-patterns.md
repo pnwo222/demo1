@@ -1,28 +1,31 @@
-# H5 实际业务页面模式索引
+# H5 去重业务场景索引
 
-生成 H5 原型或开发新页面时，先按需求类型命中本索引，再读取对应源码。实际业务页面的结构和信息密度优先于通用 Demo。
+生成 H5 原型或开发新页面时，先按需求类型命中本索引，再读取对应 Skill 样本源码。真实业务页面的结构和信息密度优先于通用 Demo。
+
+下表中的业务页面路径默认指向：
+
+`assets/reference-business-scenes/views/...`
+
+组件与组合式方法会明确使用 `assets/reference-business-scenes/components/...` 或 `assets/reference-business-scenes/composables/...`。
+
+这些样本按页面模式去重，不参与 H5 框架运行，也不保证脱离原项目后可独立编译。只读取其布局结构、信息密度、字段组织和交互方式；其中的学校名称、接口、认证判断和业务数据不得复制到新项目。业务图片不归档，新原型按当前需求选择真实素材或使用明确占位。
 
 ## 页面模式
 
 | 模式 | 优先参考 | 可复用要点 |
 | --- | --- | --- |
-| 综合首页/门户 | `src/views/index/index.vue`、`src/views/index/modules/**` | 学校入口、顶部背景、Banner、应用宫格、公告、模块和资讯的组合顺序 |
-| 应用宫格/更多应用 | `src/views/index/modules/app/index.vue`、`more.vue` | 图标宫格、分组、更多入口、点击跳转 |
-| 图文资讯列表 | `src/views/news/index.vue`、`activity/index.vue`、`index/components/List/**` | 多种封面比例、标题摘要、来源时间、加载更多和空态 |
-| 图文详情 | `src/views/news/detail.vue`、`activity/detail.vue`、`notice/detail.vue` | 标题、元信息、富文本、附件或底部操作 |
-| 公告列表/滚动公告 | `src/views/notice/index.vue`、`index/modules/notice/index.vue` | 公告摘要、时间、未读/重点状态、详情入口 |
-| 搜索页 | `src/views/book/search/index.vue`、`modules/history/index.vue` | 搜索框、搜索历史、清空、联想和结果跳转 |
-| 带筛选的卡片列表 | `src/views/book/list/index.vue`、`components/FilterBox/index.vue` | 固定筛选头、开关、筛选数量、卡片结果、加载与空态 |
-| 复杂内容详情 | `src/views/book/list/detail.vue`、`components/BookDetail/index.vue` | 封面、主信息、可借状态、馆藏明细、操作与说明 |
-| 排行/推荐 | `src/views/book/list/rank.vue`、`book/tj/index.vue` | 排名视觉、分类切换、推荐理由和卡片信息 |
-| 记录列表 | `src/views/xf/index.vue`、`mj/index.vue`、`yy/index.vue`、`book/record/index.vue` | 时间筛选、汇总信息、状态标签、分组记录、详情入口 |
-| 记录详情 | `src/views/xf/detail.vue`、`yy/detail.vue` | 业务编号、状态、分组字段、只读详情和取消/再次操作 |
-| 分组表单 | `src/views/yy/form.vue`、`mine/info.vue`、`xymp/form.vue` | `van-cell-group` 分组、右对齐输入、选择器、校验、底部固定主按钮 |
-| 多步骤办理 | `src/views/signCard/index.vue`、`step1.vue`、`step2.vue`、`result.vue` | 办理说明、步骤推进、证件拍摄、确认承诺、提交和成功/失败结果 |
-| 校园码/动态凭证 | `src/views/code/index.vue`、`components/mycard/**` | 卡面切换、二维码刷新倒计时、身份差异、异常提示和关联预约 |
-| 个人中心 | `src/views/mine/index.vue`、`mine/info.vue` | 用户头部、身份切换、余额/卡状态、功能分组和编辑态 |
-| 业务卡片/可保存海报 | `src/views/xymp/index.vue` | 品牌背景、个人信息、头像、保存为图片和宿主下载能力 |
-| 认证历史参考 | `src/views/sys/user/**` | 登录、身份选择、绑卡和结果页；默认运行时不得自动恢复 |
+| 综合首页/门户 | `index/index.vue`、`index/modules/app/index.vue`、`index/modules/banner/index.vue` | 顶部品牌区、Banner、应用宫格和业务模块的组合顺序 |
+| 图文资讯列表与详情 | `news/index.vue`、`news/detail.vue` | 封面、标题摘要、来源时间、加载更多、富文本详情 |
+| 滚动分页列表 | `views/infinite-list/index.vue`、`components/CommonInfiniteList/index.vue`、`composables/useInfiniteList.ts` | 分页加载、下拉刷新、完成、空态、失败重试和并发保护 |
+| 搜索与历史 | `book/search/index.vue` | 搜索框、历史、清空、联想和结果跳转 |
+| 筛选卡片列表与复杂详情 | `book/list/index.vue`、`book/components/FilterBox/index.vue`、`book/list/detail.vue` | 固定筛选、结果卡片、馆藏明细、状态和操作 |
+| 记录列表与详情 | `xf/index.vue`、`xf/detail.vue` | 时间筛选、汇总、分组记录、业务编号和只读详情 |
+| 分组业务表单 | `yy/form.vue`、`yy/detail.vue` | Cell/Form 分组、选择器、校验、确认和详情回看 |
+| 多步骤办理 | `signCard/index.vue`、`step1.vue`、`step2.vue`、`result.vue` | 说明、步骤推进、证件拍摄、承诺、提交和结果 |
+| 校园码/动态凭证 | `code/index.vue`、`code/components/mycard/` | 卡面切换、二维码、倒计时、身份差异和异常提示 |
+| 个人中心 | `mine/index.vue`、`mine/info.vue`、`mine/index.less` | 用户头部、身份状态、功能分组和资料编辑 |
+| 业务卡片/海报 | `xymp/index.vue` | 品牌背景、个人信息、头像和宿主保存能力 |
+| 历史认证参考 | `sys/user/login.vue`、`sys/user/auth.vue`、`sys/user/account/index.vue` | 登录、身份选择和账号设置；默认运行时不得自动恢复 |
 
 ## 选型规则
 
@@ -33,6 +36,7 @@
 5. 涉及选择器时读取实际 `createApiPicker`、`createDatePicker`、`createTimePicker` 用法。
 6. 涉及图片、证件或二维码时读取实际媒体组件，不用文字占位。
 7. 历史页面中的学校名称、接口数据和认证判断只能作为结构参考，不能写进新需求。
+8. 分页、记录流和搜索结果先复用 Skill 内置滚动列表组件与方法，不从 `/demo` 反推实现。
 
 ## 样式观察
 
