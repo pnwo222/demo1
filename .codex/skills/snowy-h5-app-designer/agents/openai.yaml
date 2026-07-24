@@ -1,4 +1,4 @@
 interface:
   display_name: "Snowy H5 原型与应用设计"
   short_description: "参考真实 H5 页面生成带标注的原型并开发 Vue/Vant 页面"
-  default_prompt: "读取 project/h5/src/views 的实际页面模式，按需求生成或实现 H5 页面；原型必须使用多文件骨架、逐页蓝图和可持久化标注。"
+  default_prompt: "读取 Skill 内真实业务场景快照和 project/h5 框架 Demo，按需求生成或实现 H5 页面；原型必须使用多文件骨架、逐页蓝图和可持久化标注。"

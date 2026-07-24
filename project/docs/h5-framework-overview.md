@@ -4,7 +4,7 @@
 
 `project/h5/` 是独立的移动端实际应用框架，技术栈为 Vue 3、Vite、TypeScript、Vant、Pinia、Vue Router、Axios、UnoCSS 和 Less。它与 `project/snowy-admin-web/` 后管前端并列，后续 H5 页面、H5 原型和移动端组件应优先复用本项目。
 
-当前模板入口仅装载 `/demo` 组件演示页，不装载历史业务路由，也不执行登录、身份选择或 Token 权限守卫。历史业务源码保留为参考，但不是默认运行时能力。
+当前模板入口仅装载 `/demo` 组件演示页，不装载历史业务路由，也不执行登录、身份选择或 Token 权限守卫。历史真实业务场景已归档到 `.codex/skills/snowy-h5-app-designer/assets/reference-business-scenes/views/`，不再要求长期保留在 H5 框架中。
 
 ## 运行方式
 
@@ -27,7 +27,7 @@ pnpm build
 | `src/main.ts` | 应用创建、Pinia、全局组件、插件、路由和通用守卫接入 |
 | `src/App.vue` | Vant 主题容器和路由出口 |
 | `src/router/` | 当前有效路由、页面标题和通用进度守卫 |
-| `src/views/` | 实际业务页面模式库，包含门户、资讯、图书、记录、预约、办卡、校园码和个人中心等参考 |
+| `src/views/` | 框架页面目录；后续新业务页面按功能放入，历史业务场景不作为框架必备内容 |
 | `src/views/demo/` | H5 通用组件、交互和视觉规范演示入口 |
 | `src/components/` | 项目级可复用组件 |
 | `src/layouts/` | 页面布局参考 |
@@ -43,7 +43,7 @@ pnpm build
 - `/demo` 展示 H5 组件和交互。
 - 未匹配路由进入 404。
 - 不使用 `import.meta.glob` 自动装载历史业务路由。
-- 历史业务路由定义已移除；历史页面源码仍保留为设计和代码参考。
+- 历史业务路由定义已移除；历史页面参考由 H5 Skill 去重场景样本提供。
 
 ## 组件能力
 
@@ -54,9 +54,10 @@ pnpm build
 | 选择器 | `OpenApiPicker`、`OpenDatePicker`、`OpenTimePicker`、`OpenMjDatePicker`、`OpenXfDatePicker` |
 | 浮层反馈 | Vant Toast、Notify、Dialog、ActionSheet、Popup、`OpenModal` |
 | 进度和空态 | `CircleProgress`、`Empty` |
+| 滚动列表 | `CommonInfiniteList`、`useInfiniteList`，支持分页、下拉刷新、空态和失败重试 |
 | 设备能力 | `IdCardCamera` |
 
-通用组件用法以 `project/h5/src/views/demo/` 为可运行示例；页面结构和业务信息密度以 `project/h5/src/views/` 下最接近的实际业务页面为优先参考。
+通用组件用法以 `project/h5/src/views/demo/` 为可运行示例；页面结构和业务信息密度以 `.codex/skills/snowy-h5-app-designer/assets/reference-business-scenes/views/` 中最接近的去重业务场景样本为优先参考。
 
 ## H5 原型能力
 

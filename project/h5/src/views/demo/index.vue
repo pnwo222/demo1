@@ -2,12 +2,13 @@
 import FeedbackDemo from './components/FeedbackDemo.vue'
 import FormDemo from './components/FormDemo.vue'
 import FoundationDemo from './components/FoundationDemo.vue'
+import InfiniteListDemo from './components/InfiniteListDemo.vue'
 import NativeCapabilityDemo from './components/NativeCapabilityDemo.vue'
 import PickerDemo from './components/PickerDemo.vue'
 
 const activeTab = ref(0)
-const tabs = ['基础', '表单', '选择器', '反馈', '设备能力']
-const sectionIds = ['foundation', 'form', 'picker', 'feedback', 'native']
+const tabs = ['基础', '列表', '表单', '选择器', '反馈', '设备能力']
+const sectionIds = ['foundation', 'list', 'form', 'picker', 'feedback', 'native']
 
 function scrollToSection(index: number) {
   activeTab.value = index
@@ -42,6 +43,9 @@ function scrollToSection(index: number) {
     <main>
       <div id="foundation" class="section-anchor">
         <FoundationDemo />
+      </div>
+      <div id="list" class="section-anchor">
+        <InfiniteListDemo />
       </div>
       <div id="form" class="section-anchor">
         <FormDemo />

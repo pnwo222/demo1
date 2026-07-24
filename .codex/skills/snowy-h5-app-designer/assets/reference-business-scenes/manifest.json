@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Snowy H5 去重业务场景与可复用框架模式只读资源",
+  "sourceAtSnapshot": "project/h5 的代表页面、组件和组合式方法源码",
+  "selectionRule": "每类页面模式只保留代表场景及必要复用代码，不归档业务图片",
+  "files": [
+    {
+      "path": "components/CommonInfiniteList/index.vue",
+      "bytes": 2699,
+      "sha256": "48a4c3d5737a3f9a06b004cd789848eb12cfdef34c60fb20e0174f3cec69ef52"
+    },
+    {
+      "path": "composables/useInfiniteList.ts",
+      "bytes": 4318,
+      "sha256": "a7316208314fed73901e2327235cf04c17e2960b9403eba3f067503a93c0f45e"
+    },
+    {
+      "path": "views/book/components/FilterBox/index.vue",
+      "bytes": 3848,
+      "sha256": "357e23ca8d5c9b02736c7f116984116a5e68ab2e2504f0ad864303b316c88314"
+    },
+    {
+      "path": "views/book/list/detail.vue",
+      "bytes": 12485,
+      "sha256": "e070336028704e73aa840d1e9acd881476ae064728fbf7306ee2f4e0e36d453a"
+    },
+    {
+      "path": "views/book/list/index.vue",
+      "bytes": 6314,
+      "sha256": "16ede1b5ea03ac2c41d53fb23bfed0d0a983a708f2206bc9082e1ea0ae9ca53b"
+    },
+    {
+      "path": "views/book/search/index.vue",
+      "bytes": 2271,
+      "sha256": "41d6f695f701b889185d351d65ff45f3153e1e096c16c8279dadebace59ea541"
+    },
+    {
+      "path": "views/code/components/mycard/code.vue",
+      "bytes": 2286,
+      "sha256": "dde7853b6801fe1494baa966efdec690cb3b83a6f60b77ff222e97b8b93325a2"
+    },
+    {
+      "path": "views/code/components/mycard/index.less",
+      "bytes": 2412,
+      "sha256": "117157bb4283f5ebb83252603baf539dc15778eb82f0a688b83eae7b76e3f9bf"
+    },
+    {
+      "path": "views/code/components/mycard/sbCard.vue",
+      "bytes": 3837,
+      "sha256": "a2c759d5445a60e0a916f4e78e89ce5a4c0689aeee00c51b640dc1db3d64685f"
+    },
+    {
+      "path": "views/code/components/mycard/stuCard.vue",
+      "bytes": 3581,
+      "sha256": "03febc1e9928f67248e93411340956dbaa8783fcc075bd7d088070047dd97d36"
+    },
+    {
+      "path": "views/code/index.vue",
+      "bytes": 5960,
+      "sha256": "d843db5d9dbbc46b1676ea0a237a60050c951c34835ce6a8dee299742d96a7ee"
+    },
+    {
+      "path": "views/index/index.vue",
+      "bytes": 1591,
+      "sha256": "f2d23104a41a885a2692fd7e0d5c0ccf48cf4c32e7da1a9fcfc5f72bd9cda7c9"
+    },
+    {
+      "path": "views/index/modules/app/index.vue",
+      "bytes": 1785,
+      "sha256": "4358e5d1eb4936d5af754e94520b73ab34c2a5421b2f002443aaebd77e77c100"
+    },
+    {
+      "path": "views/index/modules/banner/index.vue",
+      "bytes": 920,
+      "sha256": "4fdfca14d281c0681462a1ec35a60800066db5594c8b2b243bd49feab1999247"
+    },
+    {
+      "path": "views/infinite-list/index.vue",
+      "bytes": 3247,
+      "sha256": "f9c32806461d8b4132ec1d0991d7ee0542f67cc996005d2b0c211e4dd8e05534"
+    },
+    {
+      "path": "views/mine/index.less",
+      "bytes": 4511,
+      "sha256": "6319ebc869f37d64ab07729e23bad89a3dc920c2e38fc7d827804700fb9acafb"
+    },
+    {
+      "path": "views/mine/index.vue",
+      "bytes": 7834,
+      "sha256": "92900e96499b28adc5eb4acd96897216a97e51ea113d4a07279e6e35c5d56cd8"
+    },
+    {
+      "path": "views/mine/info.vue",
+      "bytes": 4520,
+      "sha256": "7317281d252f4cf0602d60c4961c09555e2d4a7107b37ecd50d4408e9c54e45a"
+    },
+    {
+      "path": "views/news/detail.vue",
+      "bytes": 1335,
+      "sha256": "c62e42421040c4415c93f55de151b86ad85129909bd99b11a95bce5980e2fac6"
+    },
+    {
+      "path": "views/news/index.vue",
+      "bytes": 899,
+      "sha256": "7563202b24e66e1a69f445b19f69531319cf1eeb10e626b86417bdacd4d04a98"
+    },
+    {
+      "path": "views/signCard/index.vue",
+      "bytes": 4749,
+      "sha256": "c8506a342d183189d8e04e894a2236d4b88c754de2ab5630f483eb04ab875307"
+    },
+    {
+      "path": "views/signCard/result.vue",
+      "bytes": 2026,
+      "sha256": "c18a1c53039d8c7b1cb3f7303685dcef956f41f900c574a607b1dca3b9a32d6a"
+    },
+    {
+      "path": "views/signCard/step1.vue",
+      "bytes": 3996,
+      "sha256": "ae27ab28b2e549f4582ccd6c3f9879a1502ca445a463d73542b6643eb3562107"
+    },
+    {
+      "path": "views/signCard/step2.vue",
+      "bytes": 10845,
+      "sha256": "f1288fa6343f69a0ba0e11ee409e41ff25441c01f24e2900be7c6c6dfa0a1651"
+    },
+    {
+      "path": "views/sys/user/account/index.vue",
+      "bytes": 8632,
+      "sha256": "bb3ed07676a6a79a036bbf1f83004a97f7c0f211f19630c5153c8d94e314997b"
+    },
+    {
+      "path": "views/sys/user/auth.vue",
+      "bytes": 2927,
+      "sha256": "74dd359f2adc77c0d0838ae0a00c9050c356d75b958954bb4302387e34a1ee48"
+    },
+    {
+      "path": "views/sys/user/login.vue",
+      "bytes": 2273,
+      "sha256": "5a27d0c89b274630ac1e27dd49fa86928827564446d2948bd3a8d23f090998c1"
+    },
+    {
+      "path": "views/xf/detail.vue",
+      "bytes": 2778,
+      "sha256": "b71872035f2f01a239b490d7f3bdc719f1f03ac91ca893dfb42b1ea731e3e8b4"
+    },
+    {
+      "path": "views/xf/index.vue",
+      "bytes": 5040,
+      "sha256": "c9b5287d04f7c52b79a959d3e782665067a27113173fe1bc399c01084715f318"
+    },
+    {
+      "path": "views/xymp/index.vue",
+      "bytes": 5680,
+      "sha256": "71188bbe613a100eba39f62d1fd933eebacfff6664569a7c91d51cafd84d80fb"
+    },
+    {
+      "path": "views/yy/detail.vue",
+      "bytes": 2522,
+      "sha256": "c0e577c9588a7a536bce0ee1651b12303e149803c294e306cea74feef6f9e86b"
+    },
+    {
+      "path": "views/yy/form.vue",
+      "bytes": 12115,
+      "sha256": "4e28d6a4fbbdb7d7111e052240c23f4e6d7d74fd96aab82adc68398973e89f99"
+    }
+  ]
+}

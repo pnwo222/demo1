@@ -1,11 +1,11 @@
 ---
 name: snowy-h5-app-designer
-description: Design, generate, annotate, validate, implement, review, or extend mobile H5 applications and multi-file HTML prototypes using this repository's project/h5 framework, real business pages under src/views, Vant components, local components, routing conventions, UI baseline, mock strategy, and historical authentication reference. Use for new H5 apps, H5 pages, H5 prototypes, annotated requirement prototypes, mobile form/list/detail flows, route design, or deciding how a mobile requirement should reuse project/h5.
+description: Design, generate, annotate, validate, implement, review, or extend mobile H5 applications and multi-file HTML prototypes using this repository's project/h5 framework, Skill-bundled real business scene snapshots, Vant components, local components, routing conventions, UI baseline, mock strategy, and historical authentication reference. Use for new H5 apps, H5 pages, H5 prototypes, annotated requirement prototypes, mobile form/list/detail flows, route design, or deciding how a mobile requirement should reuse project/h5.
 ---
 
 # Snowy H5 应用设计与开发
 
-以 `project/h5/` 的实际代码和 `/demo` 为事实来源。不要把后管页面缩放成 H5，也不要从空白 Vue 项目重新搭建。
+以 `project/h5/` 的框架代码、`/demo` 和 Skill 内去重业务场景样本为事实来源。不要把后管页面缩放成 H5，也不要从空白 Vue 项目重新搭建。
 
 ## 必读顺序
 
@@ -14,9 +14,12 @@ description: Design, generate, annotate, validate, implement, review, or extend 
 3. `project/docs/patterns/h5-routing-auth-pattern.md`
 4. `project/docs/patterns/h5-ui-component-pattern.md`
 5. `references/actual-page-patterns.md`
-6. 与需求最接近的 `project/h5/src/views/` 实际业务页面
-7. `project/h5/src/views/demo/`
-8. 与需求最接近的 `project/h5/src/components/`
+6. 与需求最接近的 `assets/reference-business-scenes/views/` 去重业务场景样本
+7. 与需求匹配的 `assets/reference-business-scenes/components/` 和 `assets/reference-business-scenes/composables/` 内置代码资源
+8. `project/h5/src/views/demo/`
+9. 与需求最接近的 `project/h5/src/components/`
+
+`project/h5/src/views/` 下除 `/demo` 外的历史业务页面可能被删除，不得把它们作为唯一参考入口。若仍存在，可用于和 Skill 样本对比，但原型与新功能设计必须能仅依赖 Skill 样本完成场景选型。
 
 设计 H5 原型时必须读取：
 
@@ -25,6 +28,7 @@ description: Design, generate, annotate, validate, implement, review, or extend 
 - `references/prototype-checklist.md`
 
 开发或审查代码时读 `references/implementation-checklist.md`。
+涉及分页列表、下拉刷新、滚动加载或搜索结果时，额外读取 `references/infinite-list-pattern.md`。
 
 ## 执行流程
 
@@ -36,7 +40,7 @@ description: Design, generate, annotate, validate, implement, review, or extend 
 
 按以下顺序：
 
-1. 与需求最接近的 `project/h5/src/views/` 实际页面及其私有组件
+1. 与需求最接近的 `assets/reference-business-scenes/views/` 实际页面样本
 2. `project/h5/src/components/`
 3. `/demo` 中已验证的组件组合
 4. Vant 官方组件
@@ -64,7 +68,7 @@ description: Design, generate, annotate, validate, implement, review, or extend 
 ### 5. 生成 H5 HTML 原型
 
 1. 使用 `references/prototype-blueprint-template.md` 建立逐页蓝图，保留原始需求、字段、状态、交互、异常、权限、设备能力和来源。
-2. 从 `references/actual-page-patterns.md` 选择最接近的真实业务页面，不得用一个万能列表或万能表单替代不同页面。
+2. 从 `references/actual-page-patterns.md` 选择最接近的 Skill 去重业务场景样本，不得用一个万能列表或万能表单替代不同页面。
 3. 执行：
 
 ```powershell
@@ -88,6 +92,8 @@ python .codex/skills/snowy-h5-app-designer/scripts/validate_h5_prototype.py <原
 - 使用 Vue 3 Composition API、`<script setup lang="ts">` 和 TypeScript。
 - 页面放在 `src/views/<feature>/`，页面私有组件放在其 `components/`。
 - API 放在 `src/api/<feature>/`，请求走 `src/utils/http/`。
+- 分页列表必须先读取并复制或适配 Skill 内置的 `assets/reference-business-scenes/components/CommonInfiniteList/index.vue` 与 `assets/reference-business-scenes/composables/useInfiniteList.ts`；通过 `getItems`、`getTotal` 或 `getHasMore` 适配接口，不重复实现分页竞争、刷新和错误状态。
+- 滚动列表页面结构优先读取 `assets/reference-business-scenes/views/infinite-list/index.vue`。不得依赖 `project/h5/src/views/demo/` 才能还原该能力。
 - 接口不可用时同步维护 mock，不在页面中写死线上响应。
 - 样式使用 Less；局部样式优先 scoped。
 - 不修改无关历史业务源码。
@@ -104,11 +110,11 @@ pnpm build
 
 ## 缓存更新
 
-新增可复用组件或页面模式，或路由、认证、主题、请求、目录结构和 `/demo` 发生变化时，更新 `project/docs/patterns/h5-*.md`，并判断 H5 框架文档和本 skill 是否需要同步。
+新增可复用组件或页面模式，或路由、认证、主题、请求、目录结构和 `/demo` 发生变化时，更新 `project/docs/patterns/h5-*.md`，并判断 H5 框架文档和本 skill 是否需要同步。Skill 业务场景样本是去重后的只读设计依据，不随框架业务目录删除；只有出现新的页面模式时才增加或替换代表样本，不因同类业务增加而复制页面。更新后运行 `python scripts/reference_scene_manifest.py` 校验。
 
 ## 原型硬性规则
 
-- 页面风格以最接近的 `project/h5/src/views/` 实际业务页面为主，`/demo` 只补充组件用法。
+- 页面风格以最接近的 `assets/reference-business-scenes/views/` 业务场景样本为主，`/demo` 只补充当前框架组件用法。
 - 首页门户、卡片列表、搜索筛选、记录列表、图文详情、表单、多步骤流程、结果页、校园码/卡片和个人中心必须使用各自页面模式。
 - 字段、按钮、状态和说明来自需求；框架惯例和推断项必须标记来源。
 - HTML 原型中的所有可见操作必须有效，不能只做视觉外壳。
