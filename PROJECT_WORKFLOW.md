@@ -4,7 +4,7 @@
 
 本项目已将 `Agents365-ai/365-skills` 安装到 `.codex/skills/`。本文件以及工作流中涉及流程图、架构图、模块图、ERD、状态机图、时序图、任务图、DAG、依赖图或系统可视化时，默认使用 `.codex/skills/mermaid-skill`；需要可编辑 Draw.io、复杂样式、泳道或厂商图标时使用 `.codex/skills/drawio-skill`；需要 PlantUML/UML/C4 语义时使用 `.codex/skills/plantuml-skill`；需要手绘白板风格时使用 `.codex/skills/excalidraw-skill`。图形产物必须按对应 skill 的校验流程生成和导出。
 
-根目录 `PROJECT_ARTIFACTS.html` 统一导航需求、PRD、原型、设计、技术方案、图表、测试、审查、发布和验收等非代码产物。每次新增、重命名或删除产物后执行 `python scripts/update_artifact_index.py`，阶段放行前确认导航条目存在且链接可打开。
+根目录 `PROJECT_ARTIFACTS.html` 统一导航需求、PRD、原型、设计、技术方案、图表、测试、审查、发布和验收等非代码产物。非并行阶段由 Orchestrator 更新；并行开发阶段由 Integration Owner 在任务合并后统一更新，任务负责人不直接修改共享导航。
 
 ## 主流程
 
@@ -24,11 +24,14 @@ flowchart TD
     E -- "4 暂停" --> END0([暂停])
     D4 --> D
     E1 --> E2{"分支选择"}
-    E2 -- "1 当前分支" --> F["前置 3: 创建需求集成分支"]
+    E2 -- "1 当前分支" --> F{"前置 3: 需求入口识别"}
     E2 -- "2 切换分支" --> E1
     E2 -- "3 暂停" --> END0
-
-    F --> G["阶段 1: 需求和框架装载<br/>读取 docs/requirements/**"]
+    F -- "创建新需求" --> F1["分配需求ID<br/>创建需求状态和需求集成分支<br/>登记 Integration Owner / 备份 Owner"]
+    F -- "恢复已有需求" --> F2["读取全局索引、需求状态和任务状态<br/>切换并同步已登记的需求集成分支"]
+    F -- "暂停" --> END0
+    F1 --> G["阶段 1: 需求和框架装载<br/>读取 docs/requirements/**"]
+    F2 --> G
     G --> H["读取 project/docs/**、project/docs/patterns/**、project/README.md"]
     H --> I{"需求、框架和环境信息是否充分"}
     I -- 否 --> I1["补充或澄清需求 / 框架文档"]
@@ -78,15 +81,16 @@ flowchart TD
     O -- 否 --> N
     O -- 是 --> P["Orchestrator 拆 Feature Slice"]
     P --> Q["生成任务图、DAG、Wave、Owner、Branch/Worktree 策略"]
-    Q --> R{"开发计划确认"}
+    Q --> Q1["创建唯一任务状态文件<br/>登记任务ID、负责人、分支、依赖和允许修改范围"]
+    Q1 --> R{"开发计划确认"}
     R -- 否 --> P
     R -- 是 --> S["从需求集成分支创建 worktree 开发分支 / 目录"]
-    S --> T["Frontend / Backend / Data / QA / Security 开发"]
+    S --> T["任务负责人开发、测试、提交<br/>只维护自己的任务状态文件"]
     T --> U["本地门禁: lint、typecheck、test、build、migration、smoke"]
     U --> V{"门禁通过或风险已记录"}
     V -- 否 --> T
 
-    V -- 是 --> W["Worktree 提交并合并回需求集成分支"]
+    V -- 是 --> W["Review 通过<br/>Integration Owner 运行 integrate-task.ps1<br/>合并并统一更新共享状态与产物导航"]
     W --> X{"需求集成分支验证无误"}
     X -- 否 --> T
     X -- 是 --> Y{"是否合并回开发分支"}
@@ -101,7 +105,7 @@ flowchart TD
     AD -- 否 --> T
     AD -- 是 --> AE["预发验证、灰度发布、全量发布"]
     AE --> AF["发布后监控、验收、复盘"]
-    AF --> NAV["刷新 PROJECT_ARTIFACTS.html<br/>校验全部非代码产物链接"]
+    AF --> NAV["Integration Owner 校验 PROJECT_ARTIFACTS.html<br/>确认全部非代码产物链接"]
     NAV --> AG([完成])
 ```
 
@@ -123,12 +127,13 @@ flowchart LR
     G --> G1[Integration / Smoke / Bugfix]
     H --> H1[Review / Security / CI / Release Notes]
 
-    D1 --> I[Integration Branch 或 PR Queue]
-    E1 --> I
-    F1 --> I
-    G1 --> I
-    H1 --> I
-    I --> J[完整 CI]
+    D1 --> T1["各任务负责人维护独立任务状态文件"]
+    E1 --> T1
+    F1 --> T1
+    G1 --> T1
+    H1 --> T1
+    T1 --> I["Integration Owner<br/>单写需求汇总、全局索引和产物导航"]
+    I --> J[Integration Branch 完整 CI]
     J --> K[最终 PR]
 ```
 
@@ -170,8 +175,10 @@ flowchart TB
 
 - 未读取 `docs/requirements/**` 和 `project/docs/**`，不进入产品设计、技术设计或开发。
 - 未完成开发环境只读自检并输出 `✅`、`⚠️`、`❌` 清单，不进入分支确认。
-- 环境检测和分支确认必须分成两步；未输出当前 Git 分支并取得开发者确认作为开发分支，不创建需求集成分支、worktree、需求状态文件或进入代码开发。
-- 开发必须遵循 `当前分支 -> 需求集成分支 -> worktree 开发分支/目录 -> 合回需求集成分支 -> 询问是否合回当前分支`。
+- 环境检测和分支确认必须分成两步；分支确认后还必须识别“创建新需求 / 恢复已有需求”。恢复路径不得重复创建需求集成分支。
+- 开发必须遵循 `当前分支 -> 新建或恢复需求集成分支 -> 个人任务分支/worktree -> Integration Owner 合回需求集成分支 -> 询问是否合回当前分支`。
+- 每个需求必须登记 Integration Owner 和备份 Owner；每个并行任务必须有唯一任务 ID 和独立任务状态文件。任务负责人只写自己的任务文件，Owner 单写需求汇总、全局索引和 `PROJECT_ARTIFACTS.html`。
+- Owner 日常合并使用 `scripts/integrate-task.ps1` 自动更新共享状态和导航，不需要每次再次执行 AI；发生冲突、契约变化、业务歧义或高风险判断时再由 AI/人工介入。
 - 首次执行流程前，未使用 `.codex/skills/snowy-framework-bootstrap` 执行只读自检、输出框架运行提示并取得开发者确认，不进入产品设计、技术设计或开发。
 - 开发环境检测必须用列表展示 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务，并用 `✅`、`⚠️`、`❌` 标明结果；`检测：` 后必须换行，每个检测项独占一行。
 - 开发环境检测结果写入 `docs/workflow/local-environment-status.md`，该文件被 `.gitignore` 忽略，不提交到 Git；`docs/workflow/status.md` 保持可提交。
@@ -186,7 +193,7 @@ flowchart TB
 - 开发环境检测必须检测可用 MySQL CLI；PATH 找不到 `mysql` 时自动搜索常见安装目录中的 `mysql.exe` 并用绝对路径验证。PATH 和搜索都找不到时记录全局状态 `blocked_missing_mysql_cli`，不进入 PRD/UI/技术设计或开发阶段。
 - 开发必须基于 `project/` 现有 Snowy 框架增量实现，不按空白项目重建目录。
 - 工作流中的流程图、架构图、ERD、状态机图、任务图、DAG 和依赖图必须使用 `.codex/skills/` 下的 365 diagram skills 生成与校验，默认 Mermaid，复杂可编辑图使用 Draw.io。
-- 任何阶段新增、重命名或删除非代码产物后必须执行 `python scripts/update_artifact_index.py`；根目录 `PROJECT_ARTIFACTS.html` 未登记对应产物或存在失效链接时，不得宣称该阶段完成。
+- 非并行阶段由 Orchestrator 更新产物导航；并行开发阶段由 Integration Owner 在任务合并后统一更新。根目录 `PROJECT_ARTIFACTS.html` 未登记对应产物或存在失效链接时，不得宣称该阶段完成。
 - 涉及金额、权限、状态机、资源数量、业务单据、交易、逆向流程、删除和批量操作的改动必须重点审查。
 - 开发 Agent 不能自己给自己放行，必须经过 Review、CI 和人工审批。
 - P0 必须修复；P1 合并前应修复；CI 和发布检查未通过不进入全量发布。

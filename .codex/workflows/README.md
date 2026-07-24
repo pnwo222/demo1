@@ -14,7 +14,7 @@
 1. 用户输入“完成/开发/实现/新增/修复/优化 + 某功能”时，Orchestrator 必须先进入本工作流，不得直接编码。
 2. Orchestrator 先读取 `docs/requirements/` 下的全部需求文档。
 3. Orchestrator 再读取 `project/docs/` 下的全部框架文档，并读取 `docs/workflow/status.md` 全局状态，确认本次开发基于现有 `project/` 框架增量扩展。
-4. 环境自检只在 `docs/workflow/status.md` 记录一次；每个需求或功能必须创建并更新 `docs/workflow/requirements/<需求ID>.md`。
+4. 环境自检由每个开发者在被 Git 忽略的 `docs/workflow/local-environment-status.md` 记录；项目需求索引写入 `docs/workflow/status.md`，每个需求状态写入 `docs/workflow/requirements/<需求ID>.md`。
 5. 首次执行项目工作流前，Orchestrator 使用 `.codex/skills/snowy-framework-bootstrap` 输出框架运行提示，请开发者自行确认前后端具备运行条件；默认不自动安装、构建、启动或校验环境。
 6. 开发环境清单未确认前，`docs/workflow/local-environment-status.md` 本机状态为 `blocked_until_developer_confirmed_ready` 或对应阻塞状态，任何需求不得进入 PRD/UI/技术设计或开发阶段。
 7. 开发者回复“前后端已确认可运行”或等价表达后，Orchestrator 仍必须补齐 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务检测；满足后更新 `docs/workflow/local-environment-status.md` 为 `developer_confirmed_ready`。如果存在阻塞项，记录对应阻塞状态并停在开发环境检测阶段；后续新需求不重复要求环境自检，除非依赖、配置、CLI 或运行状态变化。
@@ -26,6 +26,9 @@
 13. 工作流只约束阶段、产物、门禁和协作规则。
 14. 业务判断、页面范围、技术栈命令和风险重点来自需求文档、框架文档或项目实际代码。
 15. 工作流中凡需要绘制流程图、架构图、模块图、ERD、状态机图、时序图、任务图、DAG、依赖图或其他系统可视化，必须优先使用本项目 `.codex/skills/` 中来自 `Agents365-ai/365-skills` 的图形 skills：默认使用 `.codex/skills/mermaid-skill`；需要可编辑 Draw.io、复杂样式、泳道、厂商图标或精细布局时使用 `.codex/skills/drawio-skill`；需要 PlantUML/UML 语义时使用 `.codex/skills/plantuml-skill`；需要手绘白板风格时使用 `.codex/skills/excalidraw-skill`。使用前必须读取对应 `SKILL.md`，并按 skill 要求完成校验和导出。
+16. 分支确认后必须选择“创建新需求”或“恢复已有需求”。恢复需求读取既有状态、集成分支和未完成任务，不重复创建需求。
+17. 并行开发任务使用 `docs/workflow/tasks/<需求ID>/<任务ID>.md`。任务负责人只维护自己的任务文件；Integration Owner 单独维护需求汇总、全局索引和产物导航。
+18. Owner 日常集成运行 `scripts/integrate-task.ps1`，不要求再次调用 AI；冲突、契约变化、业务歧义和高风险判断再交给 AI/人工处理。
 
 ## 相关文件
 
@@ -39,5 +42,8 @@
 - `docs/requirements/`
 - `docs/workflow/status.md`
 - `docs/workflow/requirements/`
+- `docs/workflow/tasks/`
+- `scripts/workflow_task.py`
+- `scripts/integrate-task.ps1`
 - `project/docs/`
 - `.github/workflows/`

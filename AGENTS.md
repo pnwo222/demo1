@@ -7,7 +7,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 ## 协作原则
 
 - 用户输入“完成/开发/实现/新增/修复/优化 + 某功能”时，必须视为项目工作流入口，先由 Orchestrator 走简版 SDLC 流程，不得直接进入代码实现。
-- 工作流开始前，Orchestrator 必须先执行开发环境检测；环境检测通过或开发者选择“环境有警告但继续”后，才输出当前 Git 分支和工作区状态，并让开发者确认是否以当前分支作为开发分支。环境检测和分支确认必须分成两个阶段，不得合并输出。未确认分支前，不创建需求分支、worktree 或进入代码开发。
+- 工作流开始前，Orchestrator 必须先执行开发环境检测；环境检测通过或开发者选择“环境有警告但继续”后，才输出当前 Git 分支和工作区状态，并让开发者确认是否以当前分支作为开发分支。环境检测和分支确认必须分成两个阶段，不得合并输出。分支确认后必须先让开发者选择“创建新需求”或“恢复已有需求”：新需求才创建需求集成分支；恢复已有需求必须读取 `docs/workflow/status.md` 和对应需求状态文件，切换并同步已登记的需求集成分支，禁止重复创建。未确认分支和需求入口前，不创建需求分支、worktree 或进入代码开发。
 - 所有 `状态：需确认` 的阶段都是只读阶段；在开发者选择确认项之前，不得创建需求集成分支、worktree、需求状态文件，不得登记需求索引，也不得修改业务代码。
 - PRD 和 UI 设计阶段可由开发者明确跳过。用户说“跳过 PRD”“无需 PRD”“跳过 UI”“无需设计”“直接进入技术方案/开发”等等价表达时，Orchestrator 必须记录跳过项和原因，然后进入下一合适阶段。
 - 所有需要开发者决策的节点，优先使用可点击选择项，而不是只让开发者手动输入。选择项必须覆盖推荐路径、跳过路径和自定义输入路径；如果当前 Codex 客户端不支持选择控件，则在文本中给出编号选项，允许开发者输入编号或自由文本。编号选项必须逐行输出，不得挤在 `下一步` 同一行。
@@ -28,12 +28,15 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 - 只有用户明确说“跳过工作流”“直接改代码”“无需 PRD/设计/技术方案”时，才允许跳过整个前置工作流；跳过原因必须在回复中简短记录。
 - 修改项目之前，先阅读本文件、`.codex/workflows/`、相关 `.codex/agents/*.md` 角色说明、`docs/requirements/` 下的全部需求文档，并使用 `.codex/skills/snowy-framework-reader` 读取 `project/` 框架、`project/docs/` 框架说明、开发规范和 `project/docs/patterns/` 框架模式缓存。
 - 首次执行项目工作流前，必须使用 `.codex/skills/snowy-framework-bootstrap` 先执行只读环境自检，并用 `✅`、`⚠️`、`❌` 列出 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务结果，再提示开发者确认当前 Snowy 框架能否在本机正常运行。检测结果必须在 `检测：` 后逐项换行，每个检测项独占一行，禁止用分号、逗号或空格串成一整段。默认不由 Agent 自动执行环境安装、构建、启动或校验脚本，除非用户明确要求；开发环境清单未确认前，不进入 PRD/UI/技术设计或开发阶段。
-- 工作流状态分为全局状态、开发者本机环境状态和需求状态：`docs/workflow/status.md` 记录可提交的项目级状态和需求工作项索引；`docs/workflow/local-environment-status.md` 记录当前开发者本机环境检测结果，必须被 `.gitignore` 忽略，不得提交到 Git；每个需求或功能的阶段状态记录在 `docs/workflow/requirements/<需求ID>.md`。开发者回复“前后端已确认可运行”或等价表达后，Orchestrator 必须按环境检测清单确认 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务；检测结果写入 `docs/workflow/local-environment-status.md`。PRD、UI、技术设计、开发、测试、审查、发布、验收、分支和合并等单需求阶段进入、完成、跳过或阻塞时，必须更新对应需求状态文件。
+- 工作流状态分为全局状态、开发者本机环境状态、需求状态和任务状态：`docs/workflow/status.md` 记录可提交的项目级状态和需求工作项索引；`docs/workflow/local-environment-status.md` 记录当前开发者本机环境检测结果，必须被 `.gitignore` 忽略，不得提交到 Git；每个需求或功能的阶段状态记录在 `docs/workflow/requirements/<需求ID>.md`；每个并行开发任务记录在 `docs/workflow/tasks/<需求ID>/<任务ID>.md`。开发者回复“前后端已确认可运行”或等价表达后，Orchestrator 必须按环境检测清单确认 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务；检测结果写入 `docs/workflow/local-environment-status.md`。
+- 每个需求必须登记一个 `Integration Owner` 和一个备份 Owner。只有 Integration Owner 可以修改 `docs/workflow/status.md`、需求状态文件的任务汇总区和根目录 `PROJECT_ARTIFACTS.html`；普通任务负责人只能维护自己的 `docs/workflow/tasks/<需求ID>/<任务ID>.md` 和任务产物。Owner 交接必须写入需求状态文件。单人开发时 Orchestrator 可兼任 Integration Owner。
+- 任务领取必须使用唯一任务 ID，登记负责人、需求集成分支、任务分支、依赖、允许修改范围和状态。推荐执行 `python scripts/workflow_task.py claim ...` 后立即提交并推送任务登记；推送被拒绝时先同步并重新检查，禁止两人继续开发同一任务。worktree 路径属于每台电脑的本地信息，不写入共享任务状态。
+- `PROJECT_ARTIFACTS.html` 采用单一写入：任务负责人只在任务状态文件中登记产物，Integration Owner 合并任务后统一执行 `scripts/integrate-task.ps1` 或 `python scripts/update_artifact_index.py`。日常无冲突集成不要求再次调用 AI；只有冲突、契约变化、风险判断或业务歧义需要 AI/人工介入。
 - 所有文本文件必须使用 UTF-8 编码保存，尤其是 `*.md`、`*.yml`、`*.yaml`、`*.json`、`*.toml`、`*.java`、`*.vue`、`*.ts`、`*.js`、`*.properties` 和 `docs/workflow/**` 状态文件。禁止用未显式编码的 PowerShell 写入中文文件；PowerShell 读取必须使用 `Get-Content -Encoding UTF8`，写入必须使用 `Set-Content -Encoding UTF8` 或 `Out-File -Encoding UTF8`。Agent 手工编辑优先使用 `apply_patch`，避免整文件重写导致乱码。
 - 项目内文档和阶段产物默认使用简体中文，包括 PRD、原型说明、技术方案、数据方案、开发计划、Review、测试计划和状态文件。代码标识符、路径、命令、API、类名、配置键、第三方固定模板句可以保留英文。除非用户明确要求英文，不得生成整篇英文项目文档。
-- 根目录 `PROJECT_ARTIFACTS.html` 是非代码产物统一导航。任何 Agent 新增、重命名或删除需求、PRD、原型、设计、架构、数据、计划、图表、测试、审查、发布、验收或流程状态产物后，必须在本阶段结束前执行 `python scripts/update_artifact_index.py`，确认新产物已登记且链接可跳转。导航不登记源码、依赖、构建目录、临时文件、本机状态、原型内部 JS/CSS、原型素材、运行时截图、测试截图和 Word/PDF 拆出的媒体图片。
+- 根目录 `PROJECT_ARTIFACTS.html` 是非代码产物统一导航。非并行阶段由当前 Orchestrator/Integration Owner 在阶段结束前执行 `python scripts/update_artifact_index.py`；并行开发阶段只有 Integration Owner 在任务合并后统一刷新。导航不登记源码、依赖、构建目录、临时文件、本机状态、任务内部状态、原型内部 JS/CSS、原型素材、运行时截图、测试截图和 Word/PDF 拆出的媒体图片。
 - 后端启动前必须提示开发者确认 Java、MySQL、Redis 配置：Java 在 IDEA Project SDK、Modules SDK、Java Compiler、Maven importer、Maven runner 中都必须是 JDK 17；MySQL/Redis 配置位于 `project/snowy-web-app/src/main/resources/application.properties`，可由开发者自行修改，或在明确要求时由 Agent 按开发者提供的值修改。若只修改数据库名，只更新 MySQL JDBC URL 中 `host:port/` 后、`?` 前的库名。
-- 不直接在当前分支或主分支上开发。开发者确认当前分支作为开发分支后，工作流必须先从当前分支创建新的需求集成分支；后续代码开发从该新分支再创建 worktree 开发分支/目录。worktree 开发完成并提交后，先合并回需求集成分支；在需求集成分支验证无误后，再询问开发者是否合并回开发分支。
+- 不直接在当前分支或主分支上开发。创建新需求时，从开发者确认的开发分支创建新的需求集成分支；恢复已有需求时，切换并同步状态文件已登记的需求集成分支。后续代码开发从需求集成分支创建个人任务分支和本地 worktree。worktree 开发完成并提交后，由 Integration Owner 在 Review 通过后合并回需求集成分支；在需求集成分支验证无误后，再询问开发者是否合并回开发分支。
 - 不让开发 Agent 自己给自己放行，必须经过 Review、CI 和人工审批。
 - 需求、业务规则、数据规则、权限规则不清时，不直接进入代码开发。
 - 前端优先复用现有组件、路由、状态管理和样式规范。
@@ -88,7 +91,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 
 前置 1. Orchestrator 先执行开发环境检测，只输出环境清单和环境选择项；状态为 `需确认` 时只能等待开发者选择，不创建分支或状态文件。
 前置 2. 环境检测通过或开发者选择“环境有警告但继续”后，Orchestrator 再执行分支确认，输出当前 Git 分支和工作区状态。
-前置 3. 开发者确认当前分支作为开发分支后，Orchestrator 才能从当前分支创建新的需求集成分支，并记录开发分支和需求集成分支。
+前置 3. 开发者确认当前分支作为开发分支后，Orchestrator 输出“创建新需求 / 恢复已有需求 / 暂停”选择。新需求从当前分支创建并登记需求集成分支；恢复已有需求读取并切换已登记的需求集成分支，不得重复创建。
 1. Orchestrator 读取 `docs/requirements/` 下的全部需求文档，并读取 `project/docs/` 下的框架文档和 `project/docs/patterns/` 模式缓存；使用 `.codex/skills/snowy-framework-bootstrap` 输出或更新框架运行提示和本机环境检测清单；未确认或阻塞则停在本阶段。
 2. Orchestrator 提供开发模式选择：简单 CRUD 快速模式、标准 SDLC 模式、高风险严格模式、自定义。
 3. Orchestrator 询问是否需要 PRD 和 UI 设计；开发者可明确跳过。简单 CRUD 快速模式可默认跳过 PRD/UI，但必须保留最小需求说明、字段、接口、验收标准、风险记录；如涉及后管页面，还必须保留后管菜单设计。
@@ -97,9 +100,9 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 6. Architect Agent 明确模块边界、状态机、API、数据模型、安全模型和可运维性。简单 CRUD 快速模式可用轻量技术方案替代完整架构文档。
 7. Data Agent 细化数据库模型、migration、索引、回滚和数据一致性策略。简单 CRUD 快速模式可合并到轻量技术方案或开发清单。
 8. Orchestrator 按用户价值拆 feature slice；简单 CRUD 快速模式可压缩为“后端+SQL+权限”“前端+mock”“验证+状态”三类任务。
-9. Orchestrator 套用 `.codex/workflows/auto-dispatch-parallel-development.md`，从需求集成分支创建 worktree 开发分支/目录，生成任务图、依赖 DAG、并行 wave、owner 分配和集成策略；简单 CRUD 快速模式只生成轻量执行清单。
-10. Frontend、Backend、Data、QA 等 Agent 在 worktree 开发分支/目录中开发并提交。
-11. worktree 开发完成后，合并回需求集成分支，并在需求集成分支验证。
+9. Orchestrator 套用 `.codex/workflows/auto-dispatch-parallel-development.md`，登记 Integration Owner，为每个任务分配唯一任务 ID、负责人、依赖、允许修改范围和任务分支；开发者从需求集成分支创建自己的本地 worktree。简单 CRUD 快速模式只生成轻量执行清单。
+10. Frontend、Backend、Data、QA 等 Agent 在各自 worktree 开发分支中开发、测试、提交，并只更新自己的任务状态文件。
+11. Review 通过后，Integration Owner 使用 `scripts/integrate-task.ps1` 将任务分支合并回需求集成分支，统一更新需求汇总、全局索引和产物导航，并在需求集成分支验证。
 12. 需求集成分支确认无误后，Orchestrator 询问开发者是否合并回开发分支。
 13. 本地运行必要检查后提交 PR。
 14. Reviewer、Security、QA Agent 做审查。
@@ -153,6 +156,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 | --- | --- |
 | 开发环境检测 | 环境通过，进入分支确认；环境有警告但继续；环境阻塞先处理；暂停 |
 | 分支确认 | 以当前分支作为开发分支并继续；切换到其他分支；暂停 |
+| 需求入口识别 | 创建新需求；恢复已有需求；暂停 |
 | 开发模式决策 | 简单 CRUD 快速模式；标准 SDLC 模式；高风险严格模式；自定义 |
 | PRD/原型决策 | 生成 PRD 和低保真原型；跳过 PRD，进入 UI 决策；跳过 PRD 和 UI，进入技术方案 |
 | UI/Figma 决策 | 生成 UI/Figma；跳过 UI，复用 Snowy 现有 UI；返回补充 PRD |
@@ -217,6 +221,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 - `docs/requirements/`：独立业务需求文档。
 - `docs/workflow/status.md`：全局环境自检状态和需求工作项索引。
 - `docs/workflow/requirements/`：每个需求或功能的阶段状态、跳过项、产物、验收和风险记录。
+- `docs/workflow/tasks/`：每个并行开发任务的负责人、分支、范围、依赖、状态、提交和验证记录。
 - `PROJECT_ARTIFACTS.html`：仓库全部非代码交付产物的分类导航，由 `scripts/update_artifact_index.py` 自动维护。
 - `.codex/agents/`：通用专业 Agent Markdown 角色说明。
 - `.codex/workflows/`：通用多 Agent SDLC 工作流。

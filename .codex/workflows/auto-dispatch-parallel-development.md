@@ -44,6 +44,8 @@ Orchestrator 必须先读取并确认：
 - 当前分支和工作区状态。
 - 开发分支，即开发者在分支确认阶段确认的目标分支。
 - 需求集成分支。
+- Integration Owner 和备份 Owner。
+- `docs/workflow/tasks/<需求ID>/*.md` 中已有任务、负责人、状态和依赖。
 - worktree 开发分支和路径。
 - 已有脚本、测试、CI 和构建命令。
 - 前端目录和后端目录映射。当前默认基于 Snowy 框架识别：前端 `project/snowy-admin-web/`；后端启动 `project/snowy-web-app/`；插件实现 `project/snowy-plugin/`；插件 API `project/snowy-plugin-api/`；公共模块 `project/snowy-common/`。如果实际结构变化，必须说明映射关系。
@@ -150,6 +152,8 @@ DAG 和 Wave 图必须使用 365 diagram skills 生成和校验；默认 Mermaid
 
 每个并行任务必须拥有独立执行单元。
 
+每个任务还必须拥有唯一共享状态文件：`docs/workflow/tasks/<需求ID>/<任务ID>.md`。任务负责人可以维护自己的任务文件，但不得直接修改 `docs/workflow/status.md`、需求状态文件的任务汇总区或 `PROJECT_ARTIFACTS.html`。
+
 推荐策略：
 
 | 场景 | 策略 |
@@ -173,9 +177,10 @@ base_branch(开发者确认的当前分支)
 规则：
 
 - 不直接在 `base_branch` 写功能代码。
-- 需求开始后先从 `base_branch` 创建 `integration_branch`。
+- 新需求从 `base_branch` 创建 `integration_branch`；恢复已有需求必须切换状态文件登记的 `integration_branch`，不得重复创建。
 - worktree 必须从 `integration_branch` 创建。
-- worktree 开发完成后先提交，再合并回 `integration_branch`。
+- worktree 目录是每台电脑的本地路径，不要求一致，也不写入共享状态。
+- worktree 开发完成后先提交，经 Review 后由 Integration Owner 合并回 `integration_branch`。
 - `integration_branch` 完成验证后，必须询问开发者是否合回 `base_branch`，不得自动合并。
 
 分支命名：
@@ -213,6 +218,14 @@ Owner：
 完成产物：
 ```
 
+任务领取规则：
+
+1. 先同步需求集成分支并检查 `docs/workflow/tasks/<需求ID>/`。
+2. 使用唯一任务 ID 领取任务，推荐运行 `python scripts/workflow_task.py claim ...`。
+3. 任务登记必须包含负责人、集成分支、任务分支、依赖、允许修改范围和风险等级。
+4. 领取后立即提交并推送任务登记；推送被拒绝时先同步并重新检查。若任务已被领取，必须停止并选择其他任务。
+5. 创建个人任务分支和本地 worktree 后，将状态更新为 `in_progress`。
+
 并行写入规则：
 
 - Agent 只能修改 `files_allowed` 中的文件。
@@ -227,7 +240,7 @@ Owner：
 
 ## 阶段 5：日常同步
 
-Orchestrator 维护简短状态板：
+Integration Owner 维护需求级简短状态板；任务负责人只维护自己的任务文件：
 
 ```text
 Slice：
@@ -243,11 +256,21 @@ Wave：
 任务状态：
 
 - `todo`
+- `claimed`
 - `in_progress`
 - `blocked`
 - `ready_for_integration`
 - `in_review`
 - `done`
+- `integrated`
+
+单一写入规则：
+
+- `docs/workflow/status.md`、需求状态文件的任务汇总区和 `PROJECT_ARTIFACTS.html` 仅由 Integration Owner 修改。
+- 每个任务负责人只能修改自己的 `docs/workflow/tasks/<需求ID>/<任务ID>.md`。
+- 任务负责人新增非代码产物时，在任务文件的“产物”字段登记，不自行刷新根导航。
+- Owner 合并任务后统一运行 `scripts/integrate-task.ps1`。脚本更新任务状态、需求汇总、全局索引和根导航；日常无冲突集成无需 AI。
+- Owner 临时不可用时，由需求状态文件登记的备份 Owner 接管，并先记录交接。
 
 阻塞规则：
 
@@ -262,12 +285,16 @@ Wave：
 流程：
 
 1. 每个任务完成本地检查。
-2. Orchestrator 汇总 diff、产物和风险。
-3. 低风险任务先合入 integration branch。
-4. 高风险任务单独 PR，Review 后再合入。
-5. integration branch 运行完整 CI。
-6. 修复冲突和回归问题。
-7. 通过后创建面向主分支的最终 PR。
+2. 任务负责人把状态更新为 `ready_for_integration`，登记提交、检查结果、产物和风险。
+3. Reviewer 审查任务，Integration Owner 汇总 diff、产物和风险。
+4. Owner 在需求集成分支运行 `scripts/integrate-task.ps1 -RequirementId <REQ> -TaskId <TASK> -TaskBranch <branch>`；脚本遇到工作区不干净、状态不符或 Git 冲突时停止。
+5. 低风险任务先合入 integration branch。
+6. 高风险任务单独 PR，Review 后再合入。
+7. integration branch 运行完整 CI。
+8. 修复冲突和回归问题。
+9. 通过后创建面向开发分支的最终 PR。
+
+如果代码已合并但状态汇总步骤失败，Owner 修复状态文件或脚本问题后使用 `-NoMerge` 重跑，禁止重复合并任务分支。
 
 集成前检查：
 
@@ -368,5 +395,7 @@ Feature Slice：
 - 每个任务都有 owner、范围、产物和检查命令。
 - branch/worktree 策略已明确。
 - 集成策略已明确。
+- Integration Owner、备份 Owner和共享状态单一写入规则已明确。
+- 每个任务均有唯一任务 ID 和独立任务状态文件。
 - CI、Review、QA、Security 门禁已明确。
 - 残余风险和阻塞已记录。

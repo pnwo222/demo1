@@ -51,6 +51,11 @@ ROOT_EXCLUDES = {
 PATH_EXCLUDES = {
     "docs/workflow/local-environment-status.md",
     "docs/workflow/requirements/TEMPLATE.md",
+    "docs/workflow/tasks/TEMPLATE.md",
+}
+
+PATH_PREFIX_EXCLUDES = {
+    "docs/workflow/tasks/",
 }
 
 CATEGORY_ORDER = [
@@ -84,6 +89,8 @@ def is_artifact(path: Path) -> bool:
     if is_supporting_image(relative, path.suffix):
         return False
     if relative in PATH_EXCLUDES:
+        return False
+    if any(relative.startswith(prefix) for prefix in PATH_PREFIX_EXCLUDES):
         return False
     if path.parent == ROOT and path.name in ROOT_EXCLUDES:
         return False

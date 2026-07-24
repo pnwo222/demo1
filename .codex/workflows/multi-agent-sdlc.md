@@ -2,7 +2,7 @@
 
 本工作流是通用项目流程，不绑定具体业务。业务目标、角色、核心链路、质量重点和高风险规则必须从 `docs/requirements/` 下的全部需求文档中读取；框架结构、目录映射、技术栈和开发规范必须从 `project/docs/` 下的框架文档和 `project/` 实际代码中读取。
 
-执行任何阶段前，Orchestrator 必须先执行“开发环境检测”，再执行“分支确认”。开发环境检测必须实际执行只读自检，输出 `✅`、`⚠️`、`❌` 列表，不得只提示开发者自行确认，也不得在该阶段询问分支确认。环境通过或开发者选择“环境有警告但继续”后，才进入分支确认，输出当前 Git 分支和工作区状态，并让开发者确认是否以当前分支作为开发分支。确认前属于只读阶段，不得创建需求集成分支、worktree、需求状态文件，不得登记需求索引，也不得修改业务代码。开发者确认后，Orchestrator 再读取 `docs/requirements/` 下的全部需求文档、`project/docs/` 下的全部框架文档、`project/docs/patterns/` 下的框架模式缓存、`docs/workflow/status.md` 全局状态，以及当前需求对应的 `docs/workflow/requirements/<需求ID>.md`。如果当前需求还没有状态文件，必须先按 `docs/workflow/requirements/TEMPLATE.md` 创建。
+执行任何阶段前，Orchestrator 必须先执行“开发环境检测”，再执行“分支确认”。开发环境检测必须实际执行只读自检，输出 `✅`、`⚠️`、`❌` 列表，不得只提示开发者自行确认，也不得在该阶段询问分支确认。环境通过或开发者选择“环境有警告但继续”后，才进入分支确认，输出当前 Git 分支和工作区状态，并让开发者确认是否以当前分支作为开发分支。确认前属于只读阶段，不得创建需求集成分支、worktree、需求状态文件，不得登记需求索引，也不得修改业务代码。开发者确认后，必须先执行“需求入口识别”：创建新需求时按模板创建状态并新建需求集成分支；恢复已有需求时读取 `docs/workflow/status.md` 和对应需求状态文件，切换并同步已登记的需求集成分支，禁止重复创建。
 
 ```text
 docs/requirements/**
@@ -22,7 +22,9 @@ project/docs/patterns/**
 
 - 项目级状态记录在 `docs/workflow/status.md`；当前开发者本机环境检测结果记录在 `docs/workflow/local-environment-status.md`，该文件必须被 `.gitignore` 忽略，不提交到 Git。
 - 需求、PRD、UI、技术设计、数据设计、开发、测试、审查、发布、验收等阶段是需求状态，必须记录在 `docs/workflow/requirements/<需求ID>.md`。
-- 每个阶段进入、完成、跳过或阻塞时，Orchestrator 必须更新对应状态文件。
+- 并行开发任务状态记录在 `docs/workflow/tasks/<需求ID>/<任务ID>.md`。任务负责人只维护自己的任务文件；worktree 本地路径不写入共享状态。
+- 每个需求必须登记 Integration Owner 和备份 Owner。只有 Integration Owner 可以更新 `docs/workflow/status.md`、需求状态文件的任务汇总区和 `PROJECT_ARTIFACTS.html`；Owner 交接必须记录。
+- 非并行阶段由 Orchestrator 更新对应状态；并行开发阶段由任务负责人更新任务文件，Integration Owner 在合并后统一更新需求和全局汇总。
 - 状态文件必须记录阶段、状态、来源、产物、下一步和时间。
 - 不允许只在对话中说明阶段变化而不更新状态文件。
 - 每个需求状态文件必须记录缓存读取、缓存命中和缓存更新结果。
@@ -40,7 +42,7 @@ project/docs/patterns/**
 
 - 项目文档和阶段产物默认使用简体中文。
 - PRD、原型说明、技术方案、数据方案、开发计划、测试计划、Review、验收记录和状态文件必须默认中文。
-- 每次新增、重命名或删除非代码阶段产物后，负责该阶段的 Agent 必须执行 `python scripts/update_artifact_index.py`，更新根目录 `PROJECT_ARTIFACTS.html`。Orchestrator 在阶段放行前检查导航中存在对应条目且链接可打开。
+- 非并行阶段新增、重命名或删除非代码产物后，由 Orchestrator/Integration Owner 执行 `python scripts/update_artifact_index.py`。并行开发时任务负责人只在任务文件登记产物，Integration Owner 合并后统一刷新根目录 `PROJECT_ARTIFACTS.html`。
 - 路径、命令、API、类名、方法名、配置键、SQL 标识符和第三方固定模板句可以保留英文。
 - 本流程禁止使用 Superpowers 及其 `using-superpowers`、`executing-plans`、`subagent-driven-development` 模式。`docs/superpowers/**` 仅保留历史归档，新计划写入 `docs/plans/`。
 - 如果使用其他英文模板生成计划，落盘前必须转成中文；除非用户明确要求英文，不得生成整篇英文文档。
@@ -58,7 +60,7 @@ project/docs/patterns/**
 - 前置 1 必须执行“开发环境检测”。用 `✅`、`⚠️`、`❌` 列表展示 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务检测结果；检测结果必须在 `检测：` 后逐项换行，每项独占一行，禁止横向串联；提供逐行编号选择：环境通过进入分支确认、环境有警告但继续、环境阻塞先处理、暂停。
 - 前置 2 才执行“分支确认”。输出 `git branch --show-current` 和 `git status --short` 的结果，提供逐行编号选择：以当前分支作为开发分支并继续、切换到其他分支、暂停。
 - 开发环境检测和分支确认都是只读阶段；状态为 `需确认` 时，不得创建需求集成分支、worktree、需求状态文件，不得登记需求索引，也不得修改业务代码。
-- 开发者确认当前分支作为开发分支后，工作流必须从该分支创建新的需求集成分支，例如 `codex/integration-<需求ID>` 或 `codex/<需求短名>`。
+- 开发者确认当前分支作为开发分支后，必须先提供“创建新需求 / 恢复已有需求 / 暂停”选择。只有创建新需求时才从开发分支创建需求集成分支；恢复已有需求必须使用状态文件登记的集成分支。
 - 后续代码开发必须从需求集成分支创建 worktree 开发分支/目录；worktree 开发完成并提交后，先合并回需求集成分支。
 - 需求集成分支验证无误后，Orchestrator 必须询问开发者是否合并回开发分支，不得自动合并。
 - 对每个新功能，Orchestrator 必须分配需求ID，并在 `docs/workflow/status.md` 的需求索引中登记，在 `docs/workflow/requirements/<需求ID>.md` 中记录后续阶段。
@@ -126,6 +128,7 @@ project/docs/patterns/**
 | --- | --- |
 | 开发环境检测 | 环境通过，进入分支确认；环境有警告但继续；环境阻塞先处理；暂停 |
 | 分支确认 | 以当前分支作为开发分支并继续；切换到其他分支；暂停 |
+| 需求入口识别 | 创建新需求；恢复已有需求；暂停 |
 | 开发模式决策 | 简单 CRUD 快速模式；标准 SDLC 模式；高风险严格模式；自定义 |
 | PRD/原型决策 | 生成 PRD 和低保真原型；跳过 PRD，进入 UI 决策；跳过 PRD 和 UI，进入技术方案 |
 | UI/Figma 决策 | 生成 UI/Figma；跳过 UI，复用 Snowy 现有 UI；返回补充 PRD |
@@ -257,14 +260,33 @@ project/docs/patterns/**
 
 - 记录开发分支为 `base_branch`。
 
-## 前置 3：创建需求集成分支
+## 前置 3：需求入口识别
 
 仅在分支确认后执行。
 
-- 记录开发分支为 `base_branch`。
-- 从 `base_branch` 创建需求集成分支，例如 `codex/integration-<需求ID>` 或 `codex/<需求短名>`。
+必须逐行提供：
+
+1. 创建新需求。
+2. 恢复已有需求。
+3. 暂停。
+
+创建新需求：
+
+- 分配需求ID，按模板创建需求状态文件并登记需求索引。
+- 从 `base_branch` 创建需求集成分支，例如 `codex/<需求ID>-integration`。
+- 登记 Integration Owner 和备份 Owner。
+
+恢复已有需求：
+
+- 读取 `docs/workflow/status.md`，选择已有需求ID。
+- 读取对应需求状态文件中的当前阶段、需求集成分支、Integration Owner、任务汇总和未完成依赖。
+- 使用 `git fetch` 后切换并同步已登记的需求集成分支；禁止创建同名或替代集成分支。
+- 新开发者从该集成分支领取唯一任务，再创建自己的任务分支和本地 worktree。
+
+共同规则：
+
 - 后续 worktree 从需求集成分支创建。
-- worktree 开发完成后合并回需求集成分支。
+- worktree 开发完成后由 Integration Owner 合并回需求集成分支。
 - 需求集成分支验证通过后，再询问是否合并回 `base_branch`。
 
 ## 阶段 1：需求和框架装载
@@ -490,7 +512,7 @@ Figma 设计图要求：
 
 ## 阶段 8：自动分配与并行开发
 
-进入开发前，优先套用 `auto-dispatch-parallel-development.md`，由 Orchestrator 生成任务图、依赖 DAG、并行 wave、owner 分配、branch/worktree 策略和集成策略。
+进入开发前，优先套用 `auto-dispatch-parallel-development.md`，由 Orchestrator 生成任务图、依赖 DAG、并行 wave、Integration Owner、任务 owner、branch/worktree 策略和集成策略。恢复已有需求时只读取并补充未完成任务，不重新生成已存在的任务。
 
 默认基于现有 `project/` 框架增量开发：
 

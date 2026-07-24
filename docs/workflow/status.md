@@ -40,6 +40,9 @@
 5. 每个新需求或功能都必须创建独立状态文件：`docs/workflow/requirements/<需求ID>.md`。
 6. PRD、UI、技术设计、数据设计、开发、测试、审查、发布、验收等阶段完成情况，必须记录在对应需求状态文件中，不写入全局阶段表。
 7. `需求工作项索引` 只保留每个需求的摘要：需求ID、名称、来源文档、状态文件、当前阶段、状态。
+8. 每个需求必须在需求状态文件登记 Integration Owner 和备份 Owner；只有 Owner 可以修改本文件的需求索引。
+9. 并行开发任务使用 `docs/workflow/tasks/<需求ID>/<任务ID>.md`。任务负责人只维护自己的任务文件，不直接修改本文件或需求状态文件中的任务汇总区。
+10. Integration Owner 在任务合并后运行 `scripts/integrate-task.ps1`，统一更新任务状态、需求汇总、本索引和 `PROJECT_ARTIFACTS.html`。无冲突的例行集成不需要再次执行 AI。
 
 ## 全局变更记录
 

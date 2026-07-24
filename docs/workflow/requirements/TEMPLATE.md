@@ -16,8 +16,11 @@
 | 当前确认方式 | 选择优先，输入兜底 |
 | 原始当前分支 | <base_branch> |
 | 需求集成分支 | <integration_branch> |
-| Worktree 开发分支 | <worktree_branch> |
-| Worktree 路径 | <worktree_path> |
+| Integration Owner | <姓名或账号> |
+| 备份 Owner | <姓名或账号> |
+| Owner 交接记录 | <无/时间、原 Owner、新 Owner、原因> |
+| Worktree 开发分支 | 见开发任务汇总及各任务状态文件 |
+| Worktree 路径 | 本机信息，不提交统一路径 |
 | 合并状态 | <未开始/已合回需求集成分支/待确认合回原始分支/已合回原始分支> |
 | 开发模式 | <简单 CRUD 快速模式/标准 SDLC 模式/高风险严格模式/自定义> |
 | 缓存读取 | <project/docs/patterns/...> |
@@ -91,6 +94,16 @@ Worktree 合回需求集成分支:
 最终合并结果:
 时间:
 ```
+
+<!-- TASK_SUMMARY_START -->
+## 开发任务汇总
+
+本区块由 Integration Owner 通过 `scripts/workflow_task.py` 自动维护，其他开发者不得手工修改。
+
+| 任务ID | 任务标题 | 负责人 | 状态 | 任务分支 | 依赖 | 最新提交 | 状态文件 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| - | - | - | - | - | - | - | - |
+<!-- TASK_SUMMARY_END -->
 
 ## 阶段变更记录
 
