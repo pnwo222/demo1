@@ -4,6 +4,8 @@
 
 本项目已将 `Agents365-ai/365-skills` 安装到 `.codex/skills/`。本文件以及工作流中涉及流程图、架构图、模块图、ERD、状态机图、时序图、任务图、DAG、依赖图或系统可视化时，默认使用 `.codex/skills/mermaid-skill`；需要可编辑 Draw.io、复杂样式、泳道或厂商图标时使用 `.codex/skills/drawio-skill`；需要 PlantUML/UML/C4 语义时使用 `.codex/skills/plantuml-skill`；需要手绘白板风格时使用 `.codex/skills/excalidraw-skill`。图形产物必须按对应 skill 的校验流程生成和导出。
 
+根目录 `PROJECT_ARTIFACTS.html` 统一导航需求、PRD、原型、设计、技术方案、图表、测试、审查、发布和验收等非代码产物。每次新增、重命名或删除产物后执行 `python scripts/update_artifact_index.py`，阶段放行前确认导航条目存在且链接可打开。
+
 ## 主流程
 
 ```mermaid
@@ -99,7 +101,8 @@ flowchart TD
     AD -- 否 --> T
     AD -- 是 --> AE["预发验证、灰度发布、全量发布"]
     AE --> AF["发布后监控、验收、复盘"]
-    AF --> AG([完成])
+    AF --> NAV["刷新 PROJECT_ARTIFACTS.html<br/>校验全部非代码产物链接"]
+    NAV --> AG([完成])
 ```
 
 ## 并行开发子流程
@@ -183,6 +186,7 @@ flowchart TB
 - 开发环境检测必须检测可用 MySQL CLI；PATH 找不到 `mysql` 时自动搜索常见安装目录中的 `mysql.exe` 并用绝对路径验证。PATH 和搜索都找不到时记录全局状态 `blocked_missing_mysql_cli`，不进入 PRD/UI/技术设计或开发阶段。
 - 开发必须基于 `project/` 现有 Snowy 框架增量实现，不按空白项目重建目录。
 - 工作流中的流程图、架构图、ERD、状态机图、任务图、DAG 和依赖图必须使用 `.codex/skills/` 下的 365 diagram skills 生成与校验，默认 Mermaid，复杂可编辑图使用 Draw.io。
+- 任何阶段新增、重命名或删除非代码产物后必须执行 `python scripts/update_artifact_index.py`；根目录 `PROJECT_ARTIFACTS.html` 未登记对应产物或存在失效链接时，不得宣称该阶段完成。
 - 涉及金额、权限、状态机、资源数量、业务单据、交易、逆向流程、删除和批量操作的改动必须重点审查。
 - 开发 Agent 不能自己给自己放行，必须经过 Review、CI 和人工审批。
 - P0 必须修复；P1 合并前应修复；CI 和发布检查未通过不进入全量发布。

@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>项目产物导航</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+      color: #1f2937;
+      background: #f5f7fa;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; min-width: 320px; background: #f5f7fa; }
+    button, input { font: inherit; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 72px;
+      padding: 12px clamp(20px, 4vw, 56px);
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .title-group { display: flex; gap: 12px; align-items: baseline; min-width: 0; }
+    h1 { margin: 0; font-size: 22px; line-height: 32px; }
+    .total { flex: none; font-size: 13px; color: #64748b; }
+    .search {
+      width: min(360px, 42vw);
+      height: 40px;
+      padding: 0 14px;
+      color: #334155;
+      background: #f8fafc;
+      border: 1px solid #d8dee8;
+      border-radius: 6px;
+      outline: none;
+    }
+    .search:focus { background: #fff; border-color: #1677ff; box-shadow: 0 0 0 2px rgb(22 119 255 / 12%); }
+    .layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); min-height: calc(100vh - 72px); }
+    .category-nav {
+      position: sticky;
+      top: 72px;
+      align-self: start;
+      height: calc(100vh - 72px);
+      padding: 24px 16px;
+      overflow-y: auto;
+      background: #fff;
+      border-right: 1px solid #e5e7eb;
+    }
+    .category-nav a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 40px;
+      padding: 0 12px;
+      font-size: 14px;
+      color: #475569;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+    .category-nav a:hover { color: #0958d9; background: #f0f6ff; }
+    .category-nav small { color: #94a3b8; }
+    main { width: min(1120px, 100%); padding: 32px clamp(20px, 4vw, 56px) 72px; }
+    .artifact-section { margin-bottom: 36px; scroll-margin-top: 96px; }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 42px;
+      border-bottom: 1px solid #dce2ea;
+    }
+    .section-header h2 { margin: 0; font-size: 17px; line-height: 26px; }
+    .section-header span { font-size: 12px; color: #64748b; }
+    .artifact-list { background: #fff; }
+    .artifact-row {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr) 28px;
+      gap: 14px;
+      align-items: center;
+      min-height: 76px;
+      padding: 12px 16px;
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 1px solid #edf0f4;
+    }
+    .artifact-row:hover { background: #f8fbff; }
+    .artifact-row:focus-visible { outline: 2px solid #1677ff; outline-offset: -2px; }
+    .file-type {
+      display: grid;
+      width: 42px;
+      height: 30px;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #0958d9;
+      background: #e6f4ff;
+      border-radius: 4px;
+    }
+    .file-type[data-type="PNG"], .file-type[data-type="JPG"], .file-type[data-type="SVG"] {
+      color: #237804;
+      background: #f0f9e8;
+    }
+    .file-type[data-type="PDF"] { color: #cf1322; background: #fff1f0; }
+    .file-type[data-type="HTML"] { color: #ad4e00; background: #fff7e6; }
+    .artifact-copy { display: flex; flex-direction: column; min-width: 0; }
+    .artifact-copy strong {
+      overflow: hidden;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 22px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .artifact-copy small {
+      margin-top: 3px;
+      overflow: hidden;
+      font-size: 12px;
+      line-height: 18px;
+      color: #7c8798;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .open-arrow { font-size: 18px; color: #94a3b8; text-align: center; }
+    .artifact-row:hover .open-arrow { color: #1677ff; transform: translateX(2px); }
+    .empty { display: none; padding: 56px 16px; color: #64748b; text-align: center; }
+    body.no-results .empty { display: block; }
+    body.no-results .artifact-section { display: none; }
+    @media (max-width: 720px) {
+      .topbar { position: static; align-items: stretch; flex-direction: column; gap: 10px; padding: 16px; }
+      .search { width: 100%; }
+      .layout { display: block; min-height: 0; }
+      .category-nav {
+        position: sticky;
+        top: 0;
+        z-index: 9;
+        display: flex;
+        gap: 4px;
+        width: 100%;
+        height: auto;
+        padding: 8px 12px;
+        overflow-x: auto;
+        background: #fff;
+        border-right: 0;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .category-nav a { flex: none; gap: 8px; }
+      main { padding: 24px 16px 56px; }
+      .artifact-row { grid-template-columns: 42px minmax(0, 1fr) 22px; gap: 10px; padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- 由 scripts/update_artifact_index.py 自动生成，请勿手工维护条目。 -->
+  <header class="topbar">
+    <div class="title-group">
+      <h1>项目产物导航</h1>
+      <span class="total">5 个产物</span>
+    </div>
+    <input id="artifact-search" class="search" type="search" placeholder="搜索产物名称或路径" aria-label="搜索产物">
+  </header>
+  <div class="layout">
+    <nav class="category-nav" aria-label="产物分类">
+      <a href="#category-1"><span>项目流程</span><small>2</small></a>
+<a href="#category-2"><span>计划与规格</span><small>2</small></a>
+<a href="#category-3"><span>工作流状态</span><small>1</small></a>
+    </nav>
+    <main>
+      <section id="category-1" class="artifact-section"><header class="section-header"><h2>项目流程</h2><span>2 项</span></header><div class="artifact-list"><a class="artifact-row" data-search="项目工作流程图 project_workflow.md" href="PROJECT_WORKFLOW.md" target="_blank" rel="noopener"><span class="file-type" data-type="MD">MD</span><span class="artifact-copy"><strong>项目工作流程图</strong><small>PROJECT_WORKFLOW.md</small></span><span class="open-arrow" aria-hidden="true">→</span></a>
+<a class="artifact-row" data-search="project_workflow project_workflow.png" href="PROJECT_WORKFLOW.png" target="_blank" rel="noopener"><span class="file-type" data-type="PNG">PNG</span><span class="artifact-copy"><strong>PROJECT_WORKFLOW</strong><small>PROJECT_WORKFLOW.png</small></span><span class="open-arrow" aria-hidden="true">→</span></a></div></section>
+<section id="category-2" class="artifact-section"><header class="section-header"><h2>计划与规格</h2><span>2 项</span></header><div class="artifact-list"><a class="artifact-row" data-search="snowy 原型 demo 运行时组件化实施计划 docs/superpowers/plans/2026-07-16-snowy-prototype-runtime-components.md" href="docs/superpowers/plans/2026-07-16-snowy-prototype-runtime-components.md" target="_blank" rel="noopener"><span class="file-type" data-type="MD">MD</span><span class="artifact-copy"><strong>Snowy 原型 Demo 运行时组件化实施计划</strong><small>docs/superpowers/plans/2026-07-16-snowy-prototype-runtime-components.md</small></span><span class="open-arrow" aria-hidden="true">→</span></a>
+<a class="artifact-row" data-search="snowy 原型 demo 运行时组件化设计 docs/superpowers/specs/2026-07-16-snowy-prototype-runtime-components-design.md" href="docs/superpowers/specs/2026-07-16-snowy-prototype-runtime-components-design.md" target="_blank" rel="noopener"><span class="file-type" data-type="MD">MD</span><span class="artifact-copy"><strong>Snowy 原型 Demo 运行时组件化设计</strong><small>docs/superpowers/specs/2026-07-16-snowy-prototype-runtime-components-design.md</small></span><span class="open-arrow" aria-hidden="true">→</span></a></div></section>
+<section id="category-3" class="artifact-section"><header class="section-header"><h2>工作流状态</h2><span>1 项</span></header><div class="artifact-list"><a class="artifact-row" data-search="workflow status docs/workflow/status.md" href="docs/workflow/status.md" target="_blank" rel="noopener"><span class="file-type" data-type="MD">MD</span><span class="artifact-copy"><strong>Workflow Status</strong><small>docs/workflow/status.md</small></span><span class="open-arrow" aria-hidden="true">→</span></a></div></section>
+      <div class="empty">未找到匹配的产物</div>
+    </main>
+  </div>
+  <script>
+    const search = document.querySelector('#artifact-search');
+    const rows = [...document.querySelectorAll('.artifact-row')];
+    const sections = [...document.querySelectorAll('.artifact-section')];
+    search.addEventListener('input', () => {
+      const keyword = search.value.trim().toLowerCase();
+      let visibleCount = 0;
+      rows.forEach((row) => {
+        const visible = !keyword || row.dataset.search.includes(keyword);
+        row.hidden = !visible;
+        if (visible) visibleCount += 1;
+      });
+      sections.forEach((section) => {
+        section.hidden = !section.querySelector('.artifact-row:not([hidden])');
+      });
+      document.body.classList.toggle('no-results', visibleCount === 0);
+    });
+  </script>
+</body>
+</html>
