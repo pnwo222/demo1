@@ -321,7 +321,7 @@ python .codex/skills/snowy-admin-prototype-designer/scripts/validate_admin_bluep
 
 ## 大规模原型提速规则
 
-- Product 阶段生成或修改 PRD、蓝图和原型时，由当前 Product Agent 在同一次运行中直接完成，不使用面向代码开发的 `executing-plans`、`subagent-driven-development`、worktree 开发流程、逐 Task Owner 派发，也不为每个页面或中间文件单独启动一轮独立审查。已有计划文件、页面数量多、产物文件多都不是调用 `executing-plans` 的理由；只有开发者明确要求执行既有计划，或任务已进入经确认的业务代码开发阶段时才允许使用。
+- Product 阶段生成或修改 PRD、蓝图和原型时，由当前 Product Agent 在同一次运行中直接完成，不使用 Superpowers、worktree 开发流程、逐 Task Owner 派发，也不为每个页面或中间文件单独启动一轮独立审查。
 - 同一次 Product 运行只读取、归一化需求集合一次。需求来源未变化时复用已确认的需求基线、PRD 和蓝图，仅重生成发生变化的页面及覆盖矩阵行。
 - 超过 10 个独立后管页面时，按业务模块批量生成页面蓝图、数据和独立页面组件；共享入口和注册表由一个 Owner 汇总，禁止多个 Agent 并发编辑同一文件。
 - HTML 生成前做一次需求/蓝图质量审查，静态与运行时校验后做一次最终原型审查。只有出现明确 `FAIL`、P0 或 P1 时才增加修复和复审，不因无害 WARN 重跑全量链路。

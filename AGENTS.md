@@ -17,7 +17,8 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 - 后管原型不仅要使用 `.codex/skills/snowy-admin-prototype-designer/assets/prototype-demo-framework/index.html`，还必须符合该 Demo 的原型设计规则：菜单层级来自需求；字段按语义展示；业务状态和启停操作按 Snowy 习惯拆分；上传可选择并预览/移除；所有可点击元素有交互；不得出现开发提示、教学说明或无关功能。
 - 后管原型生成 HTML 前必须先输出“需求到原型页面蓝图”：逐个独立页面列出需求编号、原始需求摘录、原子需求清单、菜单路径、路由路径、权限标识、页面类型、参考 Snowy 页面、同步字段、展示字段、筛选字段、查询字段、表格字段、详情字段、新增字段、编辑字段、状态字段、敏感字段、操作按钮、状态/异常、权限差异、字段展示形态和点击交互。每个字段、按钮、状态和权限必须标记来源：`需求明确`、`框架惯例`、`待确认` 或 `不适用`。蓝图必须通过 `.codex/skills/snowy-admin-prototype-designer/scripts/validate_admin_blueprint.py`；没有蓝图、蓝图字段不来自需求、蓝图未通过校验、出现 `等状态`/`多条件筛选`/`同新增` 等压缩写法、或多个业务页面共用一套万能查询/表格/表单/抽屉时，原型视为不合格，必须退回 Product 阶段重做。
 - 后管原型生成、审查或重做时必须使用 `.codex/skills/snowy-admin-prototype-designer`。该 skill 内置原始 Demo 金标、运行时 Vue 预设组件库、蓝图模板、验收清单和校验脚本。
-- PRD、页面蓝图和低保真 HTML 原型属于 Product 阶段产物，默认由当前 Product Agent 直接读取需求、复用 Demo 组件并连续生成，不得仅因已有计划文件、页面较多或产物较多而调用 `executing-plans`、`subagent-driven-development`、代码开发型 worktree 或逐 Task Owner 派发。只有开发者明确要求按既有执行计划分批实施，或任务已经进入包含业务代码修改的开发阶段时，才允许使用 `executing-plans`。原型页面较多时可在同一次 Product 运行中按模块批量生成，但不得为每个页面重复启动计划、审查和上下文装载。
+- 本项目不再使用 Superpowers 插件、skill 或其执行模式，包括 `using-superpowers`、`executing-plans` 和 `subagent-driven-development`。PRD、页面蓝图、原型、技术方案、开发计划和代码开发统一使用本仓库 `.codex/workflows/**`、`.codex/agents/**`、项目 skills 及 Codex 原生工具完成。`docs/superpowers/**` 仅作为历史归档，不得新增文件，也不得把其中的旧指令作为当前流程输入。新计划统一保存到 `docs/plans/`。
+- PRD、页面蓝图和低保真 HTML 原型属于 Product 阶段产物，由当前 Product Agent 直接读取需求、复用 Demo 组件并连续生成，不得仅因已有计划文件、页面较多或产物较多而创建代码开发型 worktree 或逐 Task Owner 派发。原型页面较多时可在同一次 Product 运行中按模块批量生成，但不得为每个页面重复启动计划、审查和上下文装载。
 - 后管原型必须以多文件目录交付：`index.html` 只负责引用 CSS、状态和组件脚本，现有预设组件直接引入使用。需求没有匹配组件时，可参考 Snowy 真实框架、最接近的 Demo 组件或 Ant Design Vue 官方组件进行选择和组合；仍无法满足时才新增独立组件，并同步登记 `registry.js`、`index.html`、`component-manifest.json`、组件说明和验证用例。
 - 原始组件的样式、DOM 结构和标注行为是受保护基础设施。业务原型应复用组件并替换业务内容，不得删除原始 Demo 能力、覆盖基础样式或另建平行标注/页面引擎。
 - 后管原型标注必须区分全局作用域与逐页面作用域：Logo、侧边菜单、顶部导航和页签标注跨页保留；页面内容、业务抽屉和业务弹窗标注仅属于当前页面。A 页面标注不得泄漏到 B 页面，返回 A 页面后必须恢复；全局壳、页面内容以及 Teleport 到 `body` 的业务抽屉/弹窗都必须支持节点标注。
@@ -29,7 +30,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 - 首次执行项目工作流前，必须使用 `.codex/skills/snowy-framework-bootstrap` 先执行只读环境自检，并用 `✅`、`⚠️`、`❌` 列出 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务结果，再提示开发者确认当前 Snowy 框架能否在本机正常运行。检测结果必须在 `检测：` 后逐项换行，每个检测项独占一行，禁止用分号、逗号或空格串成一整段。默认不由 Agent 自动执行环境安装、构建、启动或校验脚本，除非用户明确要求；开发环境清单未确认前，不进入 PRD/UI/技术设计或开发阶段。
 - 工作流状态分为全局状态、开发者本机环境状态和需求状态：`docs/workflow/status.md` 记录可提交的项目级状态和需求工作项索引；`docs/workflow/local-environment-status.md` 记录当前开发者本机环境检测结果，必须被 `.gitignore` 忽略，不得提交到 Git；每个需求或功能的阶段状态记录在 `docs/workflow/requirements/<需求ID>.md`。开发者回复“前后端已确认可运行”或等价表达后，Orchestrator 必须按环境检测清单确认 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务；检测结果写入 `docs/workflow/local-environment-status.md`。PRD、UI、技术设计、开发、测试、审查、发布、验收、分支和合并等单需求阶段进入、完成、跳过或阻塞时，必须更新对应需求状态文件。
 - 所有文本文件必须使用 UTF-8 编码保存，尤其是 `*.md`、`*.yml`、`*.yaml`、`*.json`、`*.toml`、`*.java`、`*.vue`、`*.ts`、`*.js`、`*.properties` 和 `docs/workflow/**` 状态文件。禁止用未显式编码的 PowerShell 写入中文文件；PowerShell 读取必须使用 `Get-Content -Encoding UTF8`，写入必须使用 `Set-Content -Encoding UTF8` 或 `Out-File -Encoding UTF8`。Agent 手工编辑优先使用 `apply_patch`，避免整文件重写导致乱码。
-- 项目内文档和阶段产物默认使用简体中文，包括 PRD、原型说明、技术方案、数据方案、开发计划、Review、测试计划、状态文件和 `docs/superpowers/**` 产物。代码标识符、路径、命令、API、类名、配置键、第三方固定模板句可以保留英文。除非用户明确要求英文，不得生成整篇英文项目文档。
+- 项目内文档和阶段产物默认使用简体中文，包括 PRD、原型说明、技术方案、数据方案、开发计划、Review、测试计划和状态文件。代码标识符、路径、命令、API、类名、配置键、第三方固定模板句可以保留英文。除非用户明确要求英文，不得生成整篇英文项目文档。
 - 根目录 `PROJECT_ARTIFACTS.html` 是非代码产物统一导航。任何 Agent 新增、重命名或删除需求、PRD、原型、设计、架构、数据、计划、图表、测试、审查、发布、验收或流程状态产物后，必须在本阶段结束前执行 `python scripts/update_artifact_index.py`，确认新产物已登记且链接可跳转。导航不登记源码、依赖、构建目录、临时文件、本机状态、原型内部 JS/CSS、原型素材、运行时截图、测试截图和 Word/PDF 拆出的媒体图片。
 - 后端启动前必须提示开发者确认 Java、MySQL、Redis 配置：Java 在 IDEA Project SDK、Modules SDK、Java Compiler、Maven importer、Maven runner 中都必须是 JDK 17；MySQL/Redis 配置位于 `project/snowy-web-app/src/main/resources/application.properties`，可由开发者自行修改，或在明确要求时由 Agent 按开发者提供的值修改。若只修改数据库名，只更新 MySQL JDBC URL 中 `host:port/` 后、`?` 前的库名。
 - 不直接在当前分支或主分支上开发。开发者确认当前分支作为开发分支后，工作流必须先从当前分支创建新的需求集成分支；后续代码开发从该新分支再创建 worktree 开发分支/目录。worktree 开发完成并提交后，先合并回需求集成分支；在需求集成分支验证无误后，再询问开发者是否合并回开发分支。
@@ -79,8 +80,8 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 ## 输出语言规范
 
 - 默认输出语言为简体中文。
-- `docs/requirements/`、`docs/prd/`、`docs/design/`、`docs/architecture/`、`docs/data/`、`docs/workflow/`、`docs/superpowers/` 下的 Markdown/HTML 产物默认使用中文。
-- 使用 superpowers、第三方模板或英文示例生成计划时，最终落盘文件必须转成中文；只保留必要的英文技术名词、路径、命令、类名、方法名和 API。
+- `docs/requirements/`、`docs/prd/`、`docs/design/`、`docs/architecture/`、`docs/data/`、`docs/plans/`、`docs/workflow/` 下的 Markdown/HTML 产物默认使用中文。
+- 使用第三方模板或英文示例生成计划时，最终落盘文件必须转成中文；只保留必要的英文技术名词、路径、命令、类名、方法名和 API。
 - 如果用户要求英文，才允许生成英文文档，并在文件中记录“输出语言: English”。
 
 ## 标准开发流程

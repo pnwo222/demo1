@@ -63,6 +63,7 @@ CATEGORY_ORDER = [
     "测试与审查",
     "发布与验收",
     "工作流状态",
+    "历史产物",
     "其他产物",
 ]
 
@@ -133,7 +134,9 @@ def category_for(path: Path) -> str:
         return "需求文档"
     if "prd" in parts:
         return "产品与 PRD"
-    if "superpowers" in parts or "plans" in parts or "specs" in parts:
+    if "superpowers" in parts:
+        return "历史产物"
+    if "plans" in parts or "specs" in parts:
         return "计划与规格"
     if "design" in parts or "prototype" in relative.lower():
         return "设计与原型"

@@ -49,7 +49,7 @@ flowchart TD
     L2 --> L2A["蓝图必须包含原始需求摘录、原子需求清单、字段来源、操作来源和逐项覆盖矩阵<br/>运行 validate_admin_blueprint.py"]
     L2A --> L2B{"蓝图校验通过"}
     L2B -- 否 --> L2
-    L2B -- 是 --> L2C["Product Agent 在当前任务直接生成原型<br/>不使用 executing-plans 或逐 Task 派发<br/>超过 10 页按模块连续生成，共享入口由单一 Owner 汇总"]
+    L2B -- 是 --> L2C["Product Agent 在当前任务直接生成原型<br/>不使用 Superpowers 或逐 Task 派发<br/>超过 10 页按模块连续生成，共享入口由单一 Owner 汇总"]
     L2C --> L3["复制完整运行时组件目录<br/>按蓝图引入查询、表格、抽屉、弹窗和标注组件<br/>缺少时参考 Snowy、Demo 或 Ant Design Vue"]
     L3 --> L4["生成多文件 Snowy 后管拟真原型<br/>保留原始 Demo 内容密度、样式和标注能力<br/>入口只引用组件，禁止重新内嵌完整实现"]
     L4 --> L4A{"canonical 哈希、组件可达性、逐页契约、运行时截图和覆盖矩阵是否通过"}
@@ -178,7 +178,7 @@ flowchart TB
 - PRD 和低保真 HTML 原型未确认，不进入 UI 设计。
 - 涉及后管且未跳过原型时，必须使用 `.codex/skills/snowy-admin-prototype-designer` 并套用 `.codex/workflows/admin-prototype-design-workflow.md`，先输出严格页面蓝图。蓝图通过后必须读取原始 Demo 金标和 `components/` 组件清单，复用原始 Snowy 壳、查询、表格、上传、抽屉、弹窗、组件预设和完整标注能力。禁止精简 Schema 渲染器、平行标注、万能字段集或覆盖基础 CSS。必须通过组件哈希、静态、运行时、截图和覆盖矩阵验收。
 - 涉及 H5/移动端且未跳过原型时，必须使用 `.codex/skills/snowy-h5-app-designer`，优先读取 `project/h5/src/views/` 中最接近的实际业务页面，再以 `/demo` 和 Vant 补充组件。必须先输出 H5 逐页蓝图并通过 `validate_h5_blueprint.py`，再从 H5 多文件骨架生成页面；保留自动需求标注、任意节点用户标注、全局/页面作用域隔离、本地持久化、页面需求和另存为能力，并通过 `validate_h5_prototype.py` 与 320/375/390/414px 浏览器逐页验证。
-- Product 阶段由当前 Product Agent 直接生成 PRD、蓝图和原型，不使用代码开发型 `executing-plans`、`subagent-driven-development`、worktree 或逐 Task Owner 流程。只有开发者明确要求执行既有计划，或任务已进入经确认的业务代码开发阶段时才允许使用 `executing-plans`。超过 10 个页面时按模块连续生成独立蓝图/业务配置，由一个 Owner 汇总共享 HTML；需求来源未变化时复用已确认产物。默认只做一次生成前需求/蓝图审查和一次最终原型审查，只有明确 `FAIL`、P0 或 P1 才增加修复复审。
+- 本项目不再使用 Superpowers、`using-superpowers`、`executing-plans` 或 `subagent-driven-development`。Product 阶段由当前 Product Agent 直接生成 PRD、蓝图和原型，不使用代码开发型 worktree 或逐 Task Owner 流程。超过 10 个页面时按模块连续生成独立蓝图/业务配置，由一个 Owner 汇总共享 HTML；需求来源未变化时复用已确认产物。默认只做一次生成前需求/蓝图审查和一次最终原型审查，只有明确 `FAIL`、P0 或 P1 才增加修复复审。
 - 后管原型必须从完整原始 Demo 的运行时组件目录生成，`index.html` 通过本地脚本实际引入组件。业务页面按字段语义复用预设表单、表格、上传、状态、开关、附件、头像、进度、长文本和动作组件；缺少组件时可参考 Snowy 真实框架、最接近的 Demo 组件或 Ant Design Vue 官方组件进行选择和组合，仍不满足时再新增并登记。每页字段独立完整，禁止原生文件输入、字段名猜测和万能业务字段集。
 - 后管原型必须包含从蓝图生成的逐页 `prototype-contract.json`。静态门禁将受保护组件与 canonical Demo manifest 对比，并检查核心组件从 `app/main.js` 真实可达、无字段截断和万能页面引擎；运行时门禁逐页验证查询控件、表头、工具栏、分页、Demo 布局指标和默认标注目标/气泡，并输出截图供最终视觉审查。
 - Figma UI 未确认，不进入技术设计。

@@ -39,10 +39,11 @@ project/docs/patterns/**
 语言规则：
 
 - 项目文档和阶段产物默认使用简体中文。
-- PRD、原型说明、技术方案、数据方案、开发计划、测试计划、Review、验收记录、状态文件和 `docs/superpowers/**` 产物必须默认中文。
+- PRD、原型说明、技术方案、数据方案、开发计划、测试计划、Review、验收记录和状态文件必须默认中文。
 - 每次新增、重命名或删除非代码阶段产物后，负责该阶段的 Agent 必须执行 `python scripts/update_artifact_index.py`，更新根目录 `PROJECT_ARTIFACTS.html`。Orchestrator 在阶段放行前检查导航中存在对应条目且链接可打开。
 - 路径、命令、API、类名、方法名、配置键、SQL 标识符和第三方固定模板句可以保留英文。
-- 如果使用 superpowers 或其他英文模板生成计划，落盘前必须转成中文；除非用户明确要求英文，不得生成整篇英文文档。
+- 本流程禁止使用 Superpowers 及其 `using-superpowers`、`executing-plans`、`subagent-driven-development` 模式。`docs/superpowers/**` 仅保留历史归档，新计划写入 `docs/plans/`。
+- 如果使用其他英文模板生成计划，落盘前必须转成中文；除非用户明确要求英文，不得生成整篇英文文档。
 
 图形产物规则：
 

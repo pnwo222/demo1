@@ -20,7 +20,7 @@
 
 所有文本产物和状态文件必须使用 UTF-8 编码。读取中文文件时，在 PowerShell 中必须显式使用 `Get-Content -Encoding UTF8`；写入中文文件时必须使用 UTF-8，且优先用 `apply_patch` 做局部修改。不得用未指定编码的 `Set-Content`、`Out-File`、`>` 或 `>>` 写入 Markdown、workflow、agent、skill、需求或状态文件。如果发现 `�`、`锟斤拷`、`涓`、`鏂` 等乱码，先修复编码，不得继续在乱码文件上追加阶段记录。
 
-项目文档和阶段产物默认使用简体中文，包括 `docs/superpowers/**` 下由 superpowers 生成的 spec、plan 和执行记录。代码标识符、路径、命令、API、类名、方法名、配置键和第三方固定模板句可以保留英文。除非用户明确要求英文，不得生成整篇英文项目文档。
+项目文档和阶段产物默认使用简体中文。代码标识符、路径、命令、API、类名、方法名、配置键和第三方固定模板句可以保留英文。除非用户明确要求英文，不得生成整篇英文项目文档。项目禁止调用 Superpowers 及其 `using-superpowers`、`executing-plans`、`subagent-driven-development` 模式；`docs/superpowers/**` 仅为历史归档，新计划保存到 `docs/plans/`。
 
 每个阶段新增、重命名或删除非代码产物后，必须执行 `python scripts/update_artifact_index.py` 更新根目录 `PROJECT_ARTIFACTS.html`。阶段完成检查必须确认本阶段产物可从导航直接跳转；源码、依赖、构建文件、临时文件和本机环境状态不得进入导航。
 
@@ -125,7 +125,7 @@
 - PRD/原型未跳过且需求同时涉及后管和 H5/移动端时，必须检查 Product Agent 是否分别输出后管原型和 H5/移动端原型。
 - PRD/原型未跳过时，必须检查原型需求覆盖矩阵；没有覆盖矩阵、存在未解释的未覆盖功能点，或原型只做代表性页面/最小演示时，不允许进入 UI 设计或技术设计。
 - PRD/原型未跳过且需求涉及后管、后台、管理端或运营端页面时，必须检查 Product Agent 是否使用 `.codex/skills/snowy-admin-prototype-designer`，并引用其 Demo 模板、页面蓝图模板和验收清单。
-- PRD、页面蓝图和低保真原型生成或修改期间，Orchestrator 默认直接调度当前 Product Agent 连续完成，不得仅因存在计划文件、页面多或文件多而切换到 `executing-plans`、`subagent-driven-development`、代码开发型 worktree 或逐 Task Owner 流程。只有开发者明确要求执行既有计划，或已进入经确认的业务代码开发阶段时才允许使用 `executing-plans`。
+- PRD、页面蓝图和低保真原型生成或修改期间，Orchestrator 直接调度当前 Product Agent 连续完成，不得仅因存在计划文件、页面多或文件多而切换到 Superpowers、代码开发型 worktree 或逐 Task Owner 流程。
 - PRD/原型未跳过且需求涉及后管、后台、管理端或运营端页面时，必须检查是否先输出“需求到原型页面蓝图”。蓝图必须逐个独立页面列出需求编号、原始需求摘录、原子需求清单、菜单路径、路由路径、权限标识、页面类型、参考 Snowy 页面、同步字段、展示字段、筛选字段、查询字段、表格字段、详情字段、新增字段、编辑字段、状态字段、敏感字段、操作按钮、状态/异常、权限差异、字段展示形态和点击交互；每个字段、按钮、状态和权限必须标记来源：`需求明确`、`框架惯例`、`待确认` 或 `不适用`；缺少蓝图、蓝图没有逐页字段、蓝图未通过 `.codex/skills/snowy-admin-prototype-designer/scripts/validate_admin_blueprint.py`、出现 `等状态`/`多条件筛选`/`同新增` 等压缩写法时退回 Product 阶段重做。
 - PRD/原型未跳过且需求涉及后管、后台、管理端或运营端页面时，必须检查覆盖矩阵是否能追溯到蓝图和 HTML。`已覆盖` 项必须有对应页面、字段、操作或交互；不能只在矩阵中自称已覆盖；不得用 `ADM-S-001~020` 这类范围行证明覆盖。
 - PRD/原型未跳过且需求涉及后管、后台、管理端或运营端页面时，必须检查后管原型是否从 `.codex/skills/snowy-admin-prototype-designer/assets/prototype-demo-framework/index.html` 复制模板生成，并保留 Demo 版本标识、`prototypeMeta`、Vue + Ant Design Vue CDN、`.snowy-sider`、`.snowy-header`、`.tabs-row`、查询卡片、工具栏、`a-table`、`a-drawer`、`a-modal`、顶部标注工具栏、节点标注与本地持久化、页面需求抽屉和另存为能力；组件预设只按业务需要复用，不得作为无关菜单或页面保留。缺少任一必需关键结构时退回 Product 阶段重做。
