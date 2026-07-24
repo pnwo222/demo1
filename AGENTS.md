@@ -30,6 +30,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 - 工作流状态分为全局状态、开发者本机环境状态和需求状态：`docs/workflow/status.md` 记录可提交的项目级状态和需求工作项索引；`docs/workflow/local-environment-status.md` 记录当前开发者本机环境检测结果，必须被 `.gitignore` 忽略，不得提交到 Git；每个需求或功能的阶段状态记录在 `docs/workflow/requirements/<需求ID>.md`。开发者回复“前后端已确认可运行”或等价表达后，Orchestrator 必须按环境检测清单确认 Git、Node.js、npm、前端依赖、JDK 17、Maven、IDEA、MySQL CLI、MySQL 服务、Redis 服务；检测结果写入 `docs/workflow/local-environment-status.md`。PRD、UI、技术设计、开发、测试、审查、发布、验收、分支和合并等单需求阶段进入、完成、跳过或阻塞时，必须更新对应需求状态文件。
 - 所有文本文件必须使用 UTF-8 编码保存，尤其是 `*.md`、`*.yml`、`*.yaml`、`*.json`、`*.toml`、`*.java`、`*.vue`、`*.ts`、`*.js`、`*.properties` 和 `docs/workflow/**` 状态文件。禁止用未显式编码的 PowerShell 写入中文文件；PowerShell 读取必须使用 `Get-Content -Encoding UTF8`，写入必须使用 `Set-Content -Encoding UTF8` 或 `Out-File -Encoding UTF8`。Agent 手工编辑优先使用 `apply_patch`，避免整文件重写导致乱码。
 - 项目内文档和阶段产物默认使用简体中文，包括 PRD、原型说明、技术方案、数据方案、开发计划、Review、测试计划、状态文件和 `docs/superpowers/**` 产物。代码标识符、路径、命令、API、类名、配置键、第三方固定模板句可以保留英文。除非用户明确要求英文，不得生成整篇英文项目文档。
+- 根目录 `PROJECT_ARTIFACTS.html` 是非代码产物统一导航。任何 Agent 新增、重命名或删除需求、PRD、原型、设计、架构、数据、计划、图表、测试、审查、发布、验收或流程状态产物后，必须在本阶段结束前执行 `python scripts/update_artifact_index.py`，确认新产物已登记且链接可跳转。导航不登记源码、依赖、构建目录、临时文件、本机状态和原型内部 JS/CSS 实现文件。
 - 后端启动前必须提示开发者确认 Java、MySQL、Redis 配置：Java 在 IDEA Project SDK、Modules SDK、Java Compiler、Maven importer、Maven runner 中都必须是 JDK 17；MySQL/Redis 配置位于 `project/snowy-web-app/src/main/resources/application.properties`，可由开发者自行修改，或在明确要求时由 Agent 按开发者提供的值修改。若只修改数据库名，只更新 MySQL JDBC URL 中 `host:port/` 后、`?` 前的库名。
 - 不直接在当前分支或主分支上开发。开发者确认当前分支作为开发分支后，工作流必须先从当前分支创建新的需求集成分支；后续代码开发从该新分支再创建 worktree 开发分支/目录。worktree 开发完成并提交后，先合并回需求集成分支；在需求集成分支验证无误后，再询问开发者是否合并回开发分支。
 - 不让开发 Agent 自己给自己放行，必须经过 Review、CI 和人工审批。
@@ -44,6 +45,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 - 开发前必须提供开发模式选择：简单 CRUD 快速模式、标准 SDLC 模式、高风险严格模式、自定义。所有模式都必须使用 `.codex/skills/snowy-framework-reader` 读取 `project/docs/patterns/` 缓存；区别是快速模式以缓存为主路径减少探索，标准模式把缓存作为加速输入并继续完整设计，严格模式在读取缓存后仍做更深审查和验证。
 - 涉及资金、权限、状态机、库存或资源、用户数据、删除和批量操作的改动必须重点审查。
 - 所有功能都必须有验收标准、测试结果和残余风险说明。
+- 本次新增、重命名或删除的非代码产物已同步到根目录 `PROJECT_ARTIFACTS.html`，且导航链接不存在失效项。
 
 ## 通用 Agent 分工
 
@@ -214,6 +216,7 @@ Agent 和 workflow 不应写死具体业务需求。具体项目需求应放在 
 - `docs/requirements/`：独立业务需求文档。
 - `docs/workflow/status.md`：全局环境自检状态和需求工作项索引。
 - `docs/workflow/requirements/`：每个需求或功能的阶段状态、跳过项、产物、验收和风险记录。
+- `PROJECT_ARTIFACTS.html`：仓库全部非代码交付产物的分类导航，由 `scripts/update_artifact_index.py` 自动维护。
 - `.codex/agents/`：通用专业 Agent Markdown 角色说明。
 - `.codex/workflows/`：通用多 Agent SDLC 工作流。
 - `.codex/checklists/`：PR、发布、验收检查表。
