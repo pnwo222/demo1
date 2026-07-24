@@ -31,6 +31,17 @@ ARTIFACT_SUFFIXES = {
     ".puml",
 }
 
+IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".webp", ".svg"}
+
+SUPPORTING_IMAGE_DIRS = {
+    "assets",
+    "image",
+    "images",
+    "media",
+    "runtime-screenshots",
+    "screenshots",
+}
+
 ROOT_EXCLUDES = {
     "AGENTS.md",
     "README.md",
@@ -60,10 +71,17 @@ def relative_path(path: Path) -> str:
     return path.relative_to(ROOT).as_posix()
 
 
+def is_supporting_image(relative: str, suffix: str) -> bool:
+    path_parts = {part.lower() for part in Path(relative).parts[:-1]}
+    return suffix.lower() in IMAGE_SUFFIXES and bool(path_parts & SUPPORTING_IMAGE_DIRS)
+
+
 def is_artifact(path: Path) -> bool:
     if not path.is_file() or path.suffix.lower() not in ARTIFACT_SUFFIXES:
         return False
     relative = relative_path(path)
+    if is_supporting_image(relative, path.suffix):
+        return False
     if relative in PATH_EXCLUDES:
         return False
     if path.parent == ROOT and path.name in ROOT_EXCLUDES:
